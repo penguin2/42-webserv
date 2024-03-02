@@ -1,0 +1,10 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+AlignAfterOpenBracket: AlwaysBreak
+AllowShortFunctionsOnASingleLine: Empty
+AlignConsecutiveDeclarations: true
+BinPackParameters: false
+PointerAlignment: Left
+ReferenceAlignment: Left
+PackConstructorInitializers: NextLine
+AlwaysBreakTemplateDeclarations: Yes
