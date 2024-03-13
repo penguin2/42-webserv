@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include <cerrno>
 #include <iostream>
 
 #include "EchoServer.hpp"
