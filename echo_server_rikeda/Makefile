@@ -13,7 +13,9 @@ INCLUDES_DIR	=	./inc
 
 SRCS			=	main.cpp \
 					EventHandler.cpp \
-					EchoServer.cpp
+					Server.cpp \
+					ConnectionManager.cpp \
+					Connection.cpp
 
 OBJS			=	$(patsubst %.o, $(OBJS_DIR)/%.o, $(SRCS:.cpp=.o))
 DEPS			=	$(OBJS:.o=.d)

@@ -3,14 +3,14 @@
 #include <exception>
 #include <string>
 
-#include "EchoServer.hpp"
+#include "Server.hpp"
 
 class EventHandler {
  public:
   EventHandler(size_t max_event_size);
   ~EventHandler(void);
 
-  void startUpHandleServer(EchoServer server);
+  void startUpHandleServer(Server server);
   class EventHandlerError : std::exception {};
 
  private:

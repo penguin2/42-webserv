@@ -3,15 +3,15 @@
 #include <cerrno>
 #include <iostream>
 
-#include "EchoServer.hpp"
 #include "EventHandler.hpp"
+#include "Server.hpp"
 
 int main(void) {
   try {
-    EchoServer server("127.0.0.1", 4242);
+    Server server("127.0.0.1", 4242);
     EventHandler handler(10);
     handler.startUpHandleServer(server);
-  } catch (EchoServer::ServerInternalError& e) {
+  } catch (Server::ServerInternalError& e) {
     std::cerr << "Server Error" << std::endl;
     return 1;
     strerror(errno);

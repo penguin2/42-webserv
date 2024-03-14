@@ -1,4 +1,4 @@
-#include "EchoServer.hpp"
+#include "Server.hpp"
 
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -12,7 +12,7 @@
 
 #include "EventHandler.hpp"
 
-EchoServer::EchoServer(const char *host, unsigned short port) {
+Server::Server(const char *host, unsigned short port) {
   listen_fd_ = socket(AF_INET, SOCK_STREAM, 0);
   if (listen_fd_ < 0) throw ServerInternalError();
   struct sockaddr_in addr = customSockaddr(host, port);
@@ -20,13 +20,12 @@ EchoServer::EchoServer(const char *host, unsigned short port) {
     throw ServerInternalError();
   if (listen(listen_fd_, 3) < 0) throw ServerInternalError();
   std::cout << host << ":" << port << std::endl;
-  std::cout << "listenfd = " << listen_fd_ << std::endl;
 }
 
-EchoServer::~EchoServer(void) { close(listen_fd_); }
+Server::~Server(void) { close(listen_fd_); }
 
-struct sockaddr_in EchoServer::customSockaddr(const char *host,
-                                              unsigned short port) {
+struct sockaddr_in Server::customSockaddr(const char *host,
+                                          unsigned short port) {
   struct sockaddr_in a_addr;
   std::memset(&a_addr, 0, sizeof(a_addr));
   a_addr.sin_family = AF_INET;
@@ -35,4 +34,4 @@ struct sockaddr_in EchoServer::customSockaddr(const char *host,
   return a_addr;
 }
 
-int EchoServer::getListenFd(void) const { return listen_fd_; }
+int Server::getListenFd(void) const { return listen_fd_; }

@@ -1,11 +1,11 @@
-#ifndef Webserv_EchoServer_H_
-#define Webserv_EchoServer_H_
+#ifndef Webserv_Server_H_
+#define Webserv_Server_H_
 #include <string>
 
-class EchoServer {
+class Server {
  public:
-  EchoServer(const char *host, unsigned short port);
-  ~EchoServer(void);
+  Server(const char *host, unsigned short port);
+  ~Server(void);
 
   struct sockaddr_in customSockaddr(const char *host, unsigned short port);
   int getListenFd(void) const;
@@ -13,7 +13,7 @@ class EchoServer {
 
  private:
   int listen_fd_;
-  EchoServer(void);
+  Server(void);
 };
 
 #endif

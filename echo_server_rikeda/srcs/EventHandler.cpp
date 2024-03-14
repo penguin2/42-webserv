@@ -7,6 +7,9 @@
 #include <cstring>
 #include <iostream>
 
+#include "Connection.hpp"
+#include "ConnectionManager.hpp"
+
 #define RESPONSE                                                               \
   "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 20\n\n<p>Hello, " \
   "World!</p>"
@@ -32,7 +35,9 @@ void EventHandler::del(int fd) {
     throw EventHandlerError();
 }
 
-void EventHandler::startUpHandleServer(EchoServer server) {
+void EventHandler::startUpHandleServer(Server server) {
+  ConnectionManager manager;
+
   add(server.getListenFd(), EPOLLIN);
   while (true) {
     int nfds = epoll_wait(epoll_fd_, ev_list_, max_event_size_, -1);
@@ -42,18 +47,17 @@ void EventHandler::startUpHandleServer(EchoServer server) {
         int fd = accept(server.getListenFd(), NULL, NULL);
         if (fd < 0) throw EventHandlerError();
         add(fd, EPOLLIN);
+        manager.add(-1, fd, Connection::CLIENT_SERVER);
       } else if (ev_list_[i].events & EPOLLIN) {
-        int fd = ev_list_[i].data.fd;
-        int bytes = recv(fd, buffer, BUFFER_SIZE, 0);
-        buffer[bytes] = '\0';
-        std::cout << buffer << std::endl;
-        del(fd);
-        add(fd, EPOLLOUT);
+        Connection* conn = manager.searchFromDownStreamFds(ev_list_[i].data.fd);
+        conn->recvToBuffer(conn->getDownStreamFd());
+        del(conn->getDownStreamFd());
+        add(conn->getDownStreamFd(), EPOLLOUT);
       } else {
-        int fd = ev_list_[i].data.fd;
-        send(fd, RESPONSE, strlen(RESPONSE), 0);
-        del(fd);
-        close(fd);
+        Connection* conn = manager.searchFromDownStreamFds(ev_list_[i].data.fd);
+        conn->sendBufferContents(conn->getDownStreamFd());
+        del(conn->getDownStreamFd());
+        manager.del(conn->getDownStreamFd());
       }
     }
   }
