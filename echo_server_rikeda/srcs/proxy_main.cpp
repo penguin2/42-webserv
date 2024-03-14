@@ -6,9 +6,6 @@
 #include "ProxyHandler.hpp"
 #include "Server.hpp"
 
-#define PROXY_HOST "127.0.0.1"
-#define PROXY_PORT 4242
-
 int main(void) {
   try {
     Server server(PROXY_HOST, PROXY_PORT);

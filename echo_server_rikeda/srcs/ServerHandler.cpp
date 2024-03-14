@@ -7,27 +7,14 @@
 #include <cstring>
 #include <iostream>
 
+#include "AHandler.hpp"
 #include "Connection.hpp"
 #include "ConnectionManager.hpp"
 
 ServerHandler::ServerHandler(size_t max_event_size)
-    : max_event_size_(max_event_size) {
-  ev_list_ = new struct epoll_event[max_event_size];
-  epoll_fd_ = epoll_create(max_event_size);
-  if (epoll_fd_ < 0) throw HandlerError();
-}
+    : AHandler(max_event_size) {}
 
 ServerHandler::~ServerHandler(void) { delete[] ev_list_; }
-
-void ServerHandler::add(int fd, int event) {
-  struct epoll_event ev = customEpollEvent(fd, event);
-  if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, fd, &ev) < 0) throw HandlerError();
-}
-
-void ServerHandler::del(int fd) {
-  struct epoll_event ev = customEpollEvent(fd, EPOLLIN);
-  if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, fd, &ev) < 0) throw HandlerError();
-}
 
 void ServerHandler::startUpHandle(Server server) {
   ConnectionManager manager;
@@ -56,12 +43,4 @@ void ServerHandler::startUpHandle(Server server) {
       }
     }
   }
-}
-
-struct epoll_event ServerHandler::customEpollEvent(int fd, int event) {
-  struct epoll_event ev;
-  std::memset(&ev, 0, sizeof(ev));
-  ev.events = event;
-  ev.data.fd = fd;
-  return ev;
 }

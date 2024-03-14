@@ -16,6 +16,7 @@ INCLUDES_DIR	=	./inc
 
 SRCS			=	Server.cpp \
 					ConnectionManager.cpp \
+					AHandler.cpp \
 					Connection.cpp
 
 SERVER_SRCS		=	ServerHandler.cpp \

@@ -6,9 +6,6 @@
 #include "Server.hpp"
 #include "ServerHandler.hpp"
 
-#define SERVER_HOST "127.0.0.1"
-#define SERVER_PORT 4243
-
 int main(void) {
   try {
     Server server(SERVER_HOST, SERVER_PORT);

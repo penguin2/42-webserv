@@ -11,27 +11,13 @@
 #include <cstring>
 #include <iostream>
 
+#include "AHandler.hpp"
 #include "Connection.hpp"
 #include "ConnectionManager.hpp"
 
-ProxyHandler::ProxyHandler(size_t max_event_size)
-    : max_event_size_(max_event_size) {
-  ev_list_ = new struct epoll_event[max_event_size];
-  epoll_fd_ = epoll_create(max_event_size);
-  if (epoll_fd_ < 0) throw HandlerError();
-}
+ProxyHandler::ProxyHandler(size_t max_event_size) : AHandler(max_event_size) {}
 
-ProxyHandler::~ProxyHandler(void) { delete[] ev_list_; }
-
-void ProxyHandler::add(int fd, int event) {
-  struct epoll_event ev = customEpollEvent(fd, event);
-  if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, fd, &ev) < 0) throw HandlerError();
-}
-
-void ProxyHandler::del(int fd) {
-  struct epoll_event ev = customEpollEvent(fd, EPOLLIN);
-  if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, fd, &ev) < 0) throw HandlerError();
-}
+ProxyHandler::~ProxyHandler(void) {}
 
 int ProxyHandler::connectToUpStreamServer() {
   int up_stream_server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -41,8 +27,8 @@ int ProxyHandler::connectToUpStreamServer() {
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(4243);
-  addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  addr.sin_port = htons(SERVER_PORT);
+  addr.sin_addr.s_addr = inet_addr(SERVER_HOST);
   if (connect(up_stream_server_fd, (struct sockaddr*)&addr, sizeof(addr)) ==
           -1 &&
       errno != EINPROGRESS)
@@ -93,12 +79,4 @@ void ProxyHandler::startUpHandle(Server server) {
       }
     }
   }
-}
-
-struct epoll_event ProxyHandler::customEpollEvent(int fd, int event) {
-  struct epoll_event ev;
-  std::memset(&ev, 0, sizeof(ev));
-  ev.events = event;
-  ev.data.fd = fd;
-  return ev;
 }
