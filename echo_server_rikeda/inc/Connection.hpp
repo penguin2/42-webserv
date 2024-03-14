@@ -15,6 +15,7 @@ class Connection {
 
   void recvToBuffer(int fd);
   void sendBufferContents(int fd);
+  void sendResponse(int fd);
   int getUpStreamFd(void) const;
   int getDownStreamFd(void) const;
   t_connection_type getConnectionType(void) const;

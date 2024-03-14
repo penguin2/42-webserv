@@ -10,10 +10,6 @@
 #include "Connection.hpp"
 #include "ConnectionManager.hpp"
 
-#define RESPONSE                                                               \
-  "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 20\n\n<p>Hello, " \
-  "World!</p>"
-
 EventHandler::EventHandler(size_t max_event_size)
     : max_event_size_(max_event_size) {
   ev_list_ = new struct epoll_event[max_event_size];
@@ -55,6 +51,7 @@ void EventHandler::startUpHandleServer(Server server) {
         add(conn->getDownStreamFd(), EPOLLOUT);
       } else {
         Connection* conn = manager.searchFromDownStreamFds(ev_list_[i].data.fd);
+        // conn->sendResponse(conn->getDownStreamFd());
         conn->sendBufferContents(conn->getDownStreamFd());
         del(conn->getDownStreamFd());
         manager.del(conn->getDownStreamFd());
