@@ -8,9 +8,8 @@ ConnectionManager::ConnectionManager(void) {}
 
 ConnectionManager::~ConnectionManager(void) {}
 
-void ConnectionManager::add(int up_stream_fd, int down_stream_fd,
-                            Connection::t_connection_type type) {
-  connections.push_back(new Connection(up_stream_fd, down_stream_fd, type));
+void ConnectionManager::add(int up_stream_fd, int down_stream_fd) {
+  connections.push_back(new Connection(up_stream_fd, down_stream_fd));
 }
 
 int ConnectionManager::del(int fd) {
@@ -24,14 +23,14 @@ int ConnectionManager::del(int fd) {
   return -1;
 }
 
-Connection* ConnectionManager::searchFromUpStreamFds(int fd) {
+Connection* ConnectionManager::searchFromUpStreamFds(int fd) const {
   for (size_t i = 0; i < connections.size(); ++i) {
     if (connections[i]->getUpStreamFd() == fd) return connections[i];
   }
   return NULL;
 }
 
-Connection* ConnectionManager::searchFromDownStreamFds(int fd) {
+Connection* ConnectionManager::searchFromDownStreamFds(int fd) const {
   for (size_t i = 0; i < connections.size(); ++i) {
     if (connections[i]->getDownStreamFd() == fd) return connections[i];
   }

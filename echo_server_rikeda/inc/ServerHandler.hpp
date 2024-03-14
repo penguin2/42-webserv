@@ -1,17 +1,17 @@
-#ifndef Wevserv_EventHandler_H_
-#define Wevserv_EventHandler_H_
+#ifndef Wevserv_ServerHandler_H_
+#define Wevserv_ServerHandler_H_
 #include <exception>
 #include <string>
 
 #include "Server.hpp"
 
-class EventHandler {
+class ServerHandler {
  public:
-  EventHandler(size_t max_event_size);
-  ~EventHandler(void);
+  ServerHandler(size_t max_event_size);
+  ~ServerHandler(void);
 
-  void startUpHandleServer(Server server);
-  class EventHandlerError : std::exception {};
+  void startUpHandle(Server server);
+  class HandlerError : std::exception {};
 
  private:
   int epoll_fd_;

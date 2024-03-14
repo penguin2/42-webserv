@@ -18,26 +18,24 @@ ProxyHandler::ProxyHandler(size_t max_event_size)
     : max_event_size_(max_event_size) {
   ev_list_ = new struct epoll_event[max_event_size];
   epoll_fd_ = epoll_create(max_event_size);
-  if (epoll_fd_ < 0) throw ProxyHandlerError();
+  if (epoll_fd_ < 0) throw HandlerError();
 }
 
 ProxyHandler::~ProxyHandler(void) { delete[] ev_list_; }
 
 void ProxyHandler::add(int fd, int event) {
   struct epoll_event ev = customEpollEvent(fd, event);
-  if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, fd, &ev) < 0)
-    throw ProxyHandlerError();
+  if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, fd, &ev) < 0) throw HandlerError();
 }
 
 void ProxyHandler::del(int fd) {
   struct epoll_event ev = customEpollEvent(fd, EPOLLIN);
-  if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, fd, &ev) < 0)
-    throw ProxyHandlerError();
+  if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, fd, &ev) < 0) throw HandlerError();
 }
 
 int ProxyHandler::connectToUpStreamServer() {
   int up_stream_server_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (up_stream_server_fd < 0) throw ProxyHandler::ProxyHandlerError();
+  if (up_stream_server_fd < 0) throw HandlerError();
   int flags = fcntl(up_stream_server_fd, F_GETFL, 0);
   fcntl(up_stream_server_fd, F_SETFL, flags | O_NONBLOCK);
   struct sockaddr_in addr;
@@ -48,23 +46,23 @@ int ProxyHandler::connectToUpStreamServer() {
   if (connect(up_stream_server_fd, (struct sockaddr*)&addr, sizeof(addr)) ==
           -1 &&
       errno != EINPROGRESS)
-    throw ProxyHandler::ProxyHandlerError();
+    throw HandlerError();
   return up_stream_server_fd;
 }
 
-void ProxyHandler::startUpHandleProxy(Server server) {
+void ProxyHandler::startUpHandle(Server server) {
   ConnectionManager manager;
 
   add(server.getListenFd(), EPOLLIN);
   while (true) {
     int nfds = epoll_wait(epoll_fd_, ev_list_, max_event_size_, -1);
-    if (nfds < 0) throw ProxyHandlerError();
+    if (nfds < 0) throw HandlerError();
     for (int i = 0; i < nfds; i++) {
       if (ev_list_[i].data.fd == server.getListenFd()) {
         int fd = accept(server.getListenFd(), NULL, NULL);
-        if (fd < 0) throw ProxyHandlerError();
+        if (fd < 0) throw HandlerError();
         add(fd, EPOLLIN);
-        manager.add(-1, fd, Connection::CLIENT_SERVER);
+        manager.add(-1, fd);
       } else if (ev_list_[i].events & EPOLLIN) {
         Connection* conn = manager.searchFromDownStreamFds(ev_list_[i].data.fd);
         if (conn != NULL) {

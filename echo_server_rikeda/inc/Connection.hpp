@@ -4,13 +4,7 @@
 
 class Connection {
  public:
-  typedef enum e_connection_type {
-    CLIENT_SERVER,
-    SERVER_SERVER,
-  } t_connection_type;
-
- public:
-  Connection(int up_stream_fd, int down_stream_fd, t_connection_type type);
+  Connection(int up_stream_fd, int down_stream_fd);
   ~Connection(void);
 
   void recvToBuffer(int fd);
@@ -20,14 +14,14 @@ class Connection {
   int getDownStreamFd(void) const;
   void setUpStreamFd(int fd);
   void setDownStreamFd(int fd);
-  t_connection_type getConnectionType(void) const;
 
  private:
   static const size_t BUFFER_SIZE = 1024;
   char buffer[BUFFER_SIZE];
   int up_stream_fd_;
   int down_stream_fd_;
-  t_connection_type type_;
+
+  Connection(void);
 };
 
 #endif

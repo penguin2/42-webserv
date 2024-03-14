@@ -10,11 +10,10 @@ class ConnectionManager {
   ConnectionManager(void);
   ~ConnectionManager(void);
 
-  void add(int up_stream_fd, int down_stream_fd,
-           Connection::t_connection_type type);
+  void add(int up_stream_fd, int down_stream_fd);
   int del(int fd);
-  Connection* searchFromUpStreamFds(int fd);
-  Connection* searchFromDownStreamFds(int fd);
+  Connection* searchFromUpStreamFds(int fd) const;
+  Connection* searchFromDownStreamFds(int fd) const;
 
  private:
   std::vector<Connection*> connections;

@@ -3,7 +3,6 @@
 #include <cerrno>
 #include <iostream>
 
-#include "EventHandler.hpp"
 #include "ProxyHandler.hpp"
 #include "Server.hpp"
 
@@ -14,12 +13,12 @@ int main(void) {
   try {
     Server server(PROXY_HOST, PROXY_PORT);
     ProxyHandler handler(10);
-    handler.startUpHandleProxy(server);
+    handler.startUpHandle(server);
   } catch (Server::ServerInternalError& e) {
     std::cerr << "Server Error" << std::endl;
     return 1;
     strerror(errno);
-  } catch (EventHandler::EventHandlerError& e) {
+  } catch (ProxyHandler::HandlerError& e) {
     std::cerr << "Handler Error" << std::endl;
     std::cerr << strerror(errno) << std::endl;
     strerror(errno);

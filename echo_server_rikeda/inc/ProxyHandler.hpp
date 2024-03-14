@@ -10,8 +10,8 @@ class ProxyHandler {
   ProxyHandler(size_t max_event_size);
   ~ProxyHandler(void);
 
-  void startUpHandleProxy(Server server);
-  class ProxyHandlerError : std::exception {};
+  void startUpHandle(Server server);
+  class HandlerError : std::exception {};
 
  private:
   int epoll_fd_;

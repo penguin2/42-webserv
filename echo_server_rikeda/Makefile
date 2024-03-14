@@ -18,7 +18,7 @@ SRCS			=	Server.cpp \
 					ConnectionManager.cpp \
 					Connection.cpp
 
-SERVER_SRCS		=	EventHandler.cpp \
+SERVER_SRCS		=	ServerHandler.cpp \
 					server_main.cpp
 
 PROXY_SRCS		=	ProxyHandler.cpp \

@@ -7,11 +7,8 @@
 #include <iostream>
 #include <sstream>
 
-Connection::Connection(int up_stream_fd, int down_stream_fd,
-                       t_connection_type type)
-    : up_stream_fd_(up_stream_fd),
-      down_stream_fd_(down_stream_fd),
-      type_(type) {
+Connection::Connection(int up_stream_fd, int down_stream_fd)
+    : up_stream_fd_(up_stream_fd), down_stream_fd_(down_stream_fd) {
   std::cout << "Connect" << std::endl;
 }
 
@@ -48,7 +45,3 @@ int Connection::getDownStreamFd(void) const { return down_stream_fd_; }
 void Connection::setUpStreamFd(int fd) { this->up_stream_fd_ = fd; }
 
 void Connection::setDownStreamFd(int fd) { this->down_stream_fd_ = fd; }
-
-Connection::t_connection_type Connection::getConnectionType(void) const {
-  return type_;
-}
