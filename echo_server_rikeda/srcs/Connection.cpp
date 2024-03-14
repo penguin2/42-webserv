@@ -45,6 +45,10 @@ int Connection::getUpStreamFd(void) const { return up_stream_fd_; }
 
 int Connection::getDownStreamFd(void) const { return down_stream_fd_; }
 
+void Connection::setUpStreamFd(int fd) { this->up_stream_fd_ = fd; }
+
+void Connection::setDownStreamFd(int fd) { this->down_stream_fd_ = fd; }
+
 Connection::t_connection_type Connection::getConnectionType(void) const {
   return type_;
 }

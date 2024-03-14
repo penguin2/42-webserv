@@ -51,8 +51,8 @@ void EventHandler::startUpHandleServer(Server server) {
         add(conn->getDownStreamFd(), EPOLLOUT);
       } else {
         Connection* conn = manager.searchFromDownStreamFds(ev_list_[i].data.fd);
-        // conn->sendResponse(conn->getDownStreamFd());
-        conn->sendBufferContents(conn->getDownStreamFd());
+        conn->sendResponse(conn->getDownStreamFd());
+        // conn->sendBufferContents(conn->getDownStreamFd());
         del(conn->getDownStreamFd());
         manager.del(conn->getDownStreamFd());
       }

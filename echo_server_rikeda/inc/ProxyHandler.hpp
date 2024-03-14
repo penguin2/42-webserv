@@ -1,17 +1,17 @@
-#ifndef Wevserv_EventHandler_H_
-#define Wevserv_EventHandler_H_
+#ifndef Wevserv_ProxyHandler_H_
+#define Wevserv_ProxyHandler_H_
 #include <exception>
 #include <string>
 
 #include "Server.hpp"
 
-class EventHandler {
+class ProxyHandler {
  public:
-  EventHandler(size_t max_event_size);
-  ~EventHandler(void);
+  ProxyHandler(size_t max_event_size);
+  ~ProxyHandler(void);
 
-  void startUpHandleServer(Server server);
-  class EventHandlerError : std::exception {};
+  void startUpHandleProxy(Server server);
+  class ProxyHandlerError : std::exception {};
 
  private:
   int epoll_fd_;
@@ -21,6 +21,7 @@ class EventHandler {
   void add(int fd, int event);
   void del(int fd);
   struct epoll_event customEpollEvent(int fd, int event);
+  int connectToUpStreamServer(void);
 };
 
 #endif

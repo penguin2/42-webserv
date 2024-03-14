@@ -18,6 +18,8 @@ class Connection {
   void sendResponse(int fd);
   int getUpStreamFd(void) const;
   int getDownStreamFd(void) const;
+  void setUpStreamFd(int fd);
+  void setDownStreamFd(int fd);
   t_connection_type getConnectionType(void) const;
 
  private:
