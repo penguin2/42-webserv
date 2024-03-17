@@ -1,12 +1,14 @@
 #include <string.h>
 
 #include <cerrno>
+#include <csignal>
 #include <iostream>
 
 #include "Server.hpp"
 #include "ServerHandler.hpp"
 
 int main(void) {
+  std::signal(SIGPIPE, SIG_IGN);
   try {
     Server server(SERVER_HOST, SERVER_PORT);
     ServerHandler handler(10);
