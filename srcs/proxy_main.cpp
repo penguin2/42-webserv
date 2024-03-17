@@ -1,12 +1,14 @@
 #include <string.h>
 
 #include <cerrno>
+#include <csignal>
 #include <iostream>
 
 #include "ProxyHandler.hpp"
 #include "Server.hpp"
 
 int main(void) {
+  std::signal(SIGPIPE, SIG_IGN);
   try {
     Server server(PROXY_HOST, PROXY_PORT);
     ProxyHandler handler(10);
