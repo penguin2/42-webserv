@@ -21,9 +21,8 @@ ProxyHandler::~ProxyHandler(void) {}
 
 int ProxyHandler::connectToUpStreamServer() {
   int up_stream_server_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (up_stream_server_fd < 0) throw HandlerError();
-  int flags = fcntl(up_stream_server_fd, F_GETFL, 0);
-  fcntl(up_stream_server_fd, F_SETFL, flags | O_NONBLOCK);
+  if (up_stream_server_fd < 0 || addNonblockingFlag(up_stream_server_fd) < 0)
+    throw HandlerError();
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
   addr.sin_family = AF_INET;
@@ -46,7 +45,7 @@ void ProxyHandler::startUpHandle(Server server) {
     for (int i = 0; i < nfds; i++) {
       if (ev_list_[i].data.fd == server.getListenFd()) {
         int fd = accept(server.getListenFd(), NULL, NULL);
-        if (fd < 0) throw HandlerError();
+        if (fd < 0 || addNonblockingFlag(fd) < 0) throw HandlerError();
         add(fd, EPOLLIN);
         manager.add(-1, fd);
       } else if (ev_list_[i].events & EPOLLIN) {

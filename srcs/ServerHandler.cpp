@@ -26,7 +26,7 @@ void ServerHandler::startUpHandle(Server server) {
     for (int i = 0; i < nfds; i++) {
       if (ev_list_[i].data.fd == server.getListenFd()) {
         int fd = accept(server.getListenFd(), NULL, NULL);
-        if (fd < 0) throw HandlerError();
+        if (fd < 0 || addNonblockingFlag(fd) < 0) throw HandlerError();
         add(fd, EPOLLIN);
         manager.add(-1, fd);
       } else if (ev_list_[i].events & EPOLLIN) {
