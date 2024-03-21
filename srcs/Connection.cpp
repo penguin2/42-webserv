@@ -1,8 +1,10 @@
 #include "Connection.hpp"
 
+#include <fcntl.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <sstream>
@@ -45,3 +47,16 @@ int Connection::getDownStreamFd(void) const { return down_stream_fd_; }
 void Connection::setUpStreamFd(int fd) { this->up_stream_fd_ = fd; }
 
 void Connection::setDownStreamFd(int fd) { this->down_stream_fd_ = fd; }
+
+int addNonblockingFlag(int fd) {
+  int flags = fcntl(fd, F_GETFL, 0);
+  if (flags < 0) {
+    std::perror("fcntl(F_GETFL)");
+    return -1;
+  }
+  if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0) {
+    std::perror("fcntl(F_SETFL)");
+    return -1;
+  }
+  return 0;
+}

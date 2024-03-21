@@ -24,4 +24,6 @@ class Connection {
   Connection(void);
 };
 
+int addNonblockingFlag(int fd);
+
 #endif

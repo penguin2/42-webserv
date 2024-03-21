@@ -10,9 +10,12 @@
 #include <cstring>
 #include <iostream>
 
+#include "Connection.hpp"
+
 Server::Server(const char *host, unsigned short port) {
   listen_fd_ = socket(AF_INET, SOCK_STREAM, 0);
-  if (listen_fd_ < 0) throw ServerInternalError();
+  if (listen_fd_ < 0 || addNonblockingFlag(listen_fd_) < 0)
+    throw ServerInternalError();
   struct sockaddr_in addr = customSockaddr(host, port);
   if (bind(listen_fd_, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     throw ServerInternalError();
