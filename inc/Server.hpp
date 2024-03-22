@@ -1,19 +1,40 @@
-#ifndef Webserv_Server_H_
-#define Webserv_Server_H_
+#ifndef WEBSERV_SERVER_H
+#define WEBSERV_SERVER_H
+
+#include <map>
 #include <string>
+#include <vector>
+
+#include "Config.hpp"
+#include "Connection.hpp"
+#include "EventManager.hpp"
+#include "ListenSocket.hpp"
+
+class Connection;
 
 class Server {
- public:
-  Server(const char *host, unsigned short port);
-  ~Server(void);
+ private:
+  const Config config_;
+  const EventManager event_manager_;
+  std::map<int, Connection*> connections_;
+  std::vector<ListenSocket*> listen_sockets_;
 
-  struct sockaddr_in customSockaddr(const char *host, unsigned short port);
-  int getListenFd(void) const;
-  class ServerInternalError {};
+ public:
+  Server(const char* config_file);
+  ~Server();
+
+  int addConnection(int socket_fd);
+  int closeConnection(Connection* connection);
+  int checkTimeouts();
+  int filterConnections();
+
+  int start();
+  int loop();
 
  private:
-  int listen_fd_;
-  Server(void);
+  Server();
+  Server(const Server&);
+  Server& operator=(const Server&);
 };
 
 #endif

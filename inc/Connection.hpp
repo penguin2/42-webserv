@@ -1,29 +1,41 @@
-#ifndef Webserv_Connection_H_
-#define Webserv_Connection_H_
-#include <string>
+#ifndef WEBSERV_CONNECTION_H
+#define WEBSERV_CONNECTION_H
 
-class Connection {
+#include "ASocket.hpp"
+
+class EventManager;
+
+class Connection : ASocket {
+ private:
+  typedef enum State {
+    RECV,
+    SEND,
+    CLOSED,
+  } t_state;
+
+  t_state state_;
+  EventManager* event_manager_;
+
+  // TODO: make class for timer?!
+  // int timeout_;
+  // int timeout_header_;
+
+  // TODO: http handling
+  // TODO: cgi handling
+
  public:
-  Connection(int up_stream_fd, int down_stream_fd);
-  ~Connection(void);
+  Connection(int socket_fd, EventManager* event_manager);
+  ~Connection();
 
-  void recvToBuffer(int fd);
-  void sendBufferContents(int fd);
-  void sendResponse(int fd);
-  int getUpStreamFd(void) const;
-  int getDownStreamFd(void) const;
-  void setUpStreamFd(int fd);
-  void setDownStreamFd(int fd);
+  int handler();
 
  private:
-  static const size_t BUFFER_SIZE = 1024;
-  char buffer[BUFFER_SIZE];
-  int up_stream_fd_;
-  int down_stream_fd_;
+  Connection();
+  Connection(const Connection&);
+  Connection& operator=(const Connection&);
 
-  Connection(void);
+  int handlerRecv();
+  int handlerSend();
 };
-
-int addNonblockingFlag(int fd);
 
 #endif
