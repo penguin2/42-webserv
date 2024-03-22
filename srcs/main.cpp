@@ -10,7 +10,10 @@ int main(int argc, char **argv) {
     std::cerr << "usage: " << argv[0] << " <config_file>" << std::endl;
     return EXIT_FAILURE;
   }
-  std::signal(SIGPIPE, SIG_IGN);
+  if (std::signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
+    std::cerr << "signal: " << std::strerror(errno) << std::endl;
+    return EXIT_FAILURE;
+  }
 
   Server server(argv[1]);
 
