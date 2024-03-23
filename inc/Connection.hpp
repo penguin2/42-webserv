@@ -14,6 +14,7 @@ class Connection : ASocket {
   } t_state;
 
   t_state state_;
+  // TODO: unnecessary?!
   EventManager* event_manager_;
 
   // TODO: make class for timer?!

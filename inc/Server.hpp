@@ -10,8 +10,6 @@
 #include "EventManager.hpp"
 #include "ListenSocket.hpp"
 
-class Connection;
-
 class Server {
  private:
   const Config config_;
