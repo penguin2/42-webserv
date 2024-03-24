@@ -1,0 +1,4 @@
+GET / HTTP/1.a
+Host: localhost
+Explanation: HTTP minor version is not digit.
+

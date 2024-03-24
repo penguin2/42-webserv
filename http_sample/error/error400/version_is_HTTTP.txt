@@ -1,0 +1,4 @@
+GET / HTTTP/1.1
+Host: localhost
+Explanation: HTTP version is invalid.
+

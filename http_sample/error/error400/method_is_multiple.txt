@@ -1,0 +1,4 @@
+GET POST DELETE / HTTP/1.1
+Host: localhost
+Explanation: method is multiple.
+

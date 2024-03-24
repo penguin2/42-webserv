@@ -1,0 +1,4 @@
+GET / HTTPa1.1
+Host: localhost
+Explanation: slash -> a.
+

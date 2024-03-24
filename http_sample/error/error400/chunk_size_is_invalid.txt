@@ -1,0 +1,11 @@
+GET / HTTP/1.1
+Host: localhost
+Transfer-Encoding: chunked
+Explanation: chunk size must be in hexadecimal.
+
+P
+2
+3
+456
+0
+

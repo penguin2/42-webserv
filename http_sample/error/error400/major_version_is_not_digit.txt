@@ -1,0 +1,3 @@
+GET / HTTP/a.1
+Host: localhost
+Explanation: HTTP major number is not digit.
