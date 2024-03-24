@@ -1,0 +1,4 @@
+GET / HTTP/11.0
+Host: localhost
+Explanation: "HTTP/11.0" is not supported.
+

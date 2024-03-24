@@ -1,0 +1,4 @@
+GET / HTTP/3.0
+Host: localhost
+Explanation: "HTTP/3.0" is not supported.
+
