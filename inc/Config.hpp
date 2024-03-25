@@ -1,31 +1,28 @@
 #ifndef WEBSERV_CONFIG_H
 #define WEBSERV_CONFIG_H
 
-#include <vector>
 #include <memory>
+#include <vector>
+
 #include "ServerConfig.hpp"
 
 class Config {
-private:
-    Config(const char* config_file) {}
-    Config(const Config&) = delete;
-    Config& operator=(const Config&) = delete;
-    
-    std::vector<Server> servers;
+ private:
+  Config(const char* config_file) {}
+  Config(const Config&) = delete;
+  Config& operator=(const Config&) = delete;
 
-public:
-    static Config& getInstance(const char* config_file) {
-        static Config instance(config_file);
-        return instance;
-    }
+  std::vector<Server> servers;
 
-    void addServer(const Server& server) {
-        servers.push_back(server);
-    }
+ public:
+  static Config& getInstance(const char* config_file) {
+    static Config instance(config_file);
+    return instance;
+  }
 
-    const std::vector<Server>& getServers() const {
-        return servers;
-    }  
+  void addServer(const Server& server) { servers.push_back(server); }
+
+  const std::vector<Server>& getServers() const { return servers; }
 };
 
 #endif
