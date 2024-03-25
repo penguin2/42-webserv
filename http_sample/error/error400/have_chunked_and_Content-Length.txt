@@ -1,4 +1,4 @@
-GET / HTTP/1.1
+POST /cgi-bin/all_environ.py HTTP/1.1
 Host: localhost
 Content-Length: 17
 Transfer-Encoding: chunked
