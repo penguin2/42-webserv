@@ -1,0 +1,8 @@
+
+
+
+
+ GET / HTTP/1.1
+Host: localhost
+Explanation: status line must not begin with a blank space.
+

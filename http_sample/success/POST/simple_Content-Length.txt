@@ -1,0 +1,6 @@
+POST /cgi-bin/all_environ.py HTTP/1.1
+Host: localhost
+Content-Length: 10
+
+1234567890
+

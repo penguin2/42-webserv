@@ -1,0 +1,4 @@
+TOOLONG / HTTP/1.1
+Host: localhost
+Explanation: Method name is longer than "DELETE".
+

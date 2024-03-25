@@ -1,0 +1,11 @@
+POST /cgi-bin/all_environ.py HTTP/1.1
+Host: localhost
+Content-Length: 17
+Transfer-Encoding: chunked
+Explanation: Content-Length and Transfer-Encoding: chunked cannot coexist.
+
+1
+2
+3
+456
+0
