@@ -8,9 +8,11 @@
 
 class Config {
  private:
+  Config() {}
   Config(const char* config_file) {}
   Config(const Config&);
   Config& operator=(const Config&);
+  ~Config() {}
 
   std::vector<ServerConfig> servers;
 
