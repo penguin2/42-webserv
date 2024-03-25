@@ -21,43 +21,29 @@ class LocationConfig {
   std::string cgi_ext;
 
  public:
-  LocationConfig()
-      : root(""),
-        index(""),
-        try_files_path(""),
-        try_files_error_code(0),
-        client_max_body_size(""),
-        autoindex(false),
-        return_status_code(""),
-        return_uri(""),
-        cgi_path(""),
-        cgi_ext("") {}
+  LocationConfig(){}
 
-  const std::string& getRoot() const { return root; }
+  const std::string& getRoot() const {}
 
-  const std::string& getIndex() const { return index; }
+  const std::string& getIndex() const {}
 
-  const std::string& getTryFilesPath() const { return try_files_path; }
+  const std::string& getTryFilesPath() const {}
 
-  int getTryFilesErrorCode() const { return try_files_error_code; }
+  int getTryFilesErrorCode() const {}
 
-  const std::string& getClientMaxBodySize() const {
-    return client_max_body_size;
-  }
+  const std::string& getClientMaxBodySize() const {}
 
-  bool getAutoindex() const { return autoindex; }
+  bool getAutoindex() const {}
 
-  const std::vector<HttpMethod>& getLimitExceptMethods() const {
-    return limit_except_methods;
-  }
+  const std::vector<HttpMethod>& getLimitExceptMethods() const {}
 
-  const std::string& getReturnStatusCode() const { return return_status_code; }
+  const std::string& getReturnStatusCode() const {}
 
-  const std::string& getReturnUri() const { return return_uri; }
+  const std::string& getReturnUri() const {}
 
-  const std::string& getCgiPath() const { return cgi_path; }
+  const std::string& getCgiPath() const {}
 
-  const std::string& getCgiExt() const { return cgi_ext; }
+  const std::string& getCgiExt() const {}
 };
 
 #endif

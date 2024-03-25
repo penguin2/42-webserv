@@ -9,10 +9,10 @@
 class Config {
  private:
   Config(const char* config_file) {}
-  Config(const Config&) = delete;
-  Config& operator=(const Config&) = delete;
+  Config(const Config&);
+  Config& operator=(const Config&);
 
-  std::vector<Server> servers;
+  std::vector<ServerConfig> servers;
 
  public:
   static Config& getInstance(const char* config_file) {
@@ -20,9 +20,9 @@ class Config {
     return instance;
   }
 
-  void addServer(const Server& server) { servers.push_back(server); }
+  void addServer(const ServerConfig& server) {}
 
-  const std::vector<Server>& getServers() const { return servers; }
+  const std::vector<ServerConfig>& getServers() const {}
 };
 
 #endif
