@@ -1,0 +1,6 @@
+POST /form.html HTTP/1.1
+Host: localhost
+Content-Length: 10
+
+user: user
+
