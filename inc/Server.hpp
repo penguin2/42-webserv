@@ -1,38 +1,47 @@
 #ifndef WEBSERV_SERVER_H
 #define WEBSERV_SERVER_H
 
+#include <deque>
 #include <map>
 #include <string>
-#include <vector>
 
-#include "Config.hpp"
-#include "Connection.hpp"
+#include "ASocket.hpp"
 #include "EventManager.hpp"
-#include "ListenSocket.hpp"
 
 class Server {
- private:
-  const Config config_;
-  const EventManager event_manager_;
-  std::map<int, Connection*> connections_;
-  std::vector<ListenSocket*> listen_sockets_;
-
  public:
   Server(const char* config_file);
   ~Server();
 
-  int addConnection(int socket_fd);
-  int closeConnection(Connection* connection);
-  int checkTimeouts();
-  int filterConnections();
+  int acceptListenSocket(int listen_socket_fd);
+  int closeSocket(ASocket* socket);
+
+  // TODO: timeout handling
+  // int checkTimeouts();
 
   int start();
   int loop();
 
  private:
+  EventManager* event_manager_;
+  std::map<int, ASocket*> sockets_;
+
+  static const int kDefaultListenBacklog = 511;
+
   Server();
   Server(const Server&);
   Server& operator=(const Server&);
+
+  int addConnection(int connected_socket_fd);
+
+  int executeEventsErrorQueue(std::deque<ASocket*>& errors);
+  int executeEventsQueue(std::deque<ASocket*>& events);
+
+  static int makeListenSocket(const std::string& port);
+  static int addNonblockingFlag(int fd);
+
+  // TODO: delete test initializing listen_sockets_
+  static int testInitListenSockets(std::map<int, ASocket*>& sockets);
 };
 
 #endif

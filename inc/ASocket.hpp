@@ -1,15 +1,18 @@
 #ifndef WEBSERV_ASOCKET_H
 #define WEBSERV_ASOCKET_H
 
-class ASocket {
- protected:
-  int socket_fd_;
+class Server;
+class EventManager;
 
+class ASocket {
  public:
-  virtual int handler() = 0;
+  int getSocketFd() const;
+  virtual int handler(Server* server, EventManager* event_manager) = 0;
+  virtual int errorHandler(Server* server) = 0;
   virtual ~ASocket();
 
  protected:
+  int socket_fd_;
   ASocket(int socket_fd);
 
  private:
