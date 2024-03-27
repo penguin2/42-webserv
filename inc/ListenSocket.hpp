@@ -1,23 +1,15 @@
 #ifndef WEBSERV_LISTEN_SOCKET_H
 #define WEBSERV_LISTEN_SOCKET_H
 
-#include <string>
-
 #include "ASocket.hpp"
 
-class Server;
-
-class ListenSocket : ASocket {
- private:
-  Server* server_;
-
+class ListenSocket : public ASocket {
  public:
-  ListenSocket(int socket_fd, Server* server);
+  ListenSocket(int socket_fd);
   ~ListenSocket();
 
-  int handler();
-
-  static int openListenFd(const std::string& port);
+  int handler(Server* server, EventManager* event_manager);
+  int errorHandler(Server* server);
 
  private:
   ListenSocket();
