@@ -19,7 +19,7 @@ class Connection : public ASocket {
   State state_;
 
   std::string raw_request_;
-  std::string raw_reponse_;
+  std::string raw_response_;
   std::string::size_type response_sent_size_;
 
   // TODO: timer handling

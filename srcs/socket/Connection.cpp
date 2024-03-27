@@ -38,7 +38,7 @@ bool Connection::isReadyResponse() {
   if (new_line_index != std::string::npos) {
     const std::string::size_type new_response_size = new_line_index + 1;
     response_sent_size_ = 0;
-    raw_reponse_ = std::string("ECHO/1.0 200 OK\n") +
+    raw_response_ = std::string("ECHO/1.0 200 OK\n") +
                    raw_request_.substr(0, new_response_size);
     raw_request_.erase(0, new_response_size);
     return true;
@@ -66,7 +66,7 @@ int Connection::handlerRecv(Server* server, EventManager* event_manager) {
 }
 
 int Connection::handlerSend(Server* server, EventManager* event_manager) {
-  if (response_sent_size_ == raw_reponse_.size()) {
+  if (response_sent_size_ == raw_response_.size()) {
     if (isReadyResponse()) return 0;
     setState(Connection::kRecv);
     event_manager->modify(socket_fd_, this, EventManager::kRead);
@@ -74,8 +74,8 @@ int Connection::handlerSend(Server* server, EventManager* event_manager) {
   }
 
   const int send_size =
-      send(socket_fd_, raw_reponse_.c_str() + response_sent_size_,
-           raw_reponse_.size() - response_sent_size_, 0);
+      send(socket_fd_, raw_response_.c_str() + response_sent_size_,
+           raw_response_.size() - response_sent_size_, 0);
   if (send_size > 0) {
     response_sent_size_ += send_size;
     return 0;
