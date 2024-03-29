@@ -1,8 +1,10 @@
+#include <cerrno>
 #include <csignal>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 
+#include "Logger.hpp"
 #include "Server.hpp"
 
 int main(int argc, char **argv) {
@@ -11,13 +13,13 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
   if (std::signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
-    std::cerr << "signal: " << std::strerror(errno) << std::endl;
+    LOG(ERROR, "signal: ", std::strerror(errno));
     return EXIT_FAILURE;
   }
 
   Server server(argv[1]);
 
-  server.start();
+  if (server.start() < 0) return EXIT_FAILURE;
 
   return EXIT_SUCCESS;
 }
