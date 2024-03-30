@@ -60,7 +60,7 @@ int EventManager::insert(int fd, ASocket* socket, EventFlag event_flag) {
   struct epoll_event ev;
   ev.events = event_flag == EventManager::kRead ? EPOLLIN : EPOLLOUT;
   ev.data.fd = fd;
-  ev.data.ptr = socket;
+  ev.data.ptr = reinterpret_cast<void*>(socket);
   if (epoll_ctl(ep_fd_, EPOLL_CTL_ADD, fd, &ev) < 0) {
     LOG(WARN, "epoll_ctl(insert): ", std::strerror(errno));
     return -1;
@@ -72,7 +72,7 @@ int EventManager::modify(int fd, ASocket* socket, EventFlag new_event_flag) {
   struct epoll_event ev;
   ev.events = new_event_flag == EventManager::kRead ? EPOLLIN : EPOLLOUT;
   ev.data.fd = fd;
-  ev.data.ptr = socket;
+  ev.data.ptr = reinterpret_cast<void*>(socket);
   if (epoll_ctl(ep_fd_, EPOLL_CTL_MOD, fd, &ev) < 0) {
     LOG(WARN, "epoll_ctl(modify): ", std::strerror(errno));
     return -1;
