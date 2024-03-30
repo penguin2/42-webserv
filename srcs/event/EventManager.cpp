@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include <cerrno>
+#include <cstdlib>
 #include <cstring>
 
 #include "ASocket.hpp"
@@ -13,8 +14,10 @@ struct epoll_event EventManager::ready_list_[EventManager::kEvlistMaxSize];
 
 EventManager::EventManager(const std::map<int, ASocket*>& listen_sockets) {
   ep_fd_ = epoll_create(2);
-  // TODO: throw exception
-  // if (ep_fd_ < 0) throw ServerInitError();
+  if (ep_fd_ < 0) {
+    LOG(ERROR, "epoll_create: ", std::strerror(errno));
+    std::exit(EXIT_FAILURE);
+  }
   for (std::map<int, ASocket*>::const_iterator it = listen_sockets.begin();
        it != listen_sockets.end(); ++it) {
     ASocket* current_socket = it->second;
@@ -24,7 +27,8 @@ EventManager::EventManager(const std::map<int, ASocket*>& listen_sockets) {
     ev.data.ptr = reinterpret_cast<void*>(current_socket);
     if (epoll_ctl(ep_fd_, EPOLL_CTL_ADD, current_socket->getSocketFd(), &ev) <
         0) {
-      LOG(WARN, "epoll_ctl(listen socket): ", std::strerror(errno));
+      LOG(ERROR, "epoll_ctl(listen socket): ", std::strerror(errno));
+      std::exit(EXIT_FAILURE);
     }
   }
 }
