@@ -16,7 +16,6 @@ class Request {
 
  private:
   typedef enum eRequestState {
-    START,
     METHOD,
     BETWEEN_METHOD_AND_URI,
     URI,
@@ -25,13 +24,15 @@ class Request {
     BETWEEN_VERSION_AND_HEADER,
     HEADER,
     BODY,
-    CHUNKEDBODY,
+    CHUNKED_BODY,
+    CHUNKED_SIZE,
     END,
   } RequestState;
 
   // data_ is repeatedly new and delete for each request.
   RequestData* data_;
   RequestState state_;
+  size_t body_size_;
 
   void parseMethod(std::string& buffer);
   void parseUri(std::string& buffer);
@@ -39,8 +40,10 @@ class Request {
   void parseHeader(std::string& buffer);
   void parseBody(std::string& buffer);
   void parseChunkedBody(std::string& buffer);
+  void parseChunkedSize(std::string& buffer);
   void parseBlank(std::string& buffer);
   void determineParseBody(std::string& buffer);
+  void insertContentLength(void);
 
   Request(const Request&);
   void operator=(const Request&);

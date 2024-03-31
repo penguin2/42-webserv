@@ -3,7 +3,7 @@
 Uri::Uri(void) {}
 Uri::~Uri(void) {}
 
-void Uri::parse(const std::string& uri) {}
+void Uri::parse(const std::string& uri) { path_ = uri; }
 
 const std::string& Uri::getScheme(void) const { return scheme_; }
 const std::string& Uri::getUserInfo(void) const { return user_info_; }
