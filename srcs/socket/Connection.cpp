@@ -25,6 +25,7 @@ int Connection::handler(Server* server, EventManager* event_manager) {
     default:
       break;
   }
+  server->updateTimeout(this);
   return status;
 }
 
