@@ -27,7 +27,8 @@ class NginxConfigParser {
     SPACE = ' ',
     LEFT_BRACE = '{',
     RIGHT_BRACE = '}',
-    SEMICOLON = ';'
+    SEMICOLON = ';',
+    STRING = '*'
   };
 
   Context current_context = Context::DEFAULT;
@@ -83,7 +84,6 @@ class NginxConfigParser {
     std::string token;
     char c;
     while (iss.get(c)) {
-      Delimiter delimiter;
       switch (c) {
         case static_cast<char>(Delimiter::SPACE):
           this->current_delimiter = Delimiter::SPACE;
@@ -98,7 +98,7 @@ class NginxConfigParser {
           this->current_delimiter = Delimiter::SEMICOLON;
           break;
         default:
-          delimiter = Delimiter::SPACE;
+          this->current_delimiter = Delimiter::STRING;
           break;
       }
 
