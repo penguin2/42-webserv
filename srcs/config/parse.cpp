@@ -89,33 +89,29 @@ class NginxConfigParser {
     std::istringstream iss(line);
     std::string token;
     char c;
-    // TODO delimiterの前がおかしいものはすべて文法エラーとする
     while (iss.get(c)) {
       switch (c) {
         case static_cast<char>(SPACE):
-          this->current_delimiter = SPACE;
+          if (!token.empty()) {
+            tokens.push_back(token);
+            token.clear();
+          }
           break;
         case static_cast<char>(LEFT_BRACE):
-          this->current_delimiter = LEFT_BRACE;
-          break;
         case static_cast<char>(RIGHT_BRACE):
-          this->current_delimiter = RIGHT_BRACE;
-          break;
         case static_cast<char>(SEMICOLON):
-          this->current_delimiter = SEMICOLON;
+          if (!token.empty()) {
+            tokens.push_back(token);
+            token.clear();
+          }
+          token = c;
+          tokens.push_back(token);
+          token.clear();
           break;
         default:
-          this->current_delimiter = STRING;
+          token += c;
           break;
       }
-
-      if (!token.empty()) {
-        tokens.push_back(token);
-      }
-
-      token = c;
-      tokens.push_back(token);
-      token.clear();
     }
     if (!token.empty()) {
       tokens.push_back(token);
