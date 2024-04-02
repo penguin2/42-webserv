@@ -19,9 +19,6 @@ class Server {
   int updateTimeout(ASocket* socket);
   int closeSocket(ASocket* socket);
 
-  // TODO: timeout handling
-  // int checkTimeouts();
-
   int start();
   int loop();
 

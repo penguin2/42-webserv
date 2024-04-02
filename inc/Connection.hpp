@@ -22,10 +22,6 @@ class Connection : public ASocket {
   std::string raw_response_;
   std::string::size_type response_sent_size_;
 
-  // TODO: timer handling
-  // int timeout_;
-  // int timeout_header_;
-
   // TODO: http handling
   // TODO: cgi handling
 
