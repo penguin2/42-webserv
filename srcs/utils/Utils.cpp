@@ -48,23 +48,8 @@ void Utils::toLowerString(std::string &str) {
   }
 }
 
-// 符号なし2~16進数まで対応
-bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
-  static const std::string base16_string = "0123456789abcdef";
-  std::string copy_str(str);
-  toLowerString(copy_str);
-
-  if (base < 2 || 16 < base) return false;
-  if (!Utils::isContainsOnly(copy_str, base16_string.substr(0, base)))
-    return false;
-  std::stringstream ss(copy_str);
-  ss >> num;
-  if (ss.fail() || ss.peek() != EOF) return false;
-  return true;
-}
-
 // 符号なし 8 or 10 or 16進数対応
-bool strToSize_t(const std::string &str, size_t &num, int base) {
+bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
   static const std::string string16 = "0123456789abcdef";
   std::string copy_str(str);
   Utils::toLowerString(copy_str);
@@ -85,6 +70,6 @@ bool strToSize_t(const std::string &str, size_t &num, int base) {
     default:
       return false;
   }
-  if (ss.fail() || ss.peek() != EOF) return false;
+  if (ss.fail() || ss.peek() != -1) return false;
   return true;
 }

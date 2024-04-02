@@ -26,7 +26,7 @@ class Request {
     BODY,
     CHUNKED_BODY,
     CHUNKED_SIZE,
-    END,
+    END
   } RequestState;
 
   // data_ is repeatedly new and delete for each request.

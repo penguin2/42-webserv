@@ -15,7 +15,7 @@ class ServerException : public std::exception {
     SERVER_ERROR_NOT_IMPLEMENTED = 501,
     SERVER_ERROR_BAD_GATEWAY = 502,
     SERVER_ERROR_SERVICE_UNAVAILABLE = 503,
-    SERVER_ERROR_HTTP_VERSION_NOT_SUPPORTED = 505,
+    SERVER_ERROR_HTTP_VERSION_NOT_SUPPORTED = 505
   };
 
   ServerException(ErrorCode code, const char* message)
