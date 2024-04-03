@@ -19,7 +19,7 @@ void RequestData::insertHeader(std::string &line) {
   const size_t pos_colon = line.find(':');
 
   // 先頭が空白文字の場合は行全体を無視する
-  if (isspace(line[0])) return;
+  if (std::isspace(line[0])) return;
 
   if (pos_colon == std::string::npos) {
     key = line;

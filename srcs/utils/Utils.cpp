@@ -23,7 +23,7 @@ bool Utils::isContain(const std::string &str, int (*is_func)(int)) {
 
 bool Utils::isContain(const std::string &str, const std::string charset) {
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
-    if (charset.find(*it)) return true;
+    if (charset.find(*it) != std::string::npos) return true;
   }
   return false;
 }
