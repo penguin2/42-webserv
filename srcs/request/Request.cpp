@@ -24,20 +24,11 @@ bool Request::parse(std::string& buffer) {
     case METHOD:
       parseMethod(buffer);
       break;
-    case BETWEEN_METHOD_AND_URI:
-      parseBlank(buffer);
-      break;
     case URI:
       parseUri(buffer);
       break;
-    case BETWEEN_URI_AND_VERSION:
-      parseBlank(buffer);
-      break;
     case VERSION:
       parseVersion(buffer);
-      break;
-    case BETWEEN_VERSION_AND_HEADER:
-      parseBlank(buffer);
       break;
     case HEADER:
       parseHeader(buffer);
@@ -57,27 +48,6 @@ bool Request::parse(std::string& buffer) {
   return (this->state_ == END) ? true : false;
 }
 
-void Request::parseBlank(std::string& buffer) {
-  const size_t pos_first_not_space = buffer.find_first_not_of(' ');
-  if (pos_first_not_space == std::string::npos) return;
-  buffer.erase(0, pos_first_not_space);
-  if (this->state_ == BETWEEN_METHOD_AND_URI) {
-    this->state_ = URI;
-    return parseUri(buffer);
-  } else if (this->state_ == BETWEEN_URI_AND_VERSION) {
-    this->state_ = VERSION;
-    return parseVersion(buffer);
-  } else if (this->state_ == BETWEEN_VERSION_AND_HEADER) {
-    if (buffer.size() < 2) return;
-    if (buffer.compare(0, 2, "\r\n") != 0)
-      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                            "Bad RequestLine");
-    buffer.erase(0, 2);
-    this->state_ = HEADER;
-    return parseHeader(buffer);
-  }
-}
-
 void Request::parseMethod(std::string& buffer) {
   // リクエストラインの前に複数のCRLFを置いて良い
   while (buffer.find("\r\n") == 0) buffer.erase(0, 2);
@@ -85,14 +55,15 @@ void Request::parseMethod(std::string& buffer) {
   const size_t pos_first_space = buffer.find(' ');
   if (pos_first_space == std::string::npos) return;
   data_->setMethod(buffer.substr(0, pos_first_space));
-  buffer.erase(0, pos_first_space);
+  // SP分の+1
+  buffer.erase(0, pos_first_space + 1);
   // メソッドが空白で始まる or メソッドが大文字でない
   if (data_->getMethod().size() == 0 ||
       !Utils::isContainsOnly(data_->getMethod(), std::isupper))
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Method");
-  this->state_ = BETWEEN_METHOD_AND_URI;
-  return parseBlank(buffer);
+  this->state_ = URI;
+  return parseUri(buffer);
 }
 
 void Request::parseUri(std::string& buffer) {
@@ -100,27 +71,30 @@ void Request::parseUri(std::string& buffer) {
   if (pos_first_space == std::string::npos) return;
   // uriが不正な場合、RequestData内で例外をthrowする
   data_->setUri(buffer.substr(0, pos_first_space));
-  buffer.erase(0, pos_first_space);
-  this->state_ = BETWEEN_URI_AND_VERSION;
-  return parseBlank(buffer);
+  // SP分の+1
+  buffer.erase(0, pos_first_space + 1);
+  this->state_ = VERSION;
+  return parseVersion(buffer);
 }
 
 void Request::parseVersion(std::string& buffer) {
   static const std::string HTTP_VERSION = "HTTP/1.1";
 
-  if (buffer.size() < HTTP_VERSION.size()) return;
+  // CRLF分の+2
+  if (buffer.size() < (HTTP_VERSION.size() + 2)) return;
   if (buffer.compare(0, 5, "HTTP/") != 0 || !std::isdigit(buffer[5]) ||
-      buffer[6] != '.' || !std::isdigit(buffer[7]))
+      buffer[6] != '.' || !std::isdigit(buffer[7]) ||
+      buffer.compare(8, 10, "\r\n") != 0)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad request");
   data_->setVersion(buffer.substr(0, HTTP_VERSION.size()));
-  buffer.erase(0, HTTP_VERSION.size());
+  buffer.erase(0, HTTP_VERSION.size() + 2);
   if (data_->getVersion() != HTTP_VERSION)
     throw ServerException(
         ServerException::SERVER_ERROR_HTTP_VERSION_NOT_SUPPORTED,
         "Bad HTTP version");
-  this->state_ = BETWEEN_VERSION_AND_HEADER;
-  return parseBlank(buffer);
+  this->state_ = HEADER;
+  return parseHeader(buffer);
 }
 
 void Request::parseHeader(std::string& buffer) {

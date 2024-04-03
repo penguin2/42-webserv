@@ -17,11 +17,8 @@ class Request {
  private:
   typedef enum eRequestState {
     METHOD,
-    BETWEEN_METHOD_AND_URI,
     URI,
-    BETWEEN_URI_AND_VERSION,
     VERSION,
-    BETWEEN_VERSION_AND_HEADER,
     HEADER,
     BODY,
     CHUNKED_BODY,
@@ -41,7 +38,6 @@ class Request {
   void parseBody(std::string& buffer);
   void parseChunkedBody(std::string& buffer);
   void parseChunkedSize(std::string& buffer);
-  void parseBlank(std::string& buffer);
   void determineParseBody(std::string& buffer);
   void insertContentLength(void);
 
