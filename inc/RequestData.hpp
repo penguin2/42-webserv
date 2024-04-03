@@ -15,7 +15,7 @@ class RequestData {
   void setUri(const std::string& uri);
   void setVersion(const std::string& version);
   void insertHeader(std::string& line);
-  void setBody(const std::string& body);
+  void appendBody(const std::string& data);
 
   const std::string& getMethod(void) const;
   const Uri& getUri(void) const;

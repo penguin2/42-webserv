@@ -140,7 +140,7 @@ void Request::parseHeader(std::string& buffer) {
 
 void Request::parseBody(std::string& buffer) {
   if (buffer.size() < this->body_size_) return;
-  data_->setBody(buffer.substr(0, body_size_));
+  data_->appendBody(buffer.substr(0, body_size_));
   buffer.erase(0, body_size_);
   this->state_ = END;
 }
@@ -148,7 +148,7 @@ void Request::parseBody(std::string& buffer) {
 void Request::parseChunkedBody(std::string& buffer) {
   // ボディは必ずCRLFで終了するため+2
   if (buffer.size() < (body_size_ + 2)) return;
-  data_->setBody(data_->getBody() + buffer.substr(0, body_size_));
+  data_->appendBody(buffer.substr(0, body_size_));
   buffer.erase(0, body_size_);
   if (buffer.compare(0, 2, "\r\n"))
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,

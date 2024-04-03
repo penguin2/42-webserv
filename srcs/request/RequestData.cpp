@@ -54,7 +54,7 @@ void RequestData::insertHeader(std::string &line) {
   headers_.insert(std::make_pair(key, value));
 }
 
-void RequestData::setBody(const std::string &body) { body_ = body; }
+void RequestData::appendBody(const std::string &data) { body_.append(data); }
 
 const std::string &RequestData::getMethod(void) const { return method_; }
 
