@@ -28,13 +28,13 @@ void RequestData::insertHeader(std::string &line) {
     value = line.substr(pos_colon + 1);
     // valueの前後の空白は除去される
     Utils::strTrim(value, " ");
+    // keyが無い(": value"のような場合)
+    if (key.size() == 0) return;
+    // keyとコロンの間に空白文字がある場合
+    if (std::isspace(key[key.size() - 1]))
+      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                            "Header in space between key and colon");
   }
-  // keyが無い(": value"のような場合)
-  if (key.size() == 0) return;
-  // keyとコロンの間に空白文字がある場合
-  if (std::isspace(key[key.size() - 1]))
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Header in space between key and colon");
 
   // Headerのkeyは大文字小文字を区別しないため、内部は全て小文字で処理
   Utils::toLowerString(key);
