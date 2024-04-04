@@ -13,9 +13,6 @@ SRCS		= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp" -
 ifeq ($(MAKECMDGOALS), request_parse_test)
 	SRCS += ./test_main/main_request_parse.cpp
 else ifeq ($(MAKECMDGOALS), unit_test)
-	gtestdir		=	./test
-	unit_testdir	=	$(SRC_DIR)/unit_test
-	gtest			=	$(gtestdir)/gtest $(gtestdir)/googletest-release-1.11.0
 	CXXFLAGS	= -std=c++11
 	INCLUDE		+= -I$(gtestdir)
 	SRCS		= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp")
@@ -46,6 +43,10 @@ REQUEST_PARSE	=	"request_parse"
 request_parse_test: $(OBJ_SUBDIRS) $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) $(INCLUDE) -owebserv
 	$(TEST_SH) $(OK_OR_KO) $(REQUEST_PARSE)
+
+gtestdir		=	./test
+unit_testdir	=	$(SRC_DIR)/unit_test
+gtest			=	$(gtestdir)/gtest $(gtestdir)/googletest-release-1.11.0
 
 $(gtest):
 	curl -OL https://github.com/google/googletest/archive/refs/tags/release-1.11.0.tar.gz
