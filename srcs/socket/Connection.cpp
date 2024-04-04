@@ -13,16 +13,20 @@ Connection::Connection(int socket_fd)
 Connection::~Connection() {}
 
 int Connection::handler(Server* server, EventManager* event_manager) {
+  int status = -1;
   switch (state_) {
     case Connection::kRecv:
-      return handlerRecv(server, event_manager);
+      status = handlerRecv(server, event_manager);
+      break;
     case Connection::kSend:
-      return handlerSend(server, event_manager);
+      status = handlerSend(server, event_manager);
+      break;
     case Connection::kClosed:
     default:
       break;
   }
-  return 0;
+  server->updateTimeout(this);
+  return status;
 }
 
 int Connection::errorHandler(Server* server) {
@@ -39,7 +43,7 @@ bool Connection::isReadyResponse() {
     const std::string::size_type new_response_size = new_line_index + 1;
     response_sent_size_ = 0;
     raw_response_ = std::string("ECHO/1.0 200 OK\n") +
-                   raw_request_.substr(0, new_response_size);
+                    raw_request_.substr(0, new_response_size);
     raw_request_.erase(0, new_response_size);
     return true;
   }

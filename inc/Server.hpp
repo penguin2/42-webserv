@@ -4,9 +4,11 @@
 #include <deque>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "ASocket.hpp"
 #include "EventManager.hpp"
+#include "TimeoutManager.hpp"
 
 class Server {
  public:
@@ -14,15 +16,14 @@ class Server {
   ~Server();
 
   int acceptListenSocket(int listen_socket_fd);
+  int updateTimeout(ASocket* socket);
   int closeSocket(ASocket* socket);
-
-  // TODO: timeout handling
-  // int checkTimeouts();
 
   int start();
   int loop();
 
  private:
+  TimeoutManager* timeout_manager_;
   EventManager* event_manager_;
   std::map<int, ASocket*> sockets_;
 
@@ -36,6 +37,7 @@ class Server {
 
   int executeEventsErrorQueue(std::deque<ASocket*>& errors);
   int executeEventsQueue(std::deque<ASocket*>& events);
+  int executeTimeouts(const std::vector<ASocket*>& timeouts);
 
   static int makeListenSocket(const std::string& port);
   static int addNonblockingFlag(int fd);

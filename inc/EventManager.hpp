@@ -21,7 +21,7 @@ class EventManager {
  private:
   int ep_fd_;
 
-  static const int kWaitTimeoutMilli = 10000;
+  static const int kWaitTimeoutMilli = 500;
   static const int kEvlistMaxSize = 1024;
   static struct epoll_event ready_list_[kEvlistMaxSize];
 
