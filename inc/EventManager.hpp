@@ -1,8 +1,8 @@
 #ifndef WEBSERV_EVENT_MANAGER_H
 #define WEBSERV_EVENT_MANAGER_H
 
-#include <deque>
 #include <map>
+#include <vector>
 
 class ASocket;
 
@@ -13,7 +13,8 @@ class EventManager {
 
   typedef enum eEventFlag { kRead, kWrite } EventFlag;
 
-  int wait(std::deque<ASocket*>& events, std::deque<ASocket*>& events_error);
+  int wait(std::vector<ASocket*>& event_sockets,
+           std::vector<ASocket*>& closing_sockets);
   int insert(int fd, ASocket* connection, EventFlag event_flag);
   int modify(int fd, ASocket* connection, EventFlag new_event_flag);
   int erase(int fd);

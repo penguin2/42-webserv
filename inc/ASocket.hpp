@@ -11,7 +11,6 @@ class ASocket {
   Time getTimeout() const;
   void setTimeout(const Time& timeout);
   virtual int handler(Server* server, EventManager* event_manager) = 0;
-  virtual int errorHandler(Server* server) = 0;
   virtual ~ASocket();
 
  protected:

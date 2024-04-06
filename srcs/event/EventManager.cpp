@@ -35,8 +35,8 @@ EventManager::EventManager(const std::map<int, ASocket*>& listen_sockets) {
 
 EventManager::~EventManager() { close(ep_fd_); }
 
-int EventManager::wait(std::deque<ASocket*>& events,
-                       std::deque<ASocket*>& events_error) {
+int EventManager::wait(std::vector<ASocket*>& event_sockets,
+                       std::vector<ASocket*>& closing_sockets) {
   const int ready_list_size =
       epoll_wait(ep_fd_, EventManager::ready_list_,
                  EventManager::kEvlistMaxSize, EventManager::kWaitTimeoutMilli);
@@ -49,9 +49,9 @@ int EventManager::wait(std::deque<ASocket*>& events,
     ASocket* current_socket =
         reinterpret_cast<ASocket*>(ready_list_[i].data.ptr);
     if (ready_list_[i].events & (EPOLLHUP | EPOLLERR))
-      events_error.push_back(current_socket);
+      closing_sockets.push_back(current_socket);
     else
-      events.push_back(current_socket);
+      event_sockets.push_back(current_socket);
   }
   return ready_list_size;
 }

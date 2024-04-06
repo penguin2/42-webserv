@@ -50,19 +50,6 @@ int Server::updateTimeout(ASocket* socket) {
   return timeout_manager_->update(socket);
 }
 
-int Server::closeSocket(ASocket* socket) {
-  const int closing_socket_fd = socket->getSocketFd();
-
-  event_manager_->erase(closing_socket_fd);
-  timeout_manager_->erase(socket);
-  sockets_.erase(closing_socket_fd);
-  close(closing_socket_fd);
-  delete socket;
-
-  LOG(INFO, "closed: fd: ", closing_socket_fd);
-  return 0;
-}
-
 int Server::start() {
   LOG(INFO, "server: ", "start()");
 
@@ -73,20 +60,18 @@ int Server::start() {
 
 int Server::loop() {
   LOG(INFO, "server: ", "loop()");
-  std::vector<ASocket*> timeouts;
-  std::deque<ASocket*> events, events_error;
+  std::vector<ASocket*> event_sockets, closing_sockets;
   while (true) {
-    timeouts.clear();
-    timeout_manager_->addTimeouts(timeouts);
-    executeTimeouts(timeouts);
+    closeSockets(timeout_manager_->findTimeouts());
 
-    events.clear();
-    events_error.clear();
-    const int wait_status = event_manager_->wait(events, events_error);
+    closing_sockets.clear();
+    event_sockets.clear();
+    const int wait_status =
+        event_manager_->wait(event_sockets, closing_sockets);
     if (wait_status < 0) return -1;
     if (wait_status == 0) continue;
-    executeEventsErrorQueue(events_error);
-    executeEventsQueue(events);
+    executeEventSockets(event_sockets, closing_sockets);
+    closeSockets(closing_sockets);
   }
   return 0;
 }
@@ -108,28 +93,33 @@ int Server::addConnection(int connected_socket_fd) {
   return 0;
 }
 
-int Server::executeEventsErrorQueue(std::deque<ASocket*>& events_error) {
-  while (!events_error.empty()) {
-    ASocket* socket = events_error.front();
-    events_error.pop_front();
-    socket->errorHandler(this);
+int Server::executeEventSockets(const std::vector<ASocket*>& event_sockets,
+                                std::vector<ASocket*>& closing_sockets) {
+  for (std::vector<ASocket*>::const_iterator it = event_sockets.begin();
+       it != event_sockets.end(); ++it) {
+    ASocket* event_socket = *it;
+    if (event_socket->handler(this, event_manager_) < 0)
+      closing_sockets.push_back(event_socket);
   }
   return 0;
 }
 
-int Server::executeEventsQueue(std::deque<ASocket*>& events) {
-  while (!events.empty()) {
-    ASocket* socket = events.front();
-    events.pop_front();
-    if (socket->handler(this, event_manager_) == 0) events.push_back(socket);
-  }
+int Server::closeSocket(ASocket* socket) {
+  const int closing_socket_fd = socket->getSocketFd();
+
+  event_manager_->erase(closing_socket_fd);
+  timeout_manager_->erase(socket);
+  sockets_.erase(closing_socket_fd);
+  close(closing_socket_fd);
+  delete socket;
+
+  LOG(INFO, "closed: fd: ", closing_socket_fd);
   return 0;
 }
 
-int Server::executeTimeouts(const std::vector<ASocket*>& timeouts) {
-  for (std::vector<ASocket*>::const_iterator it = timeouts.begin();
-       it != timeouts.end(); ++it) {
-    LOG(INFO, "timeout: fd: ", (*it)->getSocketFd());
+int Server::closeSockets(const std::vector<ASocket*>& closing_sockets) {
+  for (std::vector<ASocket*>::const_iterator it = closing_sockets.begin();
+       it != closing_sockets.end(); ++it) {
     closeSocket(*it);
   }
   return 0;
