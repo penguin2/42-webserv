@@ -21,17 +21,17 @@ class ConfigParser {
  public:
   ConfigParser();
 
-  void ParseConfig(const std::string& filename);
+  void parseConfig(const std::string& filename);
 
  private:
   Context current_context;
   Delimiter current_delimiter;
 
-  void ParseLine(const std::string& line);
+  void parseLine(const std::string& line);
 
-  void HandleDirective(const std::vector<std::string>& tokens);
+  void handleDirective(const std::vector<std::string>& tokens);
 
-  void Tokenize(const std::string& line, std::vector<std::string>& tokens);
+  void tokenize(const std::string& line, std::vector<std::string>& tokens);
 };
 
 #endif

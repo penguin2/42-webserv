@@ -5,7 +5,7 @@ ConfigParser::ConfigParser() {
   this->current_delimiter = SPACE;
 }
 
-void ConfigParser::ParseConfig(const std::string& filename) {
+void ConfigParser::parseConfig(const std::string& filename) {
   std::ifstream file(filename);
   if (!file.is_open()) {
     std::cerr << "Failed to open file: " << filename << std::endl;
@@ -14,17 +14,17 @@ void ConfigParser::ParseConfig(const std::string& filename) {
 
   std::string line;
   while (std::getline(file, line)) {
-    ParseLine(line);
+    parseLine(line);
   }
 }
 
-void ConfigParser::ParseLine(const std::string& line) {
+void ConfigParser::parseLine(const std::string& line) {
   if (line.empty() || line[0] == '#') {
     return;
   }
 
   std::vector<std::string> tokens;
-  Tokenize(line, tokens);
+  tokenize(line, tokens);
 
   if (tokens[0] == "events") {
     current_context = DEFAULT;
@@ -44,11 +44,11 @@ void ConfigParser::ParseLine(const std::string& line) {
       exit(1);
     }
   } else {
-    HandleDirective(tokens);
+    handleDirective(tokens);
   }
 }
 
-void ConfigParser::HandleDirective(const std::vector<std::string>& tokens) {
+void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
   // TODO contextに合っていない要素についてはすべて文法エラーとする
   switch (current_context) {
     case HTTP:
@@ -66,7 +66,7 @@ void ConfigParser::HandleDirective(const std::vector<std::string>& tokens) {
   }
 }
 
-void ConfigParser::Tokenize(const std::string& line,
+void ConfigParser::tokenize(const std::string& line,
                             std::vector<std::string>& tokens) {
   std::istringstream iss(line);
   std::string token;
