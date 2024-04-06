@@ -1,19 +1,25 @@
 #include "TimeoutManager.hpp"
 
 #include "ASocket.hpp"
+#include "Logger.hpp"
 
 TimeoutManager::TimeoutManager() {}
 
 TimeoutManager::~TimeoutManager() {}
 
-void TimeoutManager::addTimeouts(std::vector<ASocket*>& timeouts) const {
+std::vector<ASocket*> TimeoutManager::findTimeouts() const {
+  std::vector<ASocket*> timeout_sockets;
   const Time current_time = Time::getCurrentClockTime();
+
   for (std::multimap<Time, ASocket*>::const_iterator it =
            timeout_logger_.begin();
        it != timeout_logger_.end(); ++it) {
     if (it->first >= current_time) break;
-    timeouts.push_back(it->second);
+    timeout_sockets.push_back(it->second);
+    LOG(INFO, "timeout: fd: ", it->second->getSocketFd());
   }
+
+  return timeout_sockets;
 }
 
 int TimeoutManager::insert(ASocket* socket) {

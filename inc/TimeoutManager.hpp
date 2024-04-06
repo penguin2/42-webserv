@@ -13,7 +13,7 @@ class TimeoutManager {
   TimeoutManager();
   ~TimeoutManager();
 
-  void addTimeouts(std::vector<ASocket*>& timeouts) const;
+  std::vector<ASocket*> findTimeouts() const;
 
   int insert(ASocket* socket);
   int update(ASocket* socket);

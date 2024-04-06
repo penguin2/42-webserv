@@ -11,7 +11,6 @@ class Connection : public ASocket {
   ~Connection();
 
   int handler(Server* server, EventManager* event_manager);
-  int errorHandler(Server* server);
 
  private:
   typedef enum eState { kRecv, kSend, kClosed } State;
@@ -36,8 +35,8 @@ class Connection : public ASocket {
 
   bool isReadyResponse();
 
-  int handlerRecv(Server* server, EventManager* event_manager);
-  int handlerSend(Server* server, EventManager* event_manager);
+  int handlerRecv(EventManager* event_manager);
+  int handlerSend(EventManager* event_manager);
 };
 
 #endif
