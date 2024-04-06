@@ -15,7 +15,7 @@ void testAbsoluteForm(std::string uri, const char* scheme,
   } catch (ServerException& e) {
     is_correct_request = false;
   }
-  ASSERT_EQ(is_correct_request, expect);
+  ASSERT_EQ(is_correct_request, expect) << uri;
   if (is_correct_request == true) {
     EXPECT_STREQ(URI_instance.getScheme().c_str(), scheme);
     EXPECT_STREQ(URI_instance.getUserInfo().c_str(), user_info);
@@ -57,11 +57,31 @@ TEST(Uri, ABSOLUTE_FORM_SUCCESS) {
   // expect(bool) URIの構文が正しい場合はtrue, 誤っている場合はfalse
   testAbsoluteForm("http://localhost/index.html?q=50#abc", "http", "",
                    "localhost", 80, "/index.html", "q=50", "abc", true);
+  testAbsoluteForm("http://youser:pass@127.0.0.1/form.html", "http",
+                   "youser:pass", "127.0.0.1", 80, "/form.html", "", "", true);
+  testAbsoluteForm("http://@sample.com", "http", "", "sample.com", 80, "", "",
+                   "", true);
+  testAbsoluteForm("http://sample.com:4242/environ.py", "http", "",
+                   "sample.com", 4242, "/environ.py", "", "", true);
+  testAbsoluteForm("http://a:b@www.google.com:443/search.php?p=42#2", "http",
+                   "a:b", "www.google.com", 443, "/search.php", "p=42", "2",
+                   true);
+  testAbsoluteForm("http://localhost", "http", "", "localhost", 80, "", "", "",
+                   true);
+  testAbsoluteForm("http://1:23/index.html", "http", "", "1", 23, "/index.html",
+                   "", "", true);
 }
+
 TEST(Uri, ABSOLUTE_FORM_ERROR) {
-  // URI,scheme,userinfo,host,port,path,query,fragment,expect(bool)
-  // expect(bool) URIの構文が正しい場合はtrue, 誤っている場合はfalse
+  // expect(bool) == falseの場合、値の比較は行わないので適当な値で良い
   testAbsoluteForm("smtp://sample.com", "", "", "", -1, "", "", "", false);
+  testAbsoluteForm("http://", "", "", "", -1, "", "", "", false);
+  testAbsoluteForm("http:sample.com", "", "", "", -1, "", "", "", false);
+  testAbsoluteForm("http:/sample.com", "", "", "", -1, "", "", "", false);
+  testAbsoluteForm("http:///sample.com", "", "", "", -1, "", "", "", false);
+  testAbsoluteForm("http://sample.com:abc/index.html", "", "", "", -1, "", "",
+                   "", false);
+  testAbsoluteForm("http://:abc/index.html", "", "", "", -1, "", "", "", false);
 }
 
 TEST(Uri, ORIGIN_FORM_SUCCESS) {
@@ -74,8 +94,7 @@ TEST(Uri, ORIGIN_FORM_SUCCESS) {
 }
 
 TEST(Uri, ORIGIN_FORM_ERROR) {
-  // URI,HostHeaderValue,scheme,userinfo,host,port,path,query,fragment,expect(bool)
-  // expect(bool) URIの構文が正しい場合はtrue, 誤っている場合はfalse
+  // expect(bool) == falseの場合、値の比較は行わないので適当な値で良い
   testOriginForm("0.0.0.0", "smtp://sample.com", "", "", "", -1, "", "", "",
                  false);
 }

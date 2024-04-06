@@ -104,6 +104,9 @@ void Uri::setAndCheckAndDecodeUserInfo(const std::string& user_info) {
 }
 void Uri::setAndCheckAndDecodeHost(const std::string& host) {
   this->host_ = host;
+  if (this->host_.size() == 0)
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Empty Host");
   if (Utils::isContainsOnly(this->host_, UriUtils::isRegName) == false &&
       UriUtils::isIPv4Address(this->host_) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
