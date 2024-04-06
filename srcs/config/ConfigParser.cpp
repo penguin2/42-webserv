@@ -25,6 +25,9 @@ void ConfigParser::parseLine(const std::string& line) {
 
   std::vector<std::string> tokens;
   tokenize(line, tokens);
+  if (tokens.size() == 0) {
+    return;
+  }
 
   if (tokens[0] == "events") {
     current_context = DEFAULT;
@@ -102,6 +105,6 @@ void ConfigParser::tokenize(const std::string& line,
 
 // int main() {
 //   ConfigParser parser;
-//   parser.ParseConfig("sample.conf");
+//   parser.parseConfig("sample.conf");
 //   return 0;
 // }
