@@ -1,6 +1,5 @@
 #include "Utils.hpp"
 
-#include <cctype>
 #include <sstream>
 #include <string>
 
@@ -71,29 +70,5 @@ bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
       return false;
   }
   if (ss.fail() || ss.peek() != -1) return false;
-  return true;
-}
-
-bool Utils::decodeUrlEncoding(std::string &str) {
-  std::string decoded_str;
-  size_t num;
-  size_t idx = 0;
-  while (idx < str.size()) {
-    if (str[idx] == '%') {
-      if (str.size() <= (idx + 2)) {
-        return false;
-      } else {
-        std::string hex_2_characters(str.substr(idx + 1, 2));
-        if (Utils::strToSize_t(hex_2_characters, num, 16) == false)
-          return false;
-      }
-      idx += 2;
-    } else {
-      num = static_cast<size_t>(str[idx]);
-    }
-    decoded_str.push_back(static_cast<char>(num));
-    idx++;
-  }
-  str = decoded_str;
   return true;
 }
