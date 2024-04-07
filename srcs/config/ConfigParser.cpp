@@ -6,7 +6,7 @@ ConfigParser::ConfigParser() {
 }
 
 void ConfigParser::parseConfig(const std::string& filename) {
-  std::ifstream file(filename);
+  std::ifstream file(filename.c_str());
   if (!file.is_open()) {
     std::cerr << "Failed to open file: " << filename << std::endl;
     return;
@@ -103,8 +103,8 @@ void ConfigParser::tokenize(const std::string& line,
   }
 }
 
-// int main() {
-//   ConfigParser parser;
-//   parser.parseConfig("sample.conf");
-//   return 0;
-// }
+int main() {
+  ConfigParser parser;
+  parser.parseConfig("sample.conf");
+  return 0;
+}
