@@ -10,7 +10,7 @@ void testDecodeUrlEncoding(const char* target, const char* expect_str,
   if (ret == true) EXPECT_STREQ(target_string.c_str(), expect_str);
 }
 
-TEST(Utils, DECODE_URL_ENCODING_SUCCESS) {
+TEST(UriUtils, DECODE_URL_ENCODING_SUCCESS) {
   // string expect(string) expect(bool)
   testDecodeUrlEncoding("", "", true);
   testDecodeUrlEncoding("%20", " ", true);
@@ -36,7 +36,7 @@ TEST(Utils, DECODE_URL_ENCODING_SUCCESS) {
       "http://sample.com/後ろに全角空白がある　.html", true);
 }
 
-TEST(Utils, DECODE_URL_ENCODING_ERROR) {
+TEST(UriUtils, DECODE_URL_ENCODING_ERROR) {
   // if (expect(bool) == false): expect(string) = -1;
   testDecodeUrlEncoding("%2", "-1", false);
   testDecodeUrlEncoding("%2%20", "-1", false);
@@ -44,7 +44,7 @@ TEST(Utils, DECODE_URL_ENCODING_ERROR) {
   testDecodeUrlEncoding("%zx%20", "-1", false);
 }
 
-TEST(Utils, IS_IPV4_ADDRESS) {
+TEST(UriUtils, IS_IPV4_ADDRESS) {
   EXPECT_EQ(UriUtils::isIPv4Address("0.0.0.0"), true);
   EXPECT_EQ(UriUtils::isIPv4Address("127.0.0.1"), true);
   EXPECT_EQ(UriUtils::isIPv4Address("255.255.255.255"), true);

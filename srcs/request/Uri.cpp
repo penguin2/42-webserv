@@ -100,7 +100,9 @@ void Uri::setAndCheckAndDecodeUserInfo(const std::string& user_info) {
       false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad UserInfo");
-  UriUtils::decodeUrlEncoding(this->user_info_);
+  if (UriUtils::decodeUrlEncoding(this->user_info_) == false)
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Bad UserInfo");
 }
 void Uri::setAndCheckAndDecodeHost(const std::string& host) {
   this->host_ = host;
@@ -111,7 +113,9 @@ void Uri::setAndCheckAndDecodeHost(const std::string& host) {
       UriUtils::isIPv4Address(this->host_) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Host");
-  UriUtils::decodeUrlEncoding(this->host_);
+  if (UriUtils::decodeUrlEncoding(this->host_) == false)
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Bad Host");
   Utils::toLowerString(this->host_);
 }
 
@@ -132,7 +136,9 @@ void Uri::setAndCheckAndDecodePath(const std::string& path) {
   if (Utils::isContainsOnly(this->path_, UriUtils::isPathCharset) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Path");
-  UriUtils::decodeUrlEncoding(this->path_);
+  if (UriUtils::decodeUrlEncoding(this->path_) == false)
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Bad Path");
 }
 
 void Uri::setAndCheckAndDecodeQuery(const std::string& query) {
@@ -140,7 +146,9 @@ void Uri::setAndCheckAndDecodeQuery(const std::string& query) {
   if (Utils::isContainsOnly(this->query_, UriUtils::isQueryCharset) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Query");
-  UriUtils::decodeUrlEncoding(this->query_);
+  if (UriUtils::decodeUrlEncoding(this->query_) == false)
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Bad Query");
 }
 
 void Uri::setFragment(const std::string& fragment) { fragment_ = fragment; }
