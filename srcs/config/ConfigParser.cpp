@@ -27,7 +27,7 @@ void ConfigParser::parseLine(const std::string& line) {
   tokenize(line, tokens);
   if (tokens.size() == 0) {
     std::cerr << "syntax error : line with only space detected";
-    return;
+    exit(1);
   }
 
   if (tokens[0] == "events") {
