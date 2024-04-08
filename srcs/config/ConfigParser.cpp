@@ -30,9 +30,7 @@ void ConfigParser::parseLine(const std::string& line) {
     exit(1);
   }
 
-  if (tokens[0] == "events") {
-    current_context = DEFAULT;
-  } else if (tokens[0] == "http") {
+  if (tokens[0] == "http") {
     current_context = HTTP;
   } else if (tokens[0] == "server") {
     current_context = SERVER;
