@@ -103,8 +103,8 @@ void ConfigParser::tokenize(const std::string& line,
   }
 }
 
-int main() {
-  ConfigParser parser;
-  parser.parseConfig("sample.conf");
-  return 0;
-}
+// int main() {
+//   ConfigParser parser;
+//   parser.parseConfig("sample.conf");
+//   return 0;
+// }
