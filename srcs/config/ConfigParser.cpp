@@ -104,8 +104,15 @@ void ConfigParser::tokenize(const std::string& line,
   }
 }
 
-// int main() {
-//   ConfigParser parser;
-//   parser.parseConfig("sample.conf");
-//   return 0;
-// }
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <config_file.conf>" << std::endl;
+        return 1;
+    }
+    std::string configFileName = argv[1];
+
+    ConfigParser parser;
+    parser.parseConfig(configFileName);
+
+    return 0;
+}
