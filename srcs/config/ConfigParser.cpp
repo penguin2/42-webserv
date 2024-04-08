@@ -26,6 +26,7 @@ void ConfigParser::parseLine(const std::string& line) {
   std::vector<std::string> tokens;
   tokenize(line, tokens);
   if (tokens.size() == 0) {
+    std::cerr << "syntax error : line with only space detected";
     return;
   }
 
