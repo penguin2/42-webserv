@@ -34,10 +34,6 @@ class Connection : public ASocket {
   int handlerSend(EventManager* event_manager);
 
   int updateState(connection::State new_state, EventManager* event_manager);
-  int updateStateFromRecv(connection::State new_state,
-                          EventManager* event_manager);
-  int updateStateFromSend(connection::State new_state,
-                          EventManager* event_manager);
 };
 
 #endif
