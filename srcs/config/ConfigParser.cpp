@@ -30,19 +30,21 @@ void ConfigParser::parseLine(const std::string& line) {
     exit(1);
   }
 
-  if (tokens[0] == "http") {
+  std::string last_tokens = tokens.back();
+
+  if (tokens[0] == "http" && last_tokens == "{") {
     if (current_context != DEFAULT) {
       std::cerr << "syntax error : http context must be in default context";
       exit(1);
     }
     current_context = HTTP;
-  } else if (tokens[0] == "server") {
+  } else if (tokens[0] == "server" && last_tokens == "{") {
     if (current_context != HTTP) {
       std::cerr << "syntax error : server context must be in http context";
       exit(1);
     }
     current_context = SERVER;
-  } else if (tokens[0] == "location") {
+  } else if (tokens[0] == "location" && last_tokens == "{") {
     if (current_context != SERVER) {
       std::cerr << "syntax error : location context must be in server context";
       exit(1);
