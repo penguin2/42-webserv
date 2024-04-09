@@ -69,45 +69,21 @@ int Connection::handlerSend(EventManager* event_manager) {
 
 int Connection::updateState(connection::State new_state,
                             EventManager* event_manager) {
+  if (state_ == new_state) return 0;
+
   const connection::State prev_state = state_;
-
-  if (prev_state == new_state) return 0;
-
   state_ = new_state;
 
-  if (new_state == connection::CLOSED) return 0;
-
-  switch (prev_state) {
-    case connection::RECV:
-      return updateStateFromRecv(new_state, event_manager);
-    case connection::SEND:
-      return updateStateFromSend(new_state, event_manager);
-    default:
-      break;
-  }
-  return 0;
-}
-
-int Connection::updateStateFromRecv(connection::State new_state,
-                                    EventManager* event_manager) {
   switch (new_state) {
     case connection::RECV:
+      if (prev_state == connection::SEND)
+        return event_manager->modify(socket_fd_, this, EventManager::kRead);
       break;
     case connection::SEND:
-      return event_manager->modify(socket_fd_, this, EventManager::kWrite);
-    default:
+      if (prev_state == connection::RECV)
+        return event_manager->modify(socket_fd_, this, EventManager::kWrite);
       break;
-  }
-  return 0;
-}
-
-int Connection::updateStateFromSend(connection::State new_state,
-                                    EventManager* event_manager) {
-  switch (new_state) {
-    case connection::RECV:
-      return event_manager->modify(socket_fd_, this, EventManager::kRead);
-    case connection::SEND:
-      break;
+    case connection::CLOSED:
     default:
       break;
   }
