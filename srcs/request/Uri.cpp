@@ -107,9 +107,8 @@ void Uri::setAndCheckAndDecodeHost(const std::string& host) {
   if (this->host_.size() == 0)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Empty Host");
-  // (使用不可文字を含む and IPv4フォーマットでない) or デコードに失敗
-  if ((!Utils::isContainsOnly(this->host_, UriUtils::isRegName) &&
-       !UriUtils::isIPv4Address(this->host_)) ||
+  // TODO 使用不可文字を含む or デコードに失敗
+  if (!Utils::isContainsOnly(this->host_, UriUtils::isRegName) ||
       UriUtils::decodeUrlEncoding(this->host_) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Host");
