@@ -91,6 +91,10 @@ TEST(Uri, ABSOLUTE_FORM_SUCCESS) {
                    80, "/space .html", "", "", true);
   testAbsoluteForm("http://localhost/index.html?%E9%8D%B5=%E5%80%A4", "http",
                    "", "localhost", 80, "/index.html", "鍵=値", "", true);
+  testAbsoluteForm("http://localhost?v=key", "http", "", "localhost", 80, "",
+                   "v=key", "", true);
+  testAbsoluteForm("http://localhost#f=N", "http", "", "localhost", 80, "", "",
+                   "f=N", true);
 
   // CHATGPT
   testAbsoluteForm("http://example.com", "http", "", "example.com", 80, "", "",
@@ -162,6 +166,20 @@ TEST(Uri, ABSOLUTE_FORM_SUCCESS) {
   testAbsoluteForm("http://example.com/path?query=value#Fragment123", "http",
                    "", "example.com", 80, "/path", "query=value", "Fragment123",
                    true);
+  testAbsoluteForm("http://example.com?query#fragment", "http", "",
+                   "example.com", 80, "", "query", "fragment", true);
+  testAbsoluteForm("http://example.com?query#", "http", "", "example.com", 80,
+                   "", "query", "", true);
+  testAbsoluteForm("http://example.com?query&value", "http", "", "example.com",
+                   80, "", "query&value", "", true);
+  testAbsoluteForm("http://example.com?query#fragment#", "http", "",
+                   "example.com", 80, "", "query", "fragment#", true);
+  testAbsoluteForm("http://example.com?query?", "http", "", "example.com", 80,
+                   "", "query?", "", true);
+  testAbsoluteForm("http://example.com?query=?", "http", "", "example.com", 80,
+                   "", "query=?", "", true);
+  testAbsoluteForm("http://example.com?query=&", "http", "", "example.com", 80,
+                   "", "query=&", "", true);
 }
 
 TEST(Uri, ABSOLUTE_FORM_ERROR) {
@@ -178,8 +196,6 @@ TEST(Uri, ABSOLUTE_FORM_ERROR) {
   testAbsoluteForm("http://:abc/index.html", "", "", "", -1, "", "", "", false);
   testAbsoluteForm("http://#/localhost/index.html", "", "", "", -1, "", "", "",
                    false);
-  testAbsoluteForm("http://localhost?v=key", "", "", "", -1, "", "", "", false);
-  testAbsoluteForm("http://localhost#f=N", "", "", "", -1, "", "", "", false);
   testAbsoluteForm("%48ttp://localhost/", "", "", "", -1, "", "", "", false);
   testAbsoluteForm("http://localhost:%38%30/", "", "", "", -1, "", "", "",
                    false);
@@ -202,20 +218,6 @@ TEST(Uri, ABSOLUTE_FORM_ERROR) {
   testAbsoluteForm("http:/example.com:port/path", "", "", "", -1, "", "", "",
                    false);
   testAbsoluteForm("http:/@example.com", "", "", "", -1, "", "", "", false);
-  testAbsoluteForm("http://example.com?query#fragment", "", "", "", -1, "", "",
-                   "", false);
-  testAbsoluteForm("http://example.com?query#", "", "", "", -1, "", "", "",
-                   false);
-  testAbsoluteForm("http://example.com?query&value", "", "", "", -1, "", "", "",
-                   false);
-  testAbsoluteForm("http://example.com?query#fragment#", "", "", "", -1, "", "",
-                   "", false);
-  testAbsoluteForm("http://example.com?query?", "", "", "", -1, "", "", "",
-                   false);
-  testAbsoluteForm("http://example.com?query=?", "", "", "", -1, "", "", "",
-                   false);
-  testAbsoluteForm("http://example.com?query=&", "", "", "", -1, "", "", "",
-                   false);
   testAbsoluteForm("http://example.com?query=%", "", "", "", -1, "", "", "",
                    false);
   testAbsoluteForm("http://example.com?query=%1", "", "", "", -1, "", "", "",

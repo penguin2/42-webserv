@@ -29,12 +29,13 @@ void Uri::parse(const std::string& uri) {
     setAndCheckScheme(uri.substr(0, scheme_end_idx));
     // strlen("://") == 3
     const size_t authority_start_idx = (scheme_end_idx + 3);
-    const size_t authority_end_idx = uri.find('/', authority_start_idx);
+    const size_t authority_end_idx =
+        uri.find_first_of("/#?", authority_start_idx);
     if (authority_end_idx == std::string::npos) {
       // Authorityの終端がヌル文字のためPath等は無し
       parseAuthority(uri.substr(authority_start_idx));
     } else {
-      // AuthorityAutorityの終端がスラッシュのためそれに続くPath等がある
+      // AuthorityAutorityの終端が"/#?"のためそれに続くPath等がある
       const size_t authority_size = authority_end_idx - authority_start_idx;
       parseAuthority(uri.substr(authority_start_idx, authority_size));
       parsePathQueryFragment(uri.substr(authority_start_idx + authority_size));
@@ -63,29 +64,15 @@ void Uri::parseAuthority(const std::string& authority) {
   }
 }
 
-// 必ず (path_query_fragment[0] == '/')
 void Uri::parsePathQueryFragment(const std::string& path_query_fragment) {
-  size_t delimit_idx = path_query_fragment.find_first_of("?#");
-  // query, fragmentがない場合、終端文字までPathコンポーネント
-  if (delimit_idx == std::string::npos) {
-    setAndCheckAndDecodePath(path_query_fragment);
-    return;
-  }
-  setAndCheckAndDecodePath(path_query_fragment.substr(0, delimit_idx));
-  if (path_query_fragment[delimit_idx] == '?') {
-    const size_t fragment_start_idx = path_query_fragment.find('#');
-    // queryの後にfragmentがない場合、終端文字までQueryコンポーネント
-    if (fragment_start_idx == std::string::npos) {
-      setAndCheckAndDecodeQuery(path_query_fragment.substr(delimit_idx + 1));
-      return;
-    }
-    const size_t query_size = fragment_start_idx - delimit_idx - 1;
-    setAndCheckAndDecodeQuery(
-        path_query_fragment.substr(delimit_idx + 1, query_size));
-    delimit_idx = fragment_start_idx;
-  }
-  // fragmentがある場合は終端文字までfragmentコンポーネント
-  this->fragment_ = path_query_fragment.substr(delimit_idx + 1);
+  const size_t fragment_idx = path_query_fragment.find('#');
+  if (fragment_idx != std::string::npos)
+    setFragment(path_query_fragment.substr(fragment_idx + 1));
+  const std::string path_query = path_query_fragment.substr(0, fragment_idx);
+  const size_t query_idx = path_query.find('?');
+  if (query_idx != std::string::npos)
+    setAndCheckAndDecodeQuery(path_query.substr(query_idx + 1));
+  setAndCheckAndDecodePath(path_query.substr(0, query_idx));
 }
 
 const std::string& Uri::getScheme(void) const { return scheme_; }
