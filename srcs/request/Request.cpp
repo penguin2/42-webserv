@@ -51,15 +51,18 @@ bool Request::parse(std::string& buffer) {
 void Request::parseMethod(std::string& buffer) {
   // リクエストラインの前に複数のCRLFを置いて良い
   while (buffer.find("\r\n") == 0) buffer.erase(0, 2);
-  if (buffer.size() <= 1) return;
+  if (buffer.size() == 0 || (buffer.size() == 1 && buffer[0] == '\r')) return;
   const size_t pos_first_space = buffer.find(' ');
   if (pos_first_space == std::string::npos) return;
+  // StatusLineが空白で始まる
+  if (pos_first_space == 0)
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "RequestLine start space");
   data_->setMethod(buffer.substr(0, pos_first_space));
   // SP分の+1
   buffer.erase(0, pos_first_space + 1);
-  // メソッドが空白で始まる or メソッドが大文字でない
-  if (data_->getMethod().size() == 0 ||
-      !Utils::isContainsOnly(data_->getMethod(), std::isupper))
+  // メソッドが大文字でない
+  if (!Utils::isContainsOnly(data_->getMethod(), std::isupper))
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Method");
   this->state_ = URI;

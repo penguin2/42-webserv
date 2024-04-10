@@ -48,6 +48,8 @@ void RequestData::insertHeader(std::string &line) {
     if (value.size() == 0)
       throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                             "Bad host header");
+    // URIがorigin-formの場合、Hostヘッダの値でURIの情報を上書き
+    this->uri_.overwriteAuthorityIfNotSet(value);
   }
   // keyに空白文字が含まれる or hostヘッダ以外が重複する
   if (Utils::isContain(key, std::isspace) || headers_.count(key) != 0) return;
