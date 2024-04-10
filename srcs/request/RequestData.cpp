@@ -39,9 +39,6 @@ void RequestData::insertHeader(std::string &line) {
   // Headerのkeyは大文字小文字を区別しないため、内部は全て小文字で処理
   Utils::toLowerString(key);
 
-  // keyに空白文字が含まれる
-  if (Utils::isContain(key, std::isspace)) return;
-
   if (key == "host") {
     // hostヘッダが重複する場合
     if (headers_.count(key) != 0)
@@ -54,8 +51,8 @@ void RequestData::insertHeader(std::string &line) {
     // URIがorigin-formの場合、Hostヘッダの値でURIの情報を上書き
     this->uri_.overwriteAuthorityIfNotSet(value);
   }
-  // hostヘッダ以外が重複する
-  if (headers_.count(key) != 0) return;
+  // keyに空白文字が含まれる or hostヘッダ以外が重複する
+  if (Utils::isContain(key, std::isspace) || headers_.count(key) != 0) return;
   headers_.insert(std::make_pair(key, value));
 }
 
