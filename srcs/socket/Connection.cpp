@@ -2,26 +2,28 @@
 
 #include <sys/socket.h>
 
+#include <string>
+
 #include "EventManager.hpp"
 #include "Server.hpp"
 
 char Connection::recv_buffer_[Connection::kRecvBufferSize];
 
 Connection::Connection(int socket_fd)
-    : ASocket(socket_fd), state_(Connection::kRecv) {}
+    : ASocket(socket_fd), state_(connection::RECV) {}
 
 Connection::~Connection() {}
 
 int Connection::handler(Server* server, EventManager* event_manager) {
   int status;
   switch (state_) {
-    case Connection::kRecv:
+    case connection::RECV:
       status = handlerRecv(event_manager);
       break;
-    case Connection::kSend:
+    case connection::SEND:
       status = handlerSend(event_manager);
       break;
-    case Connection::kClosed:
+    case connection::CLOSED:
     default:
       status = -1;
       break;
@@ -30,58 +32,60 @@ int Connection::handler(Server* server, EventManager* event_manager) {
   return status;
 }
 
-void Connection::setState(State state) { state_ = state; }
-
-bool Connection::isReadyResponse() {
-  const std::string::size_type new_line_index = raw_request_.find('\n');
-
-  if (new_line_index != std::string::npos) {
-    const std::string::size_type new_response_size = new_line_index + 1;
-    response_sent_size_ = 0;
-    raw_response_ = std::string("ECHO/1.0 200 OK\n") +
-                    raw_request_.substr(0, new_response_size);
-    raw_request_.erase(0, new_response_size);
-    return true;
-  }
-  return false;
-}
-
 int Connection::handlerRecv(EventManager* event_manager) {
   const int recv_size = recv(socket_fd_, Connection::recv_buffer_,
                              Connection::kRecvBufferSize, 0);
   if (recv_size <= 0) {
-    setState(Connection::kClosed);
+    updateState(connection::CLOSED, event_manager);
     return -1;
   }
-  if (recv_size > 0) {
-    // TODO: Http will handle the received message
-    // (here the code below is temporary)
-    raw_request_.append(Connection::recv_buffer_, recv_size);
-    if (isReadyResponse()) {
-      setState(Connection::kSend);
-      event_manager->modify(socket_fd_, this, EventManager::kWrite);
-    }
-  }
+  http_mock_.appendClientData(std::string(Connection::recv_buffer_, recv_size));
+  const connection::State next_state = http_mock_.httpHandler();
+  if (updateState(next_state, event_manager) < 0) return -1;
   return 0;
 }
 
 int Connection::handlerSend(EventManager* event_manager) {
+  if (response_.empty()) {
+    response_ = http_mock_.getResponse();
+    response_sent_size_ = 0;
+  }
   const int send_size =
-      send(socket_fd_, raw_response_.c_str() + response_sent_size_,
-           raw_response_.size() - response_sent_size_, 0);
+      send(socket_fd_, response_.c_str() + response_sent_size_,
+           response_.size() - response_sent_size_, 0);
   if (send_size <= 0) {
-    setState(Connection::kClosed);
+    updateState(connection::CLOSED, event_manager);
     return -1;
   }
-  if (send_size > 0) {
-    response_sent_size_ += send_size;
-    // TODO: Http will handle the sent message
-    // (here the code below is temporary)
-    if (response_sent_size_ == raw_response_.size() &&
-        isReadyResponse() == false) {
-      setState(Connection::kRecv);
-      event_manager->modify(socket_fd_, this, EventManager::kRead);
-    }
+  response_sent_size_ += send_size;
+  if (response_sent_size_ == response_.size()) {
+    response_.clear();
+    response_sent_size_ = 0;
+    const connection::State next_state = http_mock_.httpHandler();
+    if (updateState(next_state, event_manager) < 0) return -1;
+  }
+  return 0;
+}
+
+int Connection::updateState(connection::State new_state,
+                            EventManager* event_manager) {
+  if (state_ == new_state) return 0;
+
+  const connection::State prev_state = state_;
+  state_ = new_state;
+
+  switch (new_state) {
+    case connection::RECV:
+      if (prev_state == connection::SEND)
+        return event_manager->modify(socket_fd_, this, EventManager::kRead);
+      break;
+    case connection::SEND:
+      if (prev_state == connection::RECV)
+        return event_manager->modify(socket_fd_, this, EventManager::kWrite);
+      break;
+    case connection::CLOSED:
+    default:
+      break;
   }
   return 0;
 }
