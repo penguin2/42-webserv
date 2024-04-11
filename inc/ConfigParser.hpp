@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 enum Context { DEFAULT, HTTP, SERVER, LOCATION };
 enum Delimiter {
@@ -32,6 +33,8 @@ class ConfigParser {
   void handleDirective(const std::vector<std::string>& tokens);
 
   void tokenize(const std::string& line, std::vector<std::string>& tokens);
+
+  bool isValidPath(const std::string& path);
 };
 
 #endif

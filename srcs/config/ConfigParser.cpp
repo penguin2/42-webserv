@@ -49,6 +49,17 @@ void ConfigParser::parseLine(const std::string& line) {
       std::cerr << "syntax error : location context must be in server context";
       exit(1);
     }
+    if (tokens.size() == 2) {
+      std::cerr << "syntax error : location must contain path";
+      exit(1);
+    } else if (tokens.size() == 3 && !isValidPath(tokens[1])) {
+      std::cerr << "syntax error : location path is invalid";
+      exit(1);
+    } else if (tokens.size() >= 4) {
+      std::cerr << "syntax error : location too many path";
+      exit(1);
+    }
+
     current_context = LOCATION;
   } else if (tokens[0] == "}") {
     if (current_context != DEFAULT) {
@@ -116,15 +127,28 @@ void ConfigParser::tokenize(const std::string& line,
   }
 }
 
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <config_file.conf>" << std::endl;
-        return 1;
+bool ConfigParser::isValidPath(const std::string& path) {
+  if (path.empty()) {
+    return false;
+  }
+  const std::string forbiddenChars = "/\\:*?\"<>|";
+  for (size_t i = 0; i < path.size(); i++) {
+    if (forbiddenChars.find(path[i]) != std::string::npos) {
+      return false;
     }
-    std::string configFileName = argv[1];
+  }
+  return true;
+}
 
-    ConfigParser parser;
-    parser.parseConfig(configFileName);
+int main(int argc, char* argv[]) {
+  if (argc != 2) {
+    std::cerr << "Usage: " << argv[0] << " <config_file.conf>" << std::endl;
+    return 1;
+  }
+  std::string configFileName = argv[1];
 
-    return 0;
+  ConfigParser parser;
+  parser.parseConfig(configFileName);
+
+  return 0;
 }
