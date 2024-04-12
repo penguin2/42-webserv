@@ -1,5 +1,6 @@
 #include "HttpUtils.hpp"
 
+#include <algorithm>
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -121,18 +122,33 @@ std::string HttpUtils::generateDateValue(void) {
 // ファイルの拡張子に基づいてContent-Typeを決定
 // TODO Content-Typeの仕様を調べる
 std::string HttpUtils::generateContentType(const std::string& path) {
-  const std::string extention(Utils::getExtension(path));
-  if (extention == "csv") return "text/csv";
-  if (extention == "html") return "text/html";
-  if (extention == "css") return "text/css";
-  if (extention == "js") return "text/javascript";
-  if (extention == "json") return "application/json";
-  if (extention == "pdf") return "application/pdf";
-  if (extention == "png") return "image/apng";
-  if (extention == "jpeg") return "image/jpeg";
-  if (extention == "gif") return "image/gif";
-  if (extention == "svg") return "image/svg+xml";
-  if (extention == "zip") return "application/zip";
-  if (extention == "mpeg") return "video/mpeg";
+  const std::string extension(Utils::getExtension(path));
+  if (extension == "csv") return "text/csv";
+  if (extension == "html") return "text/html";
+  if (extension == "css") return "text/css";
+  if (extension == "js") return "text/javascript";
+  if (extension == "json") return "application/json";
+  if (extension == "pdf") return "application/pdf";
+  if (extension == "png") return "image/apng";
+  if (extension == "jpeg") return "image/jpeg";
+  if (extension == "gif") return "image/gif";
+  if (extension == "svg") return "image/svg+xml";
+  if (extension == "zip") return "application/zip";
+  if (extension == "mpeg") return "video/mpeg";
   return "text/plain";
+}
+
+// TODO KeepAliveをCloseするStatusCodeを調べる
+bool HttpUtils::isMaintainConnection(int code) {
+  std::vector<int> disconn_code;
+  disconn_code.push_back(400);
+  disconn_code.push_back(405);
+  disconn_code.push_back(408);
+  disconn_code.push_back(413);
+  disconn_code.push_back(414);
+  disconn_code.push_back(421);
+  disconn_code.push_back(431);
+  disconn_code.push_back(501);
+  disconn_code.push_back(505);
+  return (std::count(disconn_code.begin(), disconn_code.end(), code) == 0);
 }

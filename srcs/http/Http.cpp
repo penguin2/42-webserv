@@ -43,21 +43,15 @@ std::string Http::getResponse() const { return raw_response_data_.str(); }
 
 connection::State Http::errorContentHandler(int status_code,
                                             const std::string& phrase) {
-  response_.setStatusLine(status_code, phrase);
-  // TODO Serverの値をConfigクラスから取得できると良さそう
-  response_.insertHeader("Server", "Webserv");
-  response_.insertHeader("Date", HttpUtils::generateDateValue());
-  response_.insertHeader("Content-Type", "text/html");
   // TODO Configクラスを見てdefaultエラーページがある場合、そこから読み取る処理
   response_.appendBody(HttpUtils::generateErrorPage(status_code, phrase));
+  response_.insertHeader("Content-Type", "text/html");
   response_.insertContentLengthIfNotSet();
   // TODO Configクラスを見て何のメソッドが使用可能かを取得する処理
   if (status_code == 405) response_.insertHeader("Allow", "GET, POST, DELETE");
-
-  // TODO ConnectionをCloseするStatusCodeを調べる
-  insertConnectionHeader(
-      isConnectionKeepAlive() &&
-      (status_code != 400 && status_code != 414 && status_code != 501));
+  insertCommonHeaders(isConnectionKeepAlive() &&
+                      HttpUtils::isMaintainConnection(status_code));
+  response_.setStatusLine(status_code, phrase);
   response_.getResponseRawData(raw_response_data_);
   this->state_ = Http::SEND;
   return connection::SEND;
@@ -76,14 +70,11 @@ bool Http::isConnectionKeepAlive(void) const {
   return true;
 }
 
-void Http::insertConnectionHeader(bool keep_alive) {
-  if (keep_alive) {
-    this->keep_alive_flag_ = true;
-    response_.insertHeader("Connection", "Keep-Alive");
-  } else {
-    this->keep_alive_flag_ = false;
-    response_.insertHeader("Connection", "Close");
-  }
+void Http::insertCommonHeaders(bool keep_alive) {
+  this->keep_alive_flag_ = keep_alive;
+  response_.insertHeader("Connection", (keep_alive ? "Keep-Alive" : "Close"));
+  response_.insertHeader("Server", "Webserv");
+  response_.insertHeader("Date", HttpUtils::generateDateValue());
 }
 
 connection::State Http::dispatch(void) {
@@ -94,12 +85,10 @@ connection::State Http::dispatch(void) {
   // TODO if (静的ファイルの要求) return staticContentHandler();
   {
     response_.appendBody(HttpUtils::generatePage(path));
-    response_.setStatusLine(200, "OK");
-    response_.insertHeader("Server", "Webserv");
-    response_.insertHeader("Date", HttpUtils::generateDateValue());
     response_.insertHeader("Content-Type",
                            HttpUtils::generateContentType(path));
-    insertConnectionHeader(isConnectionKeepAlive());
+    insertCommonHeaders(isConnectionKeepAlive());
+    response_.setStatusLine(200, "OK");
     response_.getResponseRawData(raw_response_data_);
     this->state_ = Http::SEND;
     return connection::SEND;

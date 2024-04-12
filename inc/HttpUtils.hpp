@@ -11,6 +11,7 @@ class HttpUtils {
                                        const std::string& phrase);
   static std::string generateDateValue(void);
   static std::string generateContentType(const std::string& path);
+  static bool isMaintainConnection(int code);
 
  private:
   HttpUtils(void);

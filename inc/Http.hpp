@@ -37,7 +37,7 @@ class Http {
   // connection::State cgiHandler(void);
 
   bool isConnectionKeepAlive(void) const;
-  void insertConnectionHeader(bool keep_alive);
+  void insertCommonHeaders(bool keep_alive);
 
   Http(const Http&);
   void operator=(const Http&);
