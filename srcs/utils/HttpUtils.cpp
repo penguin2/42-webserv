@@ -12,27 +12,14 @@
 
 // ファイルからデータを読み取り文字列に変換
 // file or dir の確認や権限確認はこの関数外で行う想定
-std::string HttpUtils::generatePage(const std::string& file) {
+std::string HttpUtils::readAllDataFromFile(const std::string& file) {
   std::ifstream ifs;
   std::stringstream ss;
 
-  const std::string ext(Utils::getExtension(file));
-  bool is_binary =
-      (ext == "" || ext == "pdf" || ext == "png" || ext == "jpeg" ||
-       ext == "gif" || ext == "svg" || ext == "zip" || ext == "mpeg");
-  // binary or text
-  ifs.open(file.c_str(), ((is_binary) ? (std::ios::binary) : (std::ios::in)));
+  ifs.open(file.c_str(), std::ios::binary);
   if (ifs.fail())
     throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
-  if (is_binary) {
-    ss << ifs.rdbuf();
-  } else {
-    std::string line;
-    while (std::getline(ifs, line)) {
-      ss << line;
-      if (ifs.eof() == false) ss << "\r\n";
-    }
-  }
+  ss << ifs.rdbuf();
   ifs.close();
   if (ifs.eof() == false && ifs.fail())
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
@@ -92,7 +79,7 @@ std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
 std::string HttpUtils::generateErrorPage(const std::string& file, int code,
                                          const std::string& phrase) {
   try {
-    return HttpUtils::generatePage(file);
+    return HttpUtils::readAllDataFromFile(file);
   } catch (ServerException& e) {
     return HttpUtils::generateErrorPage(code, phrase);
   }
@@ -121,7 +108,7 @@ std::string HttpUtils::generateDateValue(void) {
 
 // ファイルの拡張子に基づいてContent-Typeを決定
 // TODO Content-Typeの仕様を調べる
-std::string HttpUtils::generateContentType(const std::string& path) {
+std::string HttpUtils::convertPathToContentType(const std::string& path) {
   const std::string extension(Utils::getExtension(path));
   if (extension == "csv") return "text/csv";
   if (extension == "html") return "text/html";

@@ -41,23 +41,7 @@ void Http::appendClientData(const std::string& data) {
 
 std::string Http::getResponse() const { return raw_response_data_.str(); }
 
-connection::State Http::errorContentHandler(int status_code,
-                                            const std::string& phrase) {
-  // TODO Configクラスを見てdefaultエラーページがある場合、そこから読み取る処理
-  response_.appendBody(HttpUtils::generateErrorPage(status_code, phrase));
-  response_.insertHeader("Content-Type", "text/html");
-  response_.insertContentLengthIfNotSet();
-  // TODO Configクラスを見て何のメソッドが使用可能かを取得する処理
-  if (status_code == 405) response_.insertHeader("Allow", "GET, POST, DELETE");
-  insertCommonHeaders(isConnectionKeepAlive() &&
-                      HttpUtils::isMaintainConnection(status_code));
-  response_.setStatusLine(status_code, phrase);
-  response_.getResponseRawData(raw_response_data_);
-  this->state_ = Http::SEND;
-  return connection::SEND;
-}
-
-bool Http::isConnectionKeepAlive(void) const {
+bool Http::haveConnectionCloseHeader(void) const {
   const std::map<std::string, std::string> headers =
       request_.getRequestData()->getHeaders();
   const std::map<std::string, std::string>::const_iterator connection_header =
@@ -65,9 +49,9 @@ bool Http::isConnectionKeepAlive(void) const {
   if (connection_header != headers.end()) {
     std::string connection_value(connection_header->second);
     Utils::toLowerString(connection_value);
-    if (connection_value == "close") return false;
+    if (connection_value == "close") return true;
   }
-  return true;
+  return false;
 }
 
 void Http::insertCommonHeaders(bool keep_alive) {
@@ -84,10 +68,11 @@ connection::State Http::dispatch(void) {
   // TODO if (リダイレクトすべきpath) return redirectHandler();
   // TODO if (静的ファイルの要求) return staticContentHandler();
   {
-    response_.appendBody(HttpUtils::generatePage(path));
+    response_.appendBody(HttpUtils::readAllDataFromFile(path));
+    response_.insertContentLengthIfNotSet();
     response_.insertHeader("Content-Type",
-                           HttpUtils::generateContentType(path));
-    insertCommonHeaders(isConnectionKeepAlive());
+                           HttpUtils::convertPathToContentType(path));
+    insertCommonHeaders(haveConnectionCloseHeader() == false);
     response_.setStatusLine(200, "OK");
     response_.getResponseRawData(raw_response_data_);
     this->state_ = Http::SEND;
@@ -95,4 +80,20 @@ connection::State Http::dispatch(void) {
   }
   // TODO if (どれにも当てはまらない == true)
   // throw ServerException(404, "Not Found");
+}
+
+connection::State Http::errorContentHandler(int status_code,
+                                            const std::string& phrase) {
+  // TODO Configクラスを見てdefaultエラーページがある場合、そこから読み取る処理
+  response_.appendBody(HttpUtils::generateErrorPage(status_code, phrase));
+  response_.insertHeader("Content-Type", "text/html");
+  response_.insertContentLengthIfNotSet();
+  // TODO Configクラスを見て何のメソッドが使用可能かを取得する処理
+  if (status_code == 405) response_.insertHeader("Allow", "GET, POST, DELETE");
+  insertCommonHeaders(haveConnectionCloseHeader() == false &&
+                      HttpUtils::isMaintainConnection(status_code));
+  response_.setStatusLine(status_code, phrase);
+  response_.getResponseRawData(raw_response_data_);
+  this->state_ = Http::SEND;
+  return connection::SEND;
 }

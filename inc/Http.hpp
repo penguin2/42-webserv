@@ -26,6 +26,9 @@ class Http {
   Request request_;
   Response response_;
 
+  bool haveConnectionCloseHeader(void) const;
+  void insertCommonHeaders(bool keep_alive);
+
   // TODO CGI以外のWebServer機能の実装
   connection::State dispatch(void);
   connection::State errorContentHandler(int status_code,
@@ -35,9 +38,6 @@ class Http {
 
   // TODO CGIを処理する機能
   // connection::State cgiHandler(void);
-
-  bool isConnectionKeepAlive(void) const;
-  void insertCommonHeaders(bool keep_alive);
 
   Http(const Http&);
   void operator=(const Http&);
