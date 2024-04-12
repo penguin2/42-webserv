@@ -10,6 +10,7 @@
 #include "Utils.hpp"
 
 // ファイルからデータを読み取り文字列に変換
+// file or dir の確認や権限確認はこの関数外で行う想定
 std::string HttpUtils::generatePage(const std::string& file) {
   std::ifstream ifs;
   std::stringstream ss;

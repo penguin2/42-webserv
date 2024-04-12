@@ -134,3 +134,19 @@ TEST(Utils, STR_TO_SIZE_T_ERROR) {
   testStrToSize_T("+1", 16, -1, false);
   testStrToSize_T("18446744073709551616", 10, -1, false);  // SIZE_MAX + 1
 }
+
+TEST(Utils, GET_EXTENSION) {
+  EXPECT_STREQ(Utils::getExtension("index.html").c_str(), "html");
+  EXPECT_STREQ(Utils::getExtension("../../index.html").c_str(), "html");
+  EXPECT_STREQ(Utils::getExtension("./index.html").c_str(), "html");
+  EXPECT_STREQ(Utils::getExtension("index.").c_str(), "");
+  EXPECT_STREQ(Utils::getExtension("").c_str(), "");
+  EXPECT_STREQ(Utils::getExtension("logo.png").c_str(), "png");
+  EXPECT_STREQ(Utils::getExtension("main.cpp").c_str(), "cpp");
+  EXPECT_STREQ(Utils::getExtension("/bin/ls").c_str(), "");
+  EXPECT_STREQ(Utils::getExtension("//./bin/ls").c_str(), "");
+  EXPECT_STREQ(Utils::getExtension("www.google.com").c_str(), "com");
+  EXPECT_STREQ(Utils::getExtension("/0.0.0.0/a.py?f=a.zip").c_str(), "zip");
+  EXPECT_STREQ(Utils::getExtension("......").c_str(), "");
+  EXPECT_STREQ(Utils::getExtension("../").c_str(), "");
+}
