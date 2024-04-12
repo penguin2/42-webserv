@@ -72,3 +72,10 @@ bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
   if (ss.fail() || ss.peek() != -1) return false;
   return true;
 }
+
+std::string Utils::getExtension(const std::string &file) {
+  size_t pos_period_last_of = file.find_last_of('.');
+  if (pos_period_last_of == std::string::npos) return "";
+  if (pos_period_last_of == file.size()) return "";
+  return file.substr(pos_period_last_of + 1);
+}
