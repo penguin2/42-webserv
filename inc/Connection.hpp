@@ -5,6 +5,7 @@
 
 #include "ASocket.hpp"
 #include "ConnectionState.hpp"
+#include "Http.hpp"
 #include "HttpMock.hpp"
 
 class Connection : public ASocket {
@@ -16,7 +17,8 @@ class Connection : public ASocket {
 
  private:
   connection::State state_;
-  HttpMock http_mock_;
+  // HttpMock http_;
+  Http http_;
 
   std::string response_;
   std::string::size_type response_sent_size_;
