@@ -16,6 +16,11 @@ void ConfigParser::parseConfig(const std::string& filename) {
   while (std::getline(file, line)) {
     parseLine(line);
   }
+
+  if (current_context != DEFAULT) {
+    std::cerr << "syntax error : '}' is not enough" << std::endl;
+    exit(1);
+  }
 }
 
 void ConfigParser::parseLine(const std::string& line) {
@@ -131,7 +136,7 @@ bool ConfigParser::isValidPath(const std::string& path) {
   if (path.empty()) {
     return false;
   }
-  const std::string forbiddenChars = "/\\:*?\"<>|";
+  const std::string forbiddenChars = "\\:*?\"<>|";
   for (size_t i = 0; i < path.size(); i++) {
     if (forbiddenChars.find(path[i]) != std::string::npos) {
       return false;
