@@ -3,13 +3,14 @@
 ConfigParser::ConfigParser() {
   this->current_context = DEFAULT;
   this->current_delimiter = SPACE;
+  this->http_count = 0;
 }
 
 void ConfigParser::parseConfig(const std::string& filename) {
   std::ifstream file(filename);
   if (!file.is_open()) {
     std::cerr << "Failed to open file: " << filename << std::endl;
-    return;
+    exit(1);
   }
 
   std::string line;
@@ -19,6 +20,12 @@ void ConfigParser::parseConfig(const std::string& filename) {
 
   if (current_context != DEFAULT) {
     std::cerr << "syntax error : '}' is not enough" << std::endl;
+    exit(1);
+  }
+
+  if (http_count != 1) {
+    std::cerr << "syntax error: HTTP block must appear exactly once"
+              << std::endl;
     exit(1);
   }
 }
@@ -40,6 +47,12 @@ void ConfigParser::parseLine(const std::string& line) {
   if (tokens[0] == "http" && last_tokens == "{") {
     if (current_context != DEFAULT) {
       std::cerr << "syntax error : http context must be in default context";
+      exit(1);
+    }
+    http_count++;
+    if (http_count > 1) {
+      std::cerr << "syntax error: HTTP block must appear exactly once"
+                << std::endl;
       exit(1);
     }
     current_context = HTTP;
@@ -145,15 +158,15 @@ bool ConfigParser::isValidPath(const std::string& path) {
   return true;
 }
 
-int main(int argc, char* argv[]) {
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <config_file.conf>" << std::endl;
-    return 1;
-  }
-  std::string configFileName = argv[1];
+// int main(int argc, char* argv[]) {
+//   if (argc != 2) {
+//     std::cerr << "Usage: " << argv[0] << " <config_file.conf>" << std::endl;
+//     return 1;
+//   }
+//   std::string configFileName = argv[1];
 
-  ConfigParser parser;
-  parser.parseConfig(configFileName);
+//   ConfigParser parser;
+//   parser.parseConfig(configFileName);
 
-  return 0;
-}
+//   return 0;
+// }
