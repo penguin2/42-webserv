@@ -1,13 +1,13 @@
 #ifndef CONFIG_PARSER_H
 #define CONFIG_PARSER_H
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <filesystem>
 
 enum Context { DEFAULT, HTTP, SERVER, LOCATION };
 enum Delimiter {
@@ -25,6 +25,7 @@ class ConfigParser {
   void parseConfig(const std::string& filename);
 
  private:
+  int http_count;
   Context current_context;
   Delimiter current_delimiter;
 
