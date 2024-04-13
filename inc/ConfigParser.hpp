@@ -25,9 +25,9 @@ class ConfigParser {
   void parseConfig(const std::string& filename);
 
  private:
-  int http_count;
-  Context current_context;
-  Delimiter current_delimiter;
+  int http_count_;
+  Context current_context_;
+  Delimiter current_delimiter_;
 
   void parseLine(const std::string& line);
 

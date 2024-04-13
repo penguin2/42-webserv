@@ -1,9 +1,9 @@
 #include "ConfigParser.hpp"
 
 ConfigParser::ConfigParser() {
-  this->current_context = DEFAULT;
-  this->current_delimiter = SPACE;
-  this->http_count = 0;
+  this->current_context_ = DEFAULT;
+  this->current_delimiter_ = SPACE;
+  this->http_count_ = 0;
 }
 
 void ConfigParser::parseConfig(const std::string& filename) {
@@ -18,12 +18,12 @@ void ConfigParser::parseConfig(const std::string& filename) {
     parseLine(line);
   }
 
-  if (current_context != DEFAULT) {
+  if (current_context_ != DEFAULT) {
     std::cerr << "syntax error : '}' is not enough" << std::endl;
     exit(1);
   }
 
-  if (http_count != 1) {
+  if (http_count_ != 1) {
     std::cerr << "syntax error: HTTP block must appear exactly once"
               << std::endl;
     exit(1);
@@ -45,25 +45,25 @@ void ConfigParser::parseLine(const std::string& line) {
   std::string last_tokens = tokens.back();
 
   if (tokens[0] == "http" && last_tokens == "{") {
-    if (current_context != DEFAULT) {
+    if (current_context_ != DEFAULT) {
       std::cerr << "syntax error : http context must be in default context";
       exit(1);
     }
-    http_count++;
-    if (http_count > 1) {
+    http_count_++;
+    if (http_count_ > 1) {
       std::cerr << "syntax error: HTTP block must appear exactly once"
                 << std::endl;
       exit(1);
     }
-    current_context = HTTP;
+    current_context_ = HTTP;
   } else if (tokens[0] == "server" && last_tokens == "{") {
-    if (current_context != HTTP) {
+    if (current_context_ != HTTP) {
       std::cerr << "syntax error : server context must be in http context";
       exit(1);
     }
-    current_context = SERVER;
+    current_context_ = SERVER;
   } else if (tokens[0] == "location" && last_tokens == "{") {
-    if (current_context != SERVER) {
+    if (current_context_ != SERVER) {
       std::cerr << "syntax error : location context must be in server context";
       exit(1);
     }
@@ -78,11 +78,11 @@ void ConfigParser::parseLine(const std::string& line) {
       exit(1);
     }
 
-    current_context = LOCATION;
+    current_context_ = LOCATION;
   } else if (tokens[0] == "}") {
-    if (current_context != DEFAULT) {
-      current_context =
-          static_cast<Context>(static_cast<int>(current_context) - 1);
+    if (current_context_ != DEFAULT) {
+      current_context_ =
+          static_cast<Context>(static_cast<int>(current_context_) - 1);
     } else {
       std::cerr << "syntax error : Unexpected '}' outside any block"
                 << std::endl;
@@ -95,7 +95,7 @@ void ConfigParser::parseLine(const std::string& line) {
 
 void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
   // TODO contextに合っていない要素についてはすべて文法エラーとする
-  switch (current_context) {
+  switch (current_context_) {
     case HTTP:
       std::cout << "Inside HTTP block: " << tokens[0] << std::endl;
       break;
