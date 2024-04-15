@@ -92,30 +92,27 @@ void ConfigParser::parseLine(const std::string& line) {
 
     current_context_ = LOCATION;
   } else if (tokens[0] == "}") {
-    if (current_context_ != DEFAULT) {
-      if (current_context_ == HTTP) {
-        if (server_count_ == 0) {
-          std::cerr << "syntax error : http requires one or more server"
-                    << std::endl;
-          exit(1);
-        }
-        server_count_ = 0;
-      }
-      if (current_context_ == SERVER) {
-        if (location_count_ == 0) {
-          std::cerr << "syntax error : server requires one or more location"
-                    << std::endl;
-          exit(1);
-        }
-        location_count_ = 0;
-      }
-      current_context_ =
-          static_cast<Context>(static_cast<int>(current_context_) - 1);
-    } else {
+    if (current_context_ == DEFAULT) {
       std::cerr << "syntax error : Unexpected '}' outside any block"
                 << std::endl;
       exit(1);
+    } else if (current_context_ == HTTP) {
+      if (server_count_ == 0) {
+        std::cerr << "syntax error : http requires one or more server"
+                  << std::endl;
+        exit(1);
+      }
+      server_count_ = 0;
+    } else if (current_context_ == SERVER) {
+      if (location_count_ == 0) {
+        std::cerr << "syntax error : server requires one or more location"
+                  << std::endl;
+        exit(1);
+      }
+      location_count_ = 0;
     }
+    current_context_ =
+        static_cast<Context>(static_cast<int>(current_context_) - 1);
     if (tokens.size() != 1) {
       std::cerr << "syntax error : Unexpected argument after '}'" << std::endl;
       exit(1);
