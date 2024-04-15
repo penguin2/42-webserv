@@ -11,8 +11,7 @@ ConfigParser::ConfigParser() {
 void ConfigParser::parseConfig(const std::string& filename) {
   std::ifstream file(filename.c_str());
   if (!file.is_open()) {
-    std::cerr << "Failed to open file: " << filename << std::endl;
-    exit(1);
+    handleError("Failed to open file: ");
   }
 
   std::string line;
@@ -21,14 +20,11 @@ void ConfigParser::parseConfig(const std::string& filename) {
   }
 
   if (current_context_ != DEFAULT) {
-    std::cerr << "syntax error : '}' is not enough" << std::endl;
-    exit(1);
+    handleError("syntax error : '}' is not enough");
   }
 
   if (http_count_ != 1) {
-    std::cerr << "syntax error: HTTP block must appear exactly once"
-              << std::endl;
-    exit(1);
+    handleError("syntax error: HTTP block must appear exactly once");
   }
 }
 
@@ -40,8 +36,7 @@ void ConfigParser::parseLine(const std::string& line) {
   std::vector<std::string> tokens;
   tokenize(line, tokens);
   if (tokens.size() == 0) {
-    std::cerr << "syntax error : line with only space detected";
-    exit(1);
+    handleError("syntax error : line with only space detected");
   }
 
   std::string last_tokens = tokens.back();
@@ -49,42 +44,36 @@ void ConfigParser::parseLine(const std::string& line) {
   if (tokens[0] == "http" && last_tokens == "{") {
     http_count_++;
     if (current_context_ != DEFAULT) {
-      std::cerr << "syntax error : http context must be in default context";
-      exit(1);
+      handleError("syntax error : http context must be in default context");
     }
     if (tokens.size() != 2) {
-      std::cerr << "syntax error : http requires no arguments.";
-      exit(1);
+      handleError("syntax error : http requires no arguments");
     }
     if (http_count_ > 1) {
-      std::cerr << "syntax error: HTTP block must appear exactly once"
-                << std::endl;
-      exit(1);
+      handleError("syntax error: HTTP block must appear exactly once");
     }
     current_context_ = HTTP;
   } else if (tokens[0] == "server" && last_tokens == "{") {
     server_count_++;
     if (current_context_ != HTTP) {
-      std::cerr << "syntax error : server context must be in http context";
-      exit(1);
+      handleError("syntax error : server context must be in http context");
     }
     if (tokens.size() != 2) {
-      std::cerr << "syntax error : server requires no arguments.";
-      exit(1);
+      handleError("syntax error : server requires no arguments");
     }
     current_context_ = SERVER;
   } else if (tokens[0] == "location" && last_tokens == "{") {
     location_count_++;
     if (current_context_ != SERVER) {
-      std::cerr << "syntax error : location context must be in server context";
-      exit(1);
+      handleError("syntax error : location context must be in server context");
     }
     if (tokens.size() == 2) {
-      std::cerr << "syntax error : location must contain path";
-      exit(1);
+      handleError("syntax error : location must contain path");
     } else if (tokens.size() == 3 && !isValidPath(tokens[1])) {
       std::cerr << "syntax error : location path is invalid";
       exit(1);
+      handleError("syntax error : location must contain path");
+      
     } else if (tokens.size() >= 4) {
       std::cerr << "syntax error : location too many path";
       exit(1);
@@ -185,6 +174,11 @@ bool ConfigParser::isValidPath(const std::string& path) {
     }
   }
   return true;
+}
+
+void ConfigParser::handleError(const std::string& errorMessage) {
+  std::cerr << errorMessage << std::endl;
+  exit(1);
 }
 
 // int main(int argc, char* argv[]) {
