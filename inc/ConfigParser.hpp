@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <cstdlib> 
 
 enum Context { DEFAULT, HTTP, SERVER, LOCATION };
 enum Delimiter {

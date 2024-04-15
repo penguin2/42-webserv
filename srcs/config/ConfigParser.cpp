@@ -9,7 +9,7 @@ ConfigParser::ConfigParser() {
 }
 
 void ConfigParser::parseConfig(const std::string& filename) {
-  std::ifstream file(filename);
+  std::ifstream file(filename.c_str());
   if (!file.is_open()) {
     std::cerr << "Failed to open file: " << filename << std::endl;
     exit(1);
