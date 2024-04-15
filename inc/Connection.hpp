@@ -4,6 +4,8 @@
 #include <string>
 
 #include "ASocket.hpp"
+#include "ConnectionState.hpp"
+#include "HttpMock.hpp"
 
 class Connection : public ASocket {
  public:
@@ -11,22 +13,14 @@ class Connection : public ASocket {
   ~Connection();
 
   int handler(Server* server, EventManager* event_manager);
-  int errorHandler(Server* server);
 
  private:
-  typedef enum eState { kRecv, kSend, kClosed } State;
+  connection::State state_;
+  HttpMock http_mock_;
 
-  State state_;
-
-  std::string raw_request_;
-  std::string raw_response_;
+  std::string response_;
   std::string::size_type response_sent_size_;
 
-  // TODO: timer handling
-  // int timeout_;
-  // int timeout_header_;
-
-  // TODO: http handling
   // TODO: cgi handling
 
   static const int kRecvBufferSize = 1024;
@@ -36,12 +30,10 @@ class Connection : public ASocket {
   Connection(const Connection&);
   Connection& operator=(const Connection&);
 
-  void setState(State state);
+  int handlerRecv(EventManager* event_manager);
+  int handlerSend(EventManager* event_manager);
 
-  bool isReadyResponse();
-
-  int handlerRecv(Server* server, EventManager* event_manager);
-  int handlerSend(Server* server, EventManager* event_manager);
+  int updateState(connection::State new_state, EventManager* event_manager);
 };
 
 #endif

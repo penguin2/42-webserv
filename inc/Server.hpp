@@ -1,12 +1,13 @@
 #ifndef WEBSERV_SERVER_H
 #define WEBSERV_SERVER_H
 
-#include <deque>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "ASocket.hpp"
 #include "EventManager.hpp"
+#include "TimeoutManager.hpp"
 
 class Server {
  public:
@@ -14,15 +15,13 @@ class Server {
   ~Server();
 
   int acceptListenSocket(int listen_socket_fd);
-  int closeSocket(ASocket* socket);
-
-  // TODO: timeout handling
-  // int checkTimeouts();
+  int updateTimeout(ASocket* socket);
 
   int start();
   int loop();
 
  private:
+  TimeoutManager* timeout_manager_;
   EventManager* event_manager_;
   std::map<int, ASocket*> sockets_;
 
@@ -34,8 +33,10 @@ class Server {
 
   int addConnection(int connected_socket_fd);
 
-  int executeEventsErrorQueue(std::deque<ASocket*>& errors);
-  int executeEventsQueue(std::deque<ASocket*>& events);
+  int executeEventSockets(const std::vector<ASocket*>& event_sockets,
+                          std::vector<ASocket*>& closing_sockets);
+  int closeSocket(ASocket* socket);
+  int closeSockets(const std::vector<ASocket*>& closing_sockets);
 
   static int makeListenSocket(const std::string& port);
   static int addNonblockingFlag(int fd);
