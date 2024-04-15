@@ -4,6 +4,8 @@ ConfigParser::ConfigParser() {
   this->current_context_ = DEFAULT;
   this->current_delimiter_ = SPACE;
   this->http_count_ = 0;
+  this->server_count_ = 0;
+  this->location_count_ = 0;
 }
 
 void ConfigParser::parseConfig(const std::string& filename) {
@@ -45,6 +47,7 @@ void ConfigParser::parseLine(const std::string& line) {
   std::string last_tokens = tokens.back();
 
   if (tokens[0] == "http" && last_tokens == "{") {
+    http_count_++;
     if (current_context_ != DEFAULT) {
       std::cerr << "syntax error : http context must be in default context";
       exit(1);
@@ -53,7 +56,6 @@ void ConfigParser::parseLine(const std::string& line) {
       std::cerr << "syntax error : http requires no arguments.";
       exit(1);
     }
-    http_count_++;
     if (http_count_ > 1) {
       std::cerr << "syntax error: HTTP block must appear exactly once"
                 << std::endl;
@@ -61,6 +63,7 @@ void ConfigParser::parseLine(const std::string& line) {
     }
     current_context_ = HTTP;
   } else if (tokens[0] == "server" && last_tokens == "{") {
+    server_count_++;
     if (current_context_ != HTTP) {
       std::cerr << "syntax error : server context must be in http context";
       exit(1);
@@ -71,6 +74,7 @@ void ConfigParser::parseLine(const std::string& line) {
     }
     current_context_ = SERVER;
   } else if (tokens[0] == "location" && last_tokens == "{") {
+    location_count_++;
     if (current_context_ != SERVER) {
       std::cerr << "syntax error : location context must be in server context";
       exit(1);
@@ -89,6 +93,22 @@ void ConfigParser::parseLine(const std::string& line) {
     current_context_ = LOCATION;
   } else if (tokens[0] == "}") {
     if (current_context_ != DEFAULT) {
+      if (current_context_ == HTTP) {
+        if (server_count_ == 0) {
+          std::cerr << "syntax error : http requires one or more server"
+                    << std::endl;
+          exit(1);
+        }
+        server_count_ = 0;
+      }
+      if (current_context_ == SERVER) {
+        if (location_count_ == 0) {
+          std::cerr << "syntax error : server requires one or more location"
+                    << std::endl;
+          exit(1);
+        }
+        location_count_ = 0;
+      }
       current_context_ =
           static_cast<Context>(static_cast<int>(current_context_) - 1);
     } else {
