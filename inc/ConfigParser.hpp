@@ -39,6 +39,8 @@ class ConfigParser {
   void tokenize(const std::string& line, std::vector<std::string>& tokens);
 
   bool isValidPath(const std::string& path);
+
+  void handleError(const std::string& errorMessage);
 };
 
 #endif
