@@ -49,6 +49,10 @@ void ConfigParser::parseLine(const std::string& line) {
       std::cerr << "syntax error : http context must be in default context";
       exit(1);
     }
+    if (tokens.size() != 2) {
+      std::cerr << "syntax error : http requires no arguments.";
+      exit(1);
+    }
     http_count_++;
     if (http_count_ > 1) {
       std::cerr << "syntax error: HTTP block must appear exactly once"
@@ -59,6 +63,10 @@ void ConfigParser::parseLine(const std::string& line) {
   } else if (tokens[0] == "server" && last_tokens == "{") {
     if (current_context_ != HTTP) {
       std::cerr << "syntax error : server context must be in http context";
+      exit(1);
+    }
+    if (tokens.size() != 2) {
+      std::cerr << "syntax error : server requires no arguments.";
       exit(1);
     }
     current_context_ = SERVER;
@@ -86,6 +94,10 @@ void ConfigParser::parseLine(const std::string& line) {
     } else {
       std::cerr << "syntax error : Unexpected '}' outside any block"
                 << std::endl;
+      exit(1);
+    }
+    if (tokens.size() != 1) {
+      std::cerr << "syntax error : Unexpected argument after '}'" << std::endl;
       exit(1);
     }
   } else {
