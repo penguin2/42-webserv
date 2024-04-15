@@ -9,4 +9,9 @@
 * 6.locationのあとにpathが存在しない
 * 7.locationのあとに { が足りない
 * 8.locationのあとのpathに使用できない文字が含まれている
+* 9.httpのなかにserverが存在しない
+* 10.serverの中にlocationが存在しない
+* 11.httpの後に余計な引数が存在する
+* 12.serverの後に余計な引数が存在する
+* 13.}の後に余計な文字が存在する
 ...
