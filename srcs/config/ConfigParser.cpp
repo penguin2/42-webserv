@@ -11,7 +11,7 @@ ConfigParser::ConfigParser() {
 void ConfigParser::parseConfig(const std::string& filename) {
   std::ifstream file(filename.c_str());
   if (!file.is_open()) {
-    handleError("Failed to open file: ");
+    handleError("Failed to open file: " + filename);
   }
 
   std::string line;
