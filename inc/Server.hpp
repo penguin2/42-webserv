@@ -38,9 +38,6 @@ class Server {
   int closeSocket(ASocket* socket);
   int closeSockets(const std::vector<ASocket*>& closing_sockets);
 
-  static int makeListenSocket(const std::string& port);
-  static int addNonblockingFlag(int fd);
-
   // TODO: delete test initializing listen_sockets_
   static int testInitListenSockets(std::map<int, ASocket*>& sockets);
 };
