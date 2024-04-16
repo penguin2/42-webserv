@@ -16,7 +16,9 @@ connection::State Http::httpHandler() {
   switch (state_) {
     case (Http::RECV):
       try {
-        if (request_.parse(this->client_data_) == true) return dispatch();
+        if (request_.parse(this->client_data_) == true) {
+          return dispatchRequestHandler();
+        }
         return connection::RECV;
       } catch (ServerException& e) {
         return errorContentHandler(e.code(), e.what());
@@ -61,7 +63,7 @@ void Http::insertCommonHeaders(bool keep_alive) {
   response_.insertHeader("Date", HttpUtils::generateDateValue());
 }
 
-connection::State Http::dispatch(void) {
+connection::State Http::dispatchRequestHandler(void) {
   const std::string& path = request_.getRequestData()->getUri().getPath();
 
   // TODO if (拡張子がCGIプログラム) return cgiHandler();

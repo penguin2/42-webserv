@@ -30,7 +30,7 @@ class Http {
   void insertCommonHeaders(bool keep_alive);
 
   // TODO CGI以外のWebServer機能の実装
-  connection::State dispatch(void);
+  connection::State dispatchRequestHandler(void);
   connection::State errorContentHandler(int status_code,
                                         const std::string& phrase);
   // connection::State redirectHandler(void);
