@@ -1,6 +1,8 @@
 #ifndef WEBSERV_HTTPUTILS_H_
 #define WEBSERV_HTTPUTILS_H_
 
+#include <map>
+#include <set>
 #include <string>
 
 class HttpUtils {
@@ -12,6 +14,8 @@ class HttpUtils {
   static std::string generateDateValue(void);
   static std::string convertPathToContentType(const std::string& path);
   static bool isMaintainConnection(int code);
+  static std::map<std::string, std::string> makeContentTypeMap(void);
+  static std::set<int> makeDisconnectCodeSet(void);
 
  private:
   HttpUtils(void);

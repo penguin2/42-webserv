@@ -4,8 +4,10 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <map>
+#include <set>
 #include <sstream>
-#include <vector>
+#include <utility>
 
 #include "ServerException.hpp"
 #include "Utils.hpp"
@@ -107,35 +109,51 @@ std::string HttpUtils::generateDateValue(void) {
 }
 
 // ファイルの拡張子に基づいてContent-Typeを決定
-// TODO Content-Typeの仕様を調べる
 std::string HttpUtils::convertPathToContentType(const std::string& path) {
+  static const std::map<std::string, std::string> content_type_map =
+      makeContentTypeMap();
   const std::string extension(Utils::getExtension(path));
-  if (extension == "csv") return "text/csv";
-  if (extension == "html") return "text/html";
-  if (extension == "css") return "text/css";
-  if (extension == "js") return "text/javascript";
-  if (extension == "json") return "application/json";
-  if (extension == "pdf") return "application/pdf";
-  if (extension == "png") return "image/apng";
-  if (extension == "jpeg") return "image/jpeg";
-  if (extension == "gif") return "image/gif";
-  if (extension == "svg") return "image/svg+xml";
-  if (extension == "zip") return "application/zip";
-  if (extension == "mpeg") return "video/mpeg";
+  const std::map<std::string, std::string>::const_iterator it =
+      content_type_map.find(extension);
+
+  if (it != content_type_map.end()) return it->second;
   return "text/plain";
 }
 
-// TODO KeepAliveをCloseするStatusCodeを調べる
 bool HttpUtils::isMaintainConnection(int code) {
-  std::vector<int> disconn_code;
-  disconn_code.push_back(400);
-  disconn_code.push_back(405);
-  disconn_code.push_back(408);
-  disconn_code.push_back(413);
-  disconn_code.push_back(414);
-  disconn_code.push_back(421);
-  disconn_code.push_back(431);
-  disconn_code.push_back(501);
-  disconn_code.push_back(505);
-  return (std::count(disconn_code.begin(), disconn_code.end(), code) == 0);
+  static const std::set<int> disconn_codes = HttpUtils::makeDisconnectCodeSet();
+  return (disconn_codes.find(code) == disconn_codes.end());
+}
+
+// TODO Content-Typeの仕様を調べる
+std::map<std::string, std::string> HttpUtils::makeContentTypeMap(void) {
+  std::map<std::string, std::string> content_type_map;
+  content_type_map.insert(std::make_pair("csv", "text/csv"));
+  content_type_map.insert(std::make_pair("html", "text/html"));
+  content_type_map.insert(std::make_pair("css", "text/css"));
+  content_type_map.insert(std::make_pair("js", "text/javascript"));
+  content_type_map.insert(std::make_pair("json", "application/json"));
+  content_type_map.insert(std::make_pair("pdf", "application/pdf"));
+  content_type_map.insert(std::make_pair("png", "image/apng"));
+  content_type_map.insert(std::make_pair("jpeg", "image/jpeg"));
+  content_type_map.insert(std::make_pair("gif", "image/gif"));
+  content_type_map.insert(std::make_pair("svg", "image/svg+xml"));
+  content_type_map.insert(std::make_pair("zip", "application/zip"));
+  content_type_map.insert(std::make_pair("mpeg", "video/mpeg"));
+  return content_type_map;
+}
+
+// TODO KeepAliveをCloseするStatusCodeを調べる
+std::set<int> HttpUtils::makeDisconnectCodeSet(void) {
+  std::set<int> disconnect_status_codes;
+  disconnect_status_codes.insert(400);
+  disconnect_status_codes.insert(405);
+  disconnect_status_codes.insert(408);
+  disconnect_status_codes.insert(413);
+  disconnect_status_codes.insert(414);
+  disconnect_status_codes.insert(421);
+  disconnect_status_codes.insert(431);
+  disconnect_status_codes.insert(501);
+  disconnect_status_codes.insert(505);
+  return disconnect_status_codes;
 }
