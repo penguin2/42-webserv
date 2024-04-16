@@ -72,3 +72,13 @@ bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
   if (ss.fail() || ss.peek() != -1) return false;
   return true;
 }
+
+bool Utils::isStartsWith(const std::string &str, const std::string &prefix) {
+  return (str.compare(0, prefix.size(), prefix) == 0);
+}
+
+std::string Utils::popFrontSubstr(std::string &str, std::size_t n) {
+  std::string front_substr = str.substr(0, n);
+  str.erase(0, n);
+  return front_substr;
+}
