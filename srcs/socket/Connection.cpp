@@ -39,15 +39,15 @@ int Connection::handlerRecv(EventManager* event_manager) {
     updateState(connection::CLOSED, event_manager);
     return -1;
   }
-  http_mock_.appendClientData(std::string(Connection::recv_buffer_, recv_size));
-  const connection::State next_state = http_mock_.httpHandler();
+  http_.appendClientData(std::string(Connection::recv_buffer_, recv_size));
+  const connection::State next_state = http_.httpHandler();
   if (updateState(next_state, event_manager) < 0) return -1;
   return 0;
 }
 
 int Connection::handlerSend(EventManager* event_manager) {
   if (response_.empty()) {
-    response_ = http_mock_.getResponse();
+    response_ = http_.getResponse();
     response_sent_size_ = 0;
   }
   const int send_size =
@@ -61,7 +61,7 @@ int Connection::handlerSend(EventManager* event_manager) {
   if (response_sent_size_ == response_.size()) {
     response_.clear();
     response_sent_size_ = 0;
-    const connection::State next_state = http_mock_.httpHandler();
+    const connection::State next_state = http_.httpHandler();
     if (updateState(next_state, event_manager) < 0) return -1;
   }
   return 0;

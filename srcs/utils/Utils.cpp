@@ -72,3 +72,12 @@ bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
   if (ss.fail() || ss.peek() != -1) return false;
   return true;
 }
+
+std::string Utils::getExtension(const std::string &file) {
+  size_t pos_last_of_period = file.find_last_of('.');
+  // '.'がない || '.'よりも後ろに'/'
+  if (pos_last_of_period == std::string::npos ||
+      file.find('/', pos_last_of_period) != std::string::npos)
+    return "";
+  return file.substr(pos_last_of_period + 1);
+}

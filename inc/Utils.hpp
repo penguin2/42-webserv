@@ -12,6 +12,7 @@ class Utils {
   static bool isContainsOnly(const std::string& str, const std::string charset);
   static void toLowerString(std::string& str);
   static bool strToSize_t(const std::string& str, size_t& num, int base);
+  static std::string getExtension(const std::string& file);
 
  private:
   Utils(void);
