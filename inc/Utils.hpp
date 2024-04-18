@@ -14,6 +14,7 @@ class Utils {
   static bool strToSize_t(const std::string& str, size_t& num, int base);
   static bool isStartsWith(const std::string& str, const std::string& prefix);
   static std::string popFrontSubstr(std::string& str, std::size_t n);
+  static std::string getExtension(const std::string& file);
 
  private:
   Utils(void);

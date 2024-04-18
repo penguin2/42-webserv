@@ -82,3 +82,12 @@ std::string Utils::popFrontSubstr(std::string &str, std::size_t n) {
   str.erase(0, n);
   return front_substr;
 }
+
+std::string Utils::getExtension(const std::string &file) {
+  size_t pos_last_of_period = file.find_last_of('.');
+  // '.'がない || '.'よりも後ろに'/'
+  if (pos_last_of_period == std::string::npos ||
+      file.find('/', pos_last_of_period) != std::string::npos)
+    return "";
+  return file.substr(pos_last_of_period + 1);
+}

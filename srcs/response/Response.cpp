@@ -8,12 +8,14 @@ Response::~Response(void) { delete this->data_; }
 void Response::getResponseRawData(std::stringstream &ss) const {
   const std::map<std::string, std::string> headers = data_->getHeaders();
 
-  ss << data_->getStatusCode() << " " << data_->getPhrase() << "\r\n";
+  ss << "HTTP/1.1 " << data_->getStatusCode() << " " << data_->getPhrase();
+  ss << "\r\n";
   for (typename std::map<std::string, std::string>::const_iterator it =
            headers.begin();
        it != headers.end(); ++it) {
     ss << it->first << ": " << it->second << "\r\n";
   }
+  ss << "\r\n";
   ss << data_->getBody();
 }
 

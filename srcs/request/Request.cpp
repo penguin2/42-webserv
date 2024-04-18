@@ -87,7 +87,7 @@ void Request::parseVersion(std::string& buffer) {
   if (buffer.size() < (HTTP_VERSION.size() + 2)) return;
   if (buffer.compare(0, 5, "HTTP/") != 0 || !std::isdigit(buffer[5]) ||
       buffer[6] != '.' || !std::isdigit(buffer[7]) ||
-      buffer.compare(8, 10, "\r\n") != 0)
+      buffer.compare(8, 2, "\r\n") != 0)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad request");
   data_->setVersion(buffer.substr(0, HTTP_VERSION.size()));
