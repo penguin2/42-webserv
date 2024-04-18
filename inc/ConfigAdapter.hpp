@@ -46,11 +46,6 @@ size_t getMaxHeaderSize(void);
 size_t getMaxBodySize(const std::string& host, size_t port,
                       const std::string& path);
 
-// var
-static size_t MAX_URI_SIZE = 2000;
-static size_t MAX_HEADER_SIZE = 200;
-static size_t MAX_BODY_SIZE = 10000;
-
 }  // namespace ConfigAdapter
 
 #endif

@@ -106,15 +106,15 @@ std::string ConfigAdapter::makeAbsolutePath(const std::string &host,
 
 size_t ConfigAdapter::getMaxBodySize(const std::string &host, size_t port,
                                      const std::string &path) {
-  return MAX_BODY_SIZE;
+  return 10000;
   (void)host;
   (void)port;
   (void)path;
 }
 
-size_t ConfigAdapter::getMaxHeaderSize(void) { return MAX_HEADER_SIZE; }
+size_t ConfigAdapter::getMaxHeaderSize(void) { return 200; }
 
-size_t ConfigAdapter::getMaxUriSize(void) { return MAX_URI_SIZE; }
+size_t ConfigAdapter::getMaxUriSize(void) { return 2000; }
 
 // #include <iostream>
 // using namespace ConfigAdapter;
