@@ -33,10 +33,10 @@ bool isAllowMethods(const std::string& host, size_t port,
 std::vector<std::string> getAllowMethods(const std::string& host, size_t port,
                                          const std::string& path);
 
-// 静的ファイルの組み立てをする際に使用する予定
-// rootやindexディレクティブ,Pathコンポーネントから絶対パスを組み立てる
-std::string makeAbsolutePath(const std::string& host, size_t port,
-                             const std::string& path);
+// 静的ファイルの組み立てをする際に使用
+// try_files,root,index,Pathコンポーネントから絶対パスのベクターを組み立てる
+std::vector<std::string> makeAbsolutePaths(const std::string& host, size_t port,
+                                           const std::string& path);
 
 // Uriの最大サイズ(一般的には2000bytes)
 size_t getMaxUriSize(void);

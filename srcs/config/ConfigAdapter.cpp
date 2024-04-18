@@ -91,15 +91,24 @@ std::vector<std::string> ConfigAdapter::getAllowMethods(
   (void)path;
 }
 
-std::string ConfigAdapter::makeAbsolutePath(const std::string &host,
-                                            size_t port,
-                                            const std::string &path) {
+std::vector<std::string> ConfigAdapter::makeAbsolutePaths(
+    const std::string &host, size_t port, const std::string &path) {
   const std::string base_dir("/var/www/html");
   const std::string base_cgi_dir("/lib");
+  std::vector<std::string> absolute_paths;
 
-  if (path.compare(0, 9, "/cgi-bin/") == 0) return base_cgi_dir + path;
-  if (path == "" || path == "/") return base_dir + "/index.html";
-  return base_dir + path;
+  if (path.compare(0, 9, "/cgi-bin/") == 0) {
+    absolute_paths.push_back(base_cgi_dir + path);
+  } else if (path == "" || path == "/") {
+    absolute_paths.push_back(base_dir + "/index.html");
+    absolute_paths.push_back(base_dir + "/app/index.html");
+    absolute_paths.push_back(base_dir + "/form/index.html");
+  } else {
+    absolute_paths.push_back(base_dir + path);
+    absolute_paths.push_back(base_dir + "/app" + path);
+    absolute_paths.push_back(base_dir + "/form" + path);
+  }
+  return absolute_paths;
   (void)host;
   (void)port;
 }
@@ -131,10 +140,18 @@ size_t ConfigAdapter::getMaxUriSize(void) { return 2000; }
 //   vector<string> methods = getAllowMethods("", 0, "");
 //   cout << (1 <= methods.size() ? methods[0] : "")
 //        << (2 <= methods.size() ? ", " + methods[1] : "")
-//        << (2 <= methods.size() ? ", " + methods[2] : "");
+//        << (3 <= methods.size() ? ", " + methods[2] : "");
 //   cout << endl;
-//   cout << makeAbsolutePath("", 0, "/") << endl;
-//   cout << makeAbsolutePath("", 0, "/cgi-bin/cgi.py") << endl;
+//   vector<string> paths = makeAbsolutePaths("", 0, "/");
+//   for (vector<string>::const_iterator it = paths.begin(); it != paths.end();
+//        ++it)
+//     cout << *it << " ";
+//   cout << endl;
+//   vector<string> cgi_paths = makeAbsolutePaths("", 0, "/cgi-bin/cgi.py");
+//   for (vector<string>::const_iterator it = cgi_paths.begin();
+//        it != cgi_paths.end(); ++it)
+//     cout << *it << " ";
+//   cout << endl;
 //   cout << getMaxHeaderSize() << endl;
 //   cout << getMaxUriSize() << endl;
 //   cout << getMaxBodySize("", 0, "") << endl;
