@@ -4,9 +4,6 @@
 #include <string>
 #include <vector>
 
-class LocationConfig;
-enum HttpMethod {};
-
 namespace ConfigAdapter {
 
 // (リダイレクト対象のRequest) ? redirect_URI : NULL
