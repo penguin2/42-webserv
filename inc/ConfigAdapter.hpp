@@ -10,10 +10,10 @@ namespace ConfigAdapter {
 const std::string* searchRedirectUri(const std::string& host, size_t port,
                                      const std::string& path);
 
-// (リダイレクト対象のRequest) ? redirect_status_code : -1
-// searchRedirectUri関数後に実行される想定のため、-1が返ることは基本ない
-size_t searchRedirectStatusCode(const std::string& host, size_t port,
-                                const std::string& path);
+// (リダイレクト対象のRequest) ? redirect_status_code : 0
+// searchRedirectUri関数後に実行される想定のため、0が返ることは基本ない
+int searchRedirectStatusCode(const std::string& host, size_t port,
+                             const std::string& path);
 
 // (Locationにcgi_path&cgi_extがあり、PathがCGIファイル) ? true : false
 bool isCgiPath(const std::string& host, size_t port, const std::string& path);

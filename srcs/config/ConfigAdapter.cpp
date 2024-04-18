@@ -14,11 +14,11 @@ const std::string *ConfigAdapter::searchRedirectUri(const std::string &host,
   (void)path;
 }
 
-size_t ConfigAdapter::searchRedirectStatusCode(const std::string &host,
-                                               size_t port,
-                                               const std::string &path) {
+int ConfigAdapter::searchRedirectStatusCode(const std::string &host,
+                                            size_t port,
+                                            const std::string &path) {
   int random_number = (rand() % 6);
-  size_t status_code;
+  int status_code;
   switch (random_number) {
     case 0:
       status_code = 301;
