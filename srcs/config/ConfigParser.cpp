@@ -1,11 +1,27 @@
 #include "ConfigParser.hpp"
 
+#include "ListenDirectiveValidator.hpp"
+#include "ServerNameDirectiveValidator.hpp"
+#include "ErrorPageDirectiveValidator.hpp"
+#include "AllowMethodsDirectiveValidator.hpp"
+#include "RootDirectiveValidator.hpp"
+#include "IndexDirectiveValidator.hpp"
+#include "AutoIndexDirectiveValidator.hpp"
+
 ConfigParser::ConfigParser() {
   this->current_context_ = DEFAULT;
   this->current_delimiter_ = SPACE;
   this->http_count_ = 0;
   this->server_count_ = 0;
   this->location_count_ = 0;
+
+  this->validators["listen"] = new ListenDirectiveValidator();
+  this->validators["server_name"] = new ServerNameDirectiveValidator();
+  this->validators["error_page"] = new ErrorPageDirectiveValidator();
+  this->validators["allow_methods"] = new AllowMethodsDirectiveValidator();
+  this->validators["root"] = new RootDirectiveValidator();
+  this->validators["index"] = new IndexDirectiveValidator();
+  this->validators["autoindex"] = new AutoIndexDirectiveValidator();
 }
 
 void ConfigParser::parseConfig(const std::string& filename) {
@@ -108,6 +124,15 @@ void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
       break;
     case SERVER:
       std::cout << "Inside server block: " << tokens[0] << std::endl;
+      // if (tokens[0] == "listen"){
+      //   if(this->validators[tokens[0]]->isValid(tokens)){
+      //     std::cout << "valid " << tokens[0] << std::endl;
+
+      //   }else{
+      //     std::cout << "invalid " << tokens[0] << std::endl;
+
+      //   }
+      // }
       break;
     case LOCATION:
       std::cout << "Inside location block: " << tokens[0] << std::endl;
@@ -170,15 +195,15 @@ void ConfigParser::handleError(const std::string& errorMessage) {
   exit(1);
 }
 
-// int main(int argc, char* argv[]) {
-//   if (argc != 2) {
-//     std::cerr << "Usage: " << argv[0] << " <config_file.conf>" << std::endl;
-//     return 1;
-//   }
-//   std::string configFileName = argv[1];
+int main(int argc, char* argv[]) {
+  if (argc != 2) {
+    std::cerr << "Usage: " << argv[0] << " <config_file.conf>" << std::endl;
+    return 1;
+  }
+  std::string configFileName = argv[1];
 
-//   ConfigParser parser;
-//   parser.parseConfig(configFileName);
+  ConfigParser parser;
+  parser.parseConfig(configFileName);
 
-//   return 0;
-// }
+  return 0;
+}
