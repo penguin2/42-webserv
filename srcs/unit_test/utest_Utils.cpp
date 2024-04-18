@@ -135,6 +135,41 @@ TEST(Utils, STR_TO_SIZE_T_ERROR) {
   testStrToSize_T("18446744073709551616", 10, -1, false);  // SIZE_MAX + 1
 }
 
+TEST(Utils, isStartsWith_TRUE) {
+  EXPECT_TRUE(Utils::isStartsWith("", ""));
+  EXPECT_TRUE(Utils::isStartsWith("hello", "hello"));
+  EXPECT_TRUE(Utils::isStartsWith("banana", ""));
+  EXPECT_TRUE(Utils::isStartsWith("banana", "b"));
+  EXPECT_TRUE(Utils::isStartsWith("banana", "ban"));
+  EXPECT_TRUE(Utils::isStartsWith("banana", "banana"));
+}
+
+TEST(Utils, isStartsWith_FALSE) {
+  EXPECT_FALSE(Utils::isStartsWith("", "42"));
+  EXPECT_FALSE(Utils::isStartsWith("hello", "world"));
+  EXPECT_FALSE(Utils::isStartsWith("banana", "false"));
+  EXPECT_FALSE(Utils::isStartsWith("banana", "banana-banana"));
+  EXPECT_FALSE(Utils::isStartsWith("banana-apple", "banana-banana"));
+}
+
+TEST(Utils, popFrontSubstr) {
+  std::string test_str = "hello_world";
+  EXPECT_EQ(Utils::popFrontSubstr(test_str, 0), "");
+  EXPECT_EQ(test_str, "hello_world");
+  EXPECT_EQ(Utils::popFrontSubstr(test_str, 1), "h");
+  EXPECT_EQ(test_str, "ello_world");
+  EXPECT_EQ(Utils::popFrontSubstr(test_str, 3), "ell");
+  EXPECT_EQ(test_str, "o_world");
+  EXPECT_EQ(Utils::popFrontSubstr(test_str, 5), "o_wor");
+  EXPECT_EQ(test_str, "ld");
+  EXPECT_EQ(Utils::popFrontSubstr(test_str, 10000), "ld");
+  EXPECT_EQ(test_str, "");
+  EXPECT_EQ(Utils::popFrontSubstr(test_str, 10000), "");
+  EXPECT_EQ(test_str, "");
+  EXPECT_EQ(Utils::popFrontSubstr(test_str, 10000), "");
+  EXPECT_EQ(test_str, "");
+}
+
 TEST(Utils, GET_EXTENSION) {
   EXPECT_STREQ(Utils::getExtension("index.html").c_str(), "html");
   EXPECT_STREQ(Utils::getExtension("../../index.html").c_str(), "html");

@@ -1,7 +1,5 @@
 #include "Server.hpp"
 
-#include <fcntl.h>
-#include <netdb.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
@@ -11,6 +9,7 @@
 
 #include "Connection.hpp"
 #include "Logger.hpp"
+#include "SysUtils.hpp"
 
 Server::Server(const char* config_file) {
   (void)config_file;
@@ -34,7 +33,7 @@ Server::~Server() {
 int Server::acceptListenSocket(int listen_socket_fd) {
   const int connected_socket_fd = accept(listen_socket_fd, NULL, NULL);
   if (connected_socket_fd < 0) return -1;
-  if (Server::addNonblockingFlag(connected_socket_fd) < 0) {
+  if (SysUtils::addNonblockingFlag(connected_socket_fd) < 0) {
     close(connected_socket_fd);
     return -1;
   }
@@ -125,63 +124,11 @@ int Server::closeSockets(const std::vector<ASocket*>& closing_sockets) {
   return 0;
 }
 
-int Server::makeListenSocket(const std::string& port) {
-  int socket_fd;
-  struct addrinfo hints, *listp, *p;
-
-  std::memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_flags = AI_PASSIVE;
-  const int status = getaddrinfo(NULL, port.c_str(), &hints, &listp);
-  if (status != 0) {
-    LOG(WARN, "getaddrinfo: ", gai_strerror(status));
-    return -1;
-  }
-
-  const int enable = 1;
-  for (p = listp; p != NULL; p = p->ai_next) {
-    socket_fd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-    if (socket_fd < 0) continue;
-    if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) <
-        0) {
-      LOG(WARN, "setsockopt: ", std::strerror(errno));
-    }
-    if (bind(socket_fd, p->ai_addr, p->ai_addrlen) == 0) break;
-    if (close(socket_fd) < 0) {
-      LOG(WARN, "close: ", std::strerror(errno));
-      freeaddrinfo(listp);
-      return -1;
-    }
-  }
-  freeaddrinfo(listp);
-  if (p == NULL || addNonblockingFlag(socket_fd) < 0) return -1;
-
-  if (listen(socket_fd, Server::kDefaultListenBacklog) < 0) {
-    LOG(WARN, "listen: ", std::strerror(errno));
-    close(socket_fd);
-    return -1;
-  }
-  return socket_fd;
-}
-
-int Server::addNonblockingFlag(int fd) {
-  const int flags = fcntl(fd, F_GETFL, 0);
-  if (flags < 0) {
-    LOG(WARN, "fcntl(F_GETFL): ", std::strerror(errno));
-    return -1;
-  }
-  if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0) {
-    LOG(WARN, "fcntl(F_SETFL): ", std::strerror(errno));
-    return -1;
-  }
-  return 0;
-}
-
 // TODO: delete test initializing listen_sockets_
 #include "ListenSocket.hpp"
 int Server::testInitListenSockets(std::map<int, ASocket*>& sockets) {
-  const int listen_socket_fd = Server::makeListenSocket("4242");
+  const int listen_socket_fd =
+      SysUtils::makeListenSocket("4242", Server::kDefaultListenBacklog);
   if (listen_socket_fd < 0) return -1;
 
   ListenSocket* new_listen_socket = new ListenSocket(listen_socket_fd);
