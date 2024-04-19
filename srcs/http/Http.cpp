@@ -70,7 +70,7 @@ connection::State Http::dispatchRequestHandler(void) {
   const std::string* redirect_uri = ConfigAdapter::searchRedirectUri(
       uri.getHost(), uri.getPort(), uri.getPath());
   if (redirect_uri != NULL) {
-    return redirectHandler(redirect_uri);
+    return redirectHandler(*redirect_uri);
   }
   // TODO if (拡張子がCGIプログラム) return cgiHandler();
   // TODO if (静的ファイルの要求) return staticContentHandler();
@@ -109,7 +109,7 @@ connection::State Http::errorContentHandler(int status_code,
   return connection::SEND;
 }
 
-connection::State Http::redirectHandler(const std::string* redirect_uri) {
+connection::State Http::redirectHandler(const std::string& redirect_uri) {
   const Uri& uri = request_.getRequestData()->getUri();
   const int redirect_status_code = ConfigAdapter::searchRedirectStatusCode(
       uri.getHost(), uri.getPort(), uri.getPath());
@@ -124,7 +124,7 @@ connection::State Http::redirectHandler(const std::string* redirect_uri) {
       error_page, redirect_status_code, "Redirect"));
   insertCommonHeaders(haveConnectionCloseHeader() == false &&
                       HttpUtils::isMaintainConnection(redirect_status_code));
-  response_.insertHeader("Location", *redirect_uri);
+  response_.insertHeader("Location", redirect_uri);
   response_.setStatusLine(redirect_status_code, "Redirect");
   response_.getResponseRawData(raw_response_data_);
   this->state_ = Http::SEND;
