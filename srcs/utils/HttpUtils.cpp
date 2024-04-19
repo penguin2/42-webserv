@@ -78,10 +78,11 @@ std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
 
 // デフォルトのエラーページHTMLをファイルから読み取り生成
 // ファイルがなかったり読み取りエラーとなった場合はプログラムで生成
-std::string HttpUtils::generateErrorPage(const std::string& file, int code,
+std::string HttpUtils::generateErrorPage(const std::string* file, int code,
                                          const std::string& phrase) {
+  if (file == NULL) return HttpUtils::generateErrorPage(code, phrase);
   try {
-    return HttpUtils::readAllDataFromFile(file);
+    return HttpUtils::generateErrorPage(file, code, phrase);
   } catch (ServerException& e) {
     return HttpUtils::generateErrorPage(code, phrase);
   }
@@ -125,6 +126,11 @@ bool HttpUtils::isMaintainConnection(int code) {
   return (disconn_codes.find(code) == disconn_codes.end());
 }
 
+bool HttpUtils::isRedirectStatusCode(int code) {
+  static const std::set<int> redirect_codes = HttpUtils::makeRedirectCodeSet();
+  return (redirect_codes.find(code) != redirect_codes.end());
+}
+
 // TODO Content-Typeの仕様を調べる
 std::map<std::string, std::string> HttpUtils::makeContentTypeMap(void) {
   std::map<std::string, std::string> content_type_map;
@@ -146,6 +152,7 @@ std::map<std::string, std::string> HttpUtils::makeContentTypeMap(void) {
 // TODO KeepAliveをCloseするStatusCodeを調べる
 std::set<int> HttpUtils::makeDisconnectCodeSet(void) {
   std::set<int> disconnect_status_codes;
+  disconnect_status_codes.insert(303);
   disconnect_status_codes.insert(400);
   disconnect_status_codes.insert(405);
   disconnect_status_codes.insert(408);
@@ -156,4 +163,15 @@ std::set<int> HttpUtils::makeDisconnectCodeSet(void) {
   disconnect_status_codes.insert(501);
   disconnect_status_codes.insert(505);
   return disconnect_status_codes;
+}
+
+// リダイレクトは301,302,303,307,308のみ対応
+std::set<int> HttpUtils::makeRedirectCodeSet(void) {
+  std::set<int> redirect_status_codes;
+  redirect_status_codes.insert(301);
+  redirect_status_codes.insert(302);
+  redirect_status_codes.insert(303);
+  redirect_status_codes.insert(307);
+  redirect_status_codes.insert(308);
+  return redirect_status_codes;
 }
