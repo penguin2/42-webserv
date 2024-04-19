@@ -33,6 +33,8 @@ bool isAllowMethods(const std::string& host, size_t port,
 std::vector<std::string> getAllowMethods(const std::string& host, size_t port,
                                          const std::string& path);
 
+bool isCorrespondingMethod(const std::string& method);
+
 // 静的ファイルの組み立てをする際に使用
 // try_files,root,index,Pathコンポーネントから絶対パスのベクターを組み立てる
 std::vector<std::string> makeAbsolutePaths(const std::string& host, size_t port,
@@ -42,9 +44,14 @@ std::vector<std::string> makeAbsolutePaths(const std::string& host, size_t port,
 size_t getMaxUriSize(void);
 // Headerの最大サイズ(1つのHeaderの最大サイズを想定)
 size_t getMaxHeaderSize(void);
+// Headerの最大個数
+size_t getMaxNumberOfHeaders(void);
+
 // ボディの最大サイズ(client_max_body_sizeが存在しない場合、defaultの値を返す)
 size_t getMaxBodySize(const std::string& host, size_t port,
                       const std::string& path);
+
+size_t getMaxMethodSize(void);
 
 }  // namespace ConfigAdapter
 

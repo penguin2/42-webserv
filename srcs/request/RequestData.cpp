@@ -1,5 +1,6 @@
 #include "RequestData.hpp"
 
+#include "ConfigAdapter.hpp"
 #include "ServerException.hpp"
 #include "Uri.hpp"
 #include "Utils.hpp"
@@ -17,6 +18,11 @@ void RequestData::setVersion(const std::string &version) { version_ = version; }
 void RequestData::insertHeader(std::string &line) {
   std::string key, value;
   const size_t pos_colon = line.find(':');
+
+  // Headerの1行の文字数が多すぎる
+  if (ConfigAdapter::getMaxHeaderSize() < line.size())
+    throw ServerException(ServerException::SERVER_ERROR_HEADER_TOO_LARGE,
+                          "Header too large");
 
   // 先頭が空白文字の場合は行全体を無視する
   if (std::isspace(line[0])) return;

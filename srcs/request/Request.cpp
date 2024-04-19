@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "ConfigAdapter.hpp"
 #include "RequestData.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
@@ -14,7 +15,6 @@ Request::~Request(void) { delete this->data_; }
 const RequestData* Request::getRequestData(void) const { return this->data_; }
 
 bool Request::parse(std::string& buffer) {
-  // TODO RequestData*型ではなく値で持ち、初期化関数を実装しても良さそう?
   if (this->state_ == END) {
     this->state_ = METHOD;
     delete this->data_;
@@ -53,6 +53,11 @@ void Request::parseMethod(std::string& buffer) {
   while (buffer.find("\r\n") == 0) buffer.erase(0, 2);
   if (buffer.size() == 0 || (buffer.size() == 1 && buffer[0] == '\r')) return;
   const size_t pos_first_space = buffer.find(' ');
+  // 対応するMethodの最大文字数+MethodとURIを区切る空白1文字)よりも大きい
+  if (pos_first_space == std::string::npos &&
+      (ConfigAdapter::getMaxMethodSize() + 1) < buffer.size())
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Bad method");
   if (pos_first_space == std::string::npos) return;
   // StatusLineが空白で始まる
   if (pos_first_space == 0)
@@ -71,6 +76,11 @@ void Request::parseMethod(std::string& buffer) {
 
 void Request::parseUri(std::string& buffer) {
   const size_t pos_first_space = buffer.find(' ');
+  // URIが大きすぎる
+  if (pos_first_space == std::string::npos &&
+      ConfigAdapter::getMaxUriSize() < buffer.size())
+    throw ServerException(ServerException::SERVER_ERROR_URI_TOO_LONG,
+                          "Too long URI");
   if (pos_first_space == std::string::npos) return;
   // uriが不正な場合、RequestData内で例外をthrowする
   data_->setUri(buffer.substr(0, pos_first_space));
@@ -108,6 +118,11 @@ void Request::parseHeader(std::string& buffer) {
       buffer.erase(0, 2);
       return determineParseBody(buffer);
     }
+
+    // ヘッダの数が多すぎる
+    if (ConfigAdapter::getMaxNumberOfHeaders() <= data_->getHeaders().size())
+      throw ServerException(ServerException::SERVER_ERROR_HEADER_TOO_LARGE,
+                            "Header too large");
     std::string line = buffer.substr(0, pos_crlf);
     // ヘッダエラーがあった場合、RequestData.insertHeaderメンバ関数内で例外がthrowされる
     data_->insertHeader(line);
@@ -146,10 +161,13 @@ void Request::parseChunkedSize(std::string& buffer) {
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad chunk size");
 
-  // TODO body_size_ or 合計のbodyのサイズが正常な数値であるが大き過ぎる場合
-  // if (Config.getLimitBodySize() < body_size_)
-  // throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
-  // "Body size too large")
+  // body_size_ or 合計のbodyのサイズが正常な数値であるが大き過ぎる場合
+  const Uri& uri = data_->getUri();
+  if (ConfigAdapter::getMaxBodySize(uri.getHost(), uri.getPort(),
+                                    uri.getPath()) <
+      (body_size_ + data_->getBody().size()))
+    throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
+                          "Body size too large");
 
   buffer.erase(0, pos_crlf + 2);
   if (this->body_size_ != 0) {
@@ -171,17 +189,13 @@ void Request::determineParseBody(std::string& buffer) {
   const std::map<std::string, std::string>::const_iterator content_length =
       headers.find("content-length");
 
-  // TODO configファイル内から使用可能なメソッドを取得して処理
-  if (method != "GET" && method != "POST" && method != "DELETE")
-    throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
-                          "Method not allowed");
+  if (ConfigAdapter::isCorrespondingMethod(method) == false)
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Bad Method");
   // hostヘッダフィールドが存在しない場合
   if (host == headers.end())
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Host field not found");
-
-  // TODO URIの再構築(URIが相対パスである場合にhostヘッダの情報を使用して再構築)
-  // data_->rebuildingUri();
 
   if (transfer_encoding != headers.end()) {
     // Transfer-Encodingにchunked以外の値がある場合
@@ -200,10 +214,12 @@ void Request::determineParseBody(std::string& buffer) {
       throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                             "Bad Content-Length");
 
-    // TODO body_size_が正常な数値であるが大き過ぎる場合
-    // if (Config.getLimitBodySize() < body_size_)
-    // throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
-    // "Body size too large")
+    // body_size_が正常な数値であるが大き過ぎる場合
+    const Uri& uri = data_->getUri();
+    if (ConfigAdapter::getMaxBodySize(uri.getHost(), uri.getPort(),
+                                      uri.getPath()) < body_size_)
+      throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
+                            "Body size too large");
 
     this->state_ = BODY;
     return parseBody(buffer);

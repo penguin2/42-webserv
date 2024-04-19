@@ -91,6 +91,10 @@ std::vector<std::string> ConfigAdapter::getAllowMethods(
   (void)path;
 }
 
+bool ConfigAdapter::isCorrespondingMethod(const std::string &method) {
+  return (method == "GET" || method == "POST" || method == "DELETE");
+}
+
 std::vector<std::string> ConfigAdapter::makeAbsolutePaths(
     const std::string &host, size_t port, const std::string &path) {
   const std::string base_dir("/var/www/html");
@@ -123,7 +127,14 @@ size_t ConfigAdapter::getMaxBodySize(const std::string &host, size_t port,
 
 size_t ConfigAdapter::getMaxHeaderSize(void) { return 200; }
 
+size_t ConfigAdapter::getMaxNumberOfHeaders(void) { return 100; }
+
 size_t ConfigAdapter::getMaxUriSize(void) { return 2000; }
+
+size_t ConfigAdapter::getMaxMethodSize(void) {
+  // std::string("DELETE").size()
+  return 6;
+}
 
 // #include <iostream>
 // using namespace ConfigAdapter;
