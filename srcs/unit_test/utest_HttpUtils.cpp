@@ -67,7 +67,7 @@ TEST(HttpUtils, IS_MAINTAIN_CONNECTION) {
   EXPECT_EQ(HttpUtils::isMaintainConnection(300), true);
   EXPECT_EQ(HttpUtils::isMaintainConnection(301), true);
   EXPECT_EQ(HttpUtils::isMaintainConnection(302), true);
-  EXPECT_EQ(HttpUtils::isMaintainConnection(303), true);
+  EXPECT_EQ(HttpUtils::isMaintainConnection(303), false);
   EXPECT_EQ(HttpUtils::isMaintainConnection(304), true);
   EXPECT_EQ(HttpUtils::isMaintainConnection(307), true);
   EXPECT_EQ(HttpUtils::isMaintainConnection(308), true);
@@ -108,4 +108,21 @@ TEST(HttpUtils, IS_MAINTAIN_CONNECTION) {
   EXPECT_EQ(HttpUtils::isMaintainConnection(510), true);
   EXPECT_EQ(HttpUtils::isMaintainConnection(511), true);
   EXPECT_EQ(HttpUtils::isMaintainConnection(0), true);
+}
+
+TEST(HttpUtils, IS_REDIRECT_STATUS_CODE) {
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(300), false);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(301), true);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(302), true);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(303), true);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(304), false);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(305), false);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(306), false);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(307), true);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(308), true);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(309), false);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(310), false);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(0), false);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(400), false);
+  EXPECT_EQ(HttpUtils::isRedirectStatusCode(500), false);
 }
