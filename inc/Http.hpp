@@ -33,7 +33,7 @@ class Http {
   connection::State dispatchRequestHandler(void);
   connection::State errorContentHandler(int status_code,
                                         const std::string& phrase);
-  // connection::State redirectHandler(void);
+  connection::State redirectHandler(const std::string* redirect_uri);
   // connection::State staticContentHandler(void);
 
   // TODO CGIを処理する機能

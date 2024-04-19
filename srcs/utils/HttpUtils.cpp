@@ -82,7 +82,7 @@ std::string HttpUtils::generateErrorPage(const std::string* file, int code,
                                          const std::string& phrase) {
   if (file == NULL) return HttpUtils::generateErrorPage(code, phrase);
   try {
-    return HttpUtils::generateErrorPage(file, code, phrase);
+    return HttpUtils::readAllDataFromFile(*file);
   } catch (ServerException& e) {
     return HttpUtils::generateErrorPage(code, phrase);
   }
