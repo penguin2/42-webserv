@@ -9,15 +9,25 @@
 #include <string>
 #include <vector>
 #include <cstdlib> 
+#include <map>
+#include "ADirectiveHandler.hpp"
+#include "ListenDirectiveHandler.hpp"
+#include "ServerNameDirectiveHandler.hpp"
+#include "ErrorPageDirectiveHandler.hpp"
+#include "AllowMethodsDirectiveHandler.hpp"
+#include "RootDirectiveHandler.hpp"
+#include "IndexDirectiveHandler.hpp"
+#include "AutoIndexDirectiveHandler.hpp"
+#include "ConfigEnums.hpp"
 
-enum Context { DEFAULT, HTTP, SERVER, LOCATION };
-enum Delimiter {
-  SPACE = ' ',
-  LEFT_BRACE = '{',
-  RIGHT_BRACE = '}',
-  SEMICOLON = ';',
-  STRING = '*'
-};
+// enum Context { DEFAULT, HTTP, SERVER, LOCATION };
+// enum Delimiter {
+//   SPACE = ' ',
+//   LEFT_BRACE = '{',
+//   RIGHT_BRACE = '}',
+//   SEMICOLON = ';',
+//   STRING = '*'
+// };
 
 class ConfigParser {
  public:
@@ -41,6 +51,8 @@ class ConfigParser {
   bool isValidPath(const std::string& path);
 
   void handleError(const std::string& errorMessage);
+  
+  std::map<std::string, ADirectiveHandler*> handlers;
 };
 
 #endif
