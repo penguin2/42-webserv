@@ -2,6 +2,7 @@
 #define WEBSERV_UTILS_H_
 
 #include <string>
+#include <vector>
 
 class Utils {
  public:
@@ -15,6 +16,7 @@ class Utils {
   static bool isStartsWith(const std::string& str, const std::string& prefix);
   static std::string popFrontSubstr(std::string& str, std::size_t n);
   static std::string getExtension(const std::string& file);
+  static std::vector<std::string> split(const std::string& str, char separator);
 
  private:
   Utils(void);
