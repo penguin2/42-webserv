@@ -47,6 +47,10 @@ void ConfigParser::parseLine(const std::string& line) {
     handleError("syntax error : line with only space detected");
   }
 
+  if (tokens[0] == "#") {
+    return;
+  }
+
   std::string last_tokens = tokens.back();
 
   if (tokens[0] == "http" && last_tokens == "{") {
@@ -109,7 +113,14 @@ void ConfigParser::parseLine(const std::string& line) {
 }
 
 void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
-  // TODO contextに合っていない要素についてはすべて文法エラーとする
+  if (this->handlers[tokens[0]] == NULL) {
+    handleError(tokens[0] + " does not exist");
+  }
+  
+  if (!this->handlers[tokens[0]]->isMatchContext(current_context_)){
+    handleError(tokens[0] + " exists in invalid location");
+  }
+
   switch (current_context_) {
     case HTTP:
       std::cout << "Inside HTTP block: " << tokens[0] << std::endl;
