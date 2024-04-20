@@ -5,6 +5,7 @@
 
 class RootDirectiveHandler : public ADirectiveHandler {
  public:
+  RootDirectiveHandler();
   virtual bool isValid(const std::vector<std::string>& tokens) const;
 };
 

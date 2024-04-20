@@ -20,15 +20,6 @@
 #include "AutoIndexDirectiveHandler.hpp"
 #include "ConfigEnums.hpp"
 
-// enum Context { DEFAULT, HTTP, SERVER, LOCATION };
-// enum Delimiter {
-//   SPACE = ' ',
-//   LEFT_BRACE = '{',
-//   RIGHT_BRACE = '}',
-//   SEMICOLON = ';',
-//   STRING = '*'
-// };
-
 class ConfigParser {
  public:
   ConfigParser();

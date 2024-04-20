@@ -1,8 +1,8 @@
 #include "./config/ListenDirectiveHandler.hpp"
 
-// ListenDirectiveHandler::ListenDirectiveHandler() {
-//   this->directive_context_ = SERVER;
-// }
+ListenDirectiveHandler::ListenDirectiveHandler() {
+  this->directive_context_ = SERVER;
+}
 
 bool ListenDirectiveHandler::isValid(
     const std::vector<std::string>& tokens) const {

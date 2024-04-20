@@ -5,6 +5,7 @@
 
 class AutoIndexDirectiveHandler : public ADirectiveHandler {
  public:
+  AutoIndexDirectiveHandler();
   virtual bool isValid(const std::vector<std::string>& tokens) const;
 };
 

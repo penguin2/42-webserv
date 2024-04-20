@@ -5,7 +5,7 @@
 
 class ListenDirectiveHandler : public ADirectiveHandler {
  public:
-  // ListenDirectiveHandler();
+  ListenDirectiveHandler();
   virtual bool isValid(const std::vector<std::string>& tokens) const;
 };
 
