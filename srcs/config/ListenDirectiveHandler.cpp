@@ -1,4 +1,4 @@
-#include "ListenDirectiveHandler.hpp"
+#include "./config/ListenDirectiveHandler.hpp"
 
 bool ListenDirectiveHandler::isValid(
     const std::vector<std::string>& tokens) const {

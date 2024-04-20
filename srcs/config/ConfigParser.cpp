@@ -1,12 +1,4 @@
-#include "ConfigParser.hpp"
-
-#include "ListenDirectiveHandler.hpp"
-#include "ServerNameDirectiveHandler.hpp"
-#include "ErrorPageDirectiveHandler.hpp"
-#include "AllowMethodsDirectiveHandler.hpp"
-#include "RootDirectiveHandler.hpp"
-#include "IndexDirectiveHandler.hpp"
-#include "AutoIndexDirectiveHandler.hpp"
+#include "./config/ConfigParser.hpp"
 
 ConfigParser::ConfigParser() {
   this->current_context_ = DEFAULT;
