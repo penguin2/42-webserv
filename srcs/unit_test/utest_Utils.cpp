@@ -25,6 +25,11 @@ void testStrToSize_T(std::string str, int base, size_t expect_value,
   if (ret == true) EXPECT_EQ(num, expect_value) << str << " -> " << num;
 }
 
+void testJoinStrings(std::vector<std::string> vec, std::string delim,
+                     const char* expect_str) {
+  EXPECT_STREQ(Utils::joinStrings(vec, delim).c_str(), expect_str);
+}
+
 TEST(Utils, STR_TRIM) {
   // target_string, charset, expect(string)
   testStrTrim("TEST1 ", " ", "TEST1");
@@ -184,4 +189,14 @@ TEST(Utils, GET_EXTENSION) {
   EXPECT_STREQ(Utils::getExtension("/0.0.0.0/a.py?f=a.zip").c_str(), "zip");
   EXPECT_STREQ(Utils::getExtension("......").c_str(), "");
   EXPECT_STREQ(Utils::getExtension("../").c_str(), "");
+}
+
+TEST(Utils, JOIN_STRINGS) {
+  testJoinStrings({"GET", "POST", "DELETE"}, ", ", "GET, POST, DELETE");
+  testJoinStrings({"GET", "POST", "DELETE"}, "", "GETPOSTDELETE");
+  testJoinStrings({"PATH", "TO", "FILE"}, "/", "PATH/TO/FILE");
+  testJoinStrings({"ONE", "TWO"}, "&&", "ONE&&TWO");
+  testJoinStrings({"WORD"}, "/", "WORD");
+  testJoinStrings({}, "/", "");
+  testJoinStrings({"a", "b", "c"}, " -> ", "a -> b -> c");
 }
