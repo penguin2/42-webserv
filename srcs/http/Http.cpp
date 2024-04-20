@@ -113,13 +113,18 @@ connection::State Http::redirectHandler(const std::string& redirect_uri) {
   const Uri& uri = request_.getRequestData()->getUri();
   const int redirect_status_code = ConfigAdapter::searchRedirectStatusCode(
       uri.getHost(), uri.getPort(), uri.getPath());
+  const std::string* error_page = ConfigAdapter::searchErrorPage(
+      uri.getHost(), uri.getPort(), redirect_status_code);
 
   if (HttpUtils::isRedirectStatusCode(redirect_status_code) == false)
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Return directive is invalid");
 
+  response_.appendBody(HttpUtils::generateErrorPage(
+      error_page, redirect_status_code, "Redirect"));
   insertCommonHeaders(haveConnectionCloseHeader() == false &&
                       HttpUtils::isMaintainConnection(redirect_status_code));
+  response_.insertContentLengthIfNotSet();
   response_.insertHeader("Location", redirect_uri);
   response_.setStatusLine(redirect_status_code, "Redirect");
   response_.getResponseRawData(raw_response_data_);
