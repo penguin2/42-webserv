@@ -7,12 +7,12 @@
 #include "ConfigEnums.hpp"
 
 class ADirectiveHandler {
- private:
-  // Context directive_context_;
+ protected:
+  Context directive_context_;
 
  public:
-  // ADirectiveHandler::ADirectiveHandler(Context context)
-  //     : directive_context(context) {}
+  // ADirectiveHandler(Context context)
+  //     : directive_context_(context) {}
   virtual bool isValid(const std::vector<std::string>& tokens) const = 0;
   // bool isMatchContext(Context context) {}
 };
