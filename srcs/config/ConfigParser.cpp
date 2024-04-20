@@ -14,6 +14,7 @@ ConfigParser::ConfigParser() {
   this->handlers["root"] = new RootDirectiveHandler();
   this->handlers["index"] = new IndexDirectiveHandler();
   this->handlers["autoindex"] = new AutoIndexDirectiveHandler();
+  this->handlers["try_files"] = new TryFilesDirectiveHandler();
 }
 
 void ConfigParser::parseConfig(const std::string& filename) {
