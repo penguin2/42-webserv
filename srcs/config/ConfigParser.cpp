@@ -1,12 +1,12 @@
 #include "ConfigParser.hpp"
 
-#include "ListenDirectiveValidator.hpp"
-#include "ServerNameDirectiveValidator.hpp"
-#include "ErrorPageDirectiveValidator.hpp"
-#include "AllowMethodsDirectiveValidator.hpp"
-#include "RootDirectiveValidator.hpp"
-#include "IndexDirectiveValidator.hpp"
-#include "AutoIndexDirectiveValidator.hpp"
+#include "ListenDirectiveHandler.hpp"
+#include "ServerNameDirectiveHandler.hpp"
+#include "ErrorPageDirectiveHandler.hpp"
+#include "AllowMethodsDirectiveHandler.hpp"
+#include "RootDirectiveHandler.hpp"
+#include "IndexDirectiveHandler.hpp"
+#include "AutoIndexDirectiveHandler.hpp"
 
 ConfigParser::ConfigParser() {
   this->current_context_ = DEFAULT;
@@ -15,13 +15,13 @@ ConfigParser::ConfigParser() {
   this->server_count_ = 0;
   this->location_count_ = 0;
 
-  this->validators["listen"] = new ListenDirectiveValidator();
-  this->validators["server_name"] = new ServerNameDirectiveValidator();
-  this->validators["error_page"] = new ErrorPageDirectiveValidator();
-  this->validators["allow_methods"] = new AllowMethodsDirectiveValidator();
-  this->validators["root"] = new RootDirectiveValidator();
-  this->validators["index"] = new IndexDirectiveValidator();
-  this->validators["autoindex"] = new AutoIndexDirectiveValidator();
+  this->handlers["listen"] = new ListenDirectiveHandler();
+  this->handlers["server_name"] = new ServerNameDirectiveHandler();
+  this->handlers["error_page"] = new ErrorPageDirectiveHandler();
+  this->handlers["allow_methods"] = new AllowMethodsDirectiveHandler();
+  this->handlers["root"] = new RootDirectiveHandler();
+  this->handlers["index"] = new IndexDirectiveHandler();
+  this->handlers["autoindex"] = new AutoIndexDirectiveHandler();
 }
 
 void ConfigParser::parseConfig(const std::string& filename) {
@@ -125,7 +125,7 @@ void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
     case SERVER:
       std::cout << "Inside server block: " << tokens[0] << std::endl;
       // if (tokens[0] == "listen"){
-      //   if(this->validators[tokens[0]]->isValid(tokens)){
+      //   if(this->Handlers[tokens[0]]->isValid(tokens)){
       //     std::cout << "valid " << tokens[0] << std::endl;
 
       //   }else{
