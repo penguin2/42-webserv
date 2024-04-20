@@ -186,16 +186,3 @@ void ConfigParser::handleError(const std::string& errorMessage) {
   std::cerr << errorMessage << std::endl;
   exit(1);
 }
-
-int main(int argc, char* argv[]) {
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <config_file.conf>" << std::endl;
-    return 1;
-  }
-  std::string configFileName = argv[1];
-
-  ConfigParser parser;
-  parser.parseConfig(configFileName);
-
-  return 0;
-}
