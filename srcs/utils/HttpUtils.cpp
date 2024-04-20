@@ -152,7 +152,6 @@ std::map<std::string, std::string> HttpUtils::makeContentTypeMap(void) {
 // TODO KeepAliveをCloseするStatusCodeを調べる
 std::set<int> HttpUtils::makeDisconnectCodeSet(void) {
   std::set<int> disconnect_status_codes;
-  disconnect_status_codes.insert(303);
   disconnect_status_codes.insert(400);
   disconnect_status_codes.insert(405);
   disconnect_status_codes.insert(408);
