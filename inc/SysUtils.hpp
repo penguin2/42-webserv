@@ -7,10 +7,12 @@
 class SysUtils {
  public:
   static int addNonblockingFlag(int fd);
+  static int addCloseOnExecFlag(int fd);
   static int makeListenSocket(const std::string& port, int backlog);
   static char* const* convertToEnvp(
       const std::map<std::string, std::string> envp_map);
   static void deleteCstringArray(char* const* c_str_array);
+  static int clearFd(int* fd);
 
  private:
   SysUtils(void);
