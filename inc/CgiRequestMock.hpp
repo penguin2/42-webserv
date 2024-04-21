@@ -29,4 +29,6 @@ class CgiRequestMock {
   CgiRequestMock& operator=(const CgiRequestMock&);
 };
 
+typedef CgiRequestMock CgiRequest;
+
 #endif

@@ -5,7 +5,13 @@
 
 #include <string>
 
+#ifdef MOCK
 #include "CgiRequestMock.hpp"
+#else
+// TODO: CgiRequestMock -> CgiRequest
+// #include "CgiRequest.hpp"
+#include "CgiRequestMock.hpp"
+#endif
 
 class Cgi {
  public:
@@ -25,7 +31,7 @@ class Cgi {
   bool isReadDone() const;
   bool isWriteDone() const;
 
-  static Cgi* createCgi(const CgiRequestMock* cgi_request);
+  static Cgi* createCgi(const CgiRequest* cgi_request);
 
  private:
   int read_fd_;

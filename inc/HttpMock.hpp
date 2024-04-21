@@ -41,4 +41,6 @@ class HttpMock {
   void clearCgiHandling();
 };
 
+typedef HttpMock Http;
+
 #endif

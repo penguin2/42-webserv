@@ -7,8 +7,12 @@
 #include "Cgi.hpp"
 #include "ConnectionState.hpp"
 #include "EventManager.hpp"
+
+#ifdef MOCK
+#include "HttpMock.hpp"
+#else
 #include "Http.hpp"
-// #include "HttpMock.hpp"
+#endif
 
 class Connection : public ASocket {
  public:
@@ -21,7 +25,6 @@ class Connection : public ASocket {
 
  private:
   connection::State state_;
-  // typedef HttpMock Http;
   Http http_;
   EventManager* event_manager_;
 
