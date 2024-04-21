@@ -17,6 +17,13 @@ ConfigParser::ConfigParser() {
   this->handlers["try_files"] = new TryFilesDirectiveHandler();
 }
 
+ConfigParser::~ConfigParser() {
+    for (std::map<std::string, ADirectiveHandler*>::iterator it = handlers.begin(); it != handlers.end(); ++it) {
+        delete it->second;
+    }
+    handlers.clear();
+}
+
 void ConfigParser::parseConfig(const std::string& filename) {
   std::ifstream file(filename.c_str());
   if (!file.is_open()) {

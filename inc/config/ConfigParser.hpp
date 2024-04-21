@@ -24,6 +24,7 @@
 class ConfigParser {
  public:
   ConfigParser();
+  ~ConfigParser();
 
   void parseConfig(const std::string& filename);
 
