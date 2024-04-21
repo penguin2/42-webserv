@@ -2,6 +2,8 @@
 
 ADirectiveHandler::ADirectiveHandler(){}
 
+ADirectiveHandler::~ADirectiveHandler(){}
+
 bool ADirectiveHandler::isMatchContext(Context context) {
   return directive_context_ == context;
 }

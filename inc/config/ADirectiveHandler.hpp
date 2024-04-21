@@ -16,6 +16,7 @@ class ADirectiveHandler {
 
  public:
   ADirectiveHandler();
+  virtual ~ADirectiveHandler();
   virtual bool isValid() const = 0;
   virtual bool isMatchContext(Context context);
   virtual void setToken(const std::vector<std::string>& tokens);
