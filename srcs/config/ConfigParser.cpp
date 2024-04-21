@@ -105,6 +105,7 @@ void ConfigParser::parseLine(const std::string& line) {
       }
       location_count_ = 0;
     }
+    this->current_location_path_ = "";
     current_context_ =
         static_cast<Context>(static_cast<int>(current_context_) - 1);
     if (tokens.size() != 1) {
