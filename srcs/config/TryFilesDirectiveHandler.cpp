@@ -9,3 +9,5 @@ bool TryFilesDirectiveHandler::isValid(
   (void)tokens;
   return true;
 }
+
+void TryFilesDirectiveHandler::setConfig(ServerConfig& server_config) { (void)server_config; }

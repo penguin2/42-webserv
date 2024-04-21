@@ -11,3 +11,5 @@ bool ListenDirectiveHandler::isValid(
   }
   return true;
 }
+
+void ListenDirectiveHandler::setConfig(ServerConfig& server_config) { (void)server_config; }

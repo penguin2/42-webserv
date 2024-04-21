@@ -9,3 +9,7 @@ bool AllowMethodsDirectiveHandler::isValid(
   (void)tokens;
   return true;
 }
+
+void AllowMethodsDirectiveHandler::setConfig(ServerConfig& server_config) {
+  (void)server_config;
+}

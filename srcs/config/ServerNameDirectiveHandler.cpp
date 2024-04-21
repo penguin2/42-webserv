@@ -9,3 +9,5 @@ bool ServerNameDirectiveHandler::isValid(
   (void)tokens;  
   return true;
 }
+
+void ServerNameDirectiveHandler::setConfig(ServerConfig& server_config) { (void)server_config; }

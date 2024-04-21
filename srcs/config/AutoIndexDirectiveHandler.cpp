@@ -9,3 +9,5 @@ bool AutoIndexDirectiveHandler::isValid(
   (void)tokens;
   return true;
 }
+
+void AutoIndexDirectiveHandler::setConfig(ServerConfig& server_config) { (void)server_config; }

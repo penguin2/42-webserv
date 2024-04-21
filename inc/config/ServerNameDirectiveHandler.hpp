@@ -7,6 +7,7 @@ class ServerNameDirectiveHandler : public ADirectiveHandler {
  public:
   ServerNameDirectiveHandler();
   virtual bool isValid(const std::vector<std::string>& tokens) const;
+  virtual void setConfig(ServerConfig& server_config);
 };
 
 #endif

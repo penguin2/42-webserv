@@ -9,3 +9,5 @@ bool ErrorPageDirectiveHandler::isValid(
   (void)tokens;
   return true;
 }
+
+void ErrorPageDirectiveHandler::setConfig(ServerConfig& server_config) { (void)server_config; }

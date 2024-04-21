@@ -9,3 +9,5 @@ bool IndexDirectiveHandler::isValid(
   (void)tokens;
   return true;
 }
+
+void IndexDirectiveHandler::setConfig(ServerConfig& server_config) { (void)server_config; }

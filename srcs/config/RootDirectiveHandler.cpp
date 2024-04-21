@@ -9,3 +9,5 @@ bool RootDirectiveHandler::isValid(
   (void)tokens;
   return true;
 }
+
+void RootDirectiveHandler::setConfig(ServerConfig& server_config) { (void)server_config; }
