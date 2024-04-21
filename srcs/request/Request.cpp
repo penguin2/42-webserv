@@ -8,7 +8,9 @@
 #include "ServerException.hpp"
 #include "Utils.hpp"
 
-Request::Request(void) : state_(METHOD) { this->data_ = new RequestData; }
+Request::Request(void) : state_(METHOD), header_line_counter_(0) {
+  this->data_ = new RequestData;
+}
 
 Request::~Request(void) { delete this->data_; }
 
@@ -19,6 +21,7 @@ bool Request::parse(std::string& buffer) {
     this->state_ = METHOD;
     delete this->data_;
     this->data_ = new RequestData;
+    header_line_counter_ = 0;
   }
   switch (this->state_) {
     case METHOD:
@@ -119,11 +122,15 @@ void Request::parseHeader(std::string& buffer) {
       return determineParseBody(buffer);
     }
 
-    // ヘッダの数が多すぎる
-    if (ConfigAdapter::getMaxNumberOfHeaders() <= data_->getHeaders().size())
+    std::string line = buffer.substr(0, pos_crlf);
+    header_line_counter_++;
+    // ヘッダの行が多すぎる(正しいフォーマットで記述されていないヘッダも含む)
+    // or Headerの1行の文字数が多すぎる
+    if (ConfigAdapter::getMaxNumberOfHeaders() < header_line_counter_ ||
+        ConfigAdapter::getMaxHeaderSize() < line.size())
       throw ServerException(ServerException::SERVER_ERROR_HEADER_TOO_LARGE,
                             "Header too large");
-    std::string line = buffer.substr(0, pos_crlf);
+
     // ヘッダエラーがあった場合、RequestData.insertHeaderメンバ関数内で例外がthrowされる
     data_->insertHeader(line);
     buffer.erase(0, pos_crlf + 2);

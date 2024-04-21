@@ -8,9 +8,17 @@
 RequestData::RequestData(void) {}
 RequestData::~RequestData(void) {}
 
-void RequestData::setMethod(const std::string &method) { method_ = method; }
+void RequestData::setMethod(const std::string &method) {
+  if (ConfigAdapter::getMaxMethodSize() < method.size())
+    ServerException(ServerException::SERVER_ERROR_BAD_REQUEST, "Bad Method");
+  this->method_ = method;
+}
 
-void RequestData::setUri(const std::string &uri) { this->uri_.parse(uri); }
+void RequestData::setUri(const std::string &uri) {
+  if (ConfigAdapter::getMaxUriSize() < uri.size())
+    ServerException(ServerException::SERVER_ERROR_URI_TOO_LONG, "Too long URI");
+  this->uri_.parse(uri);
+}
 
 void RequestData::setVersion(const std::string &version) { version_ = version; }
 
@@ -18,11 +26,6 @@ void RequestData::setVersion(const std::string &version) { version_ = version; }
 void RequestData::insertHeader(std::string &line) {
   std::string key, value;
   const size_t pos_colon = line.find(':');
-
-  // Headerの1行の文字数が多すぎる
-  if (ConfigAdapter::getMaxHeaderSize() < line.size())
-    throw ServerException(ServerException::SERVER_ERROR_HEADER_TOO_LARGE,
-                          "Header too large");
 
   // 先頭が空白文字の場合は行全体を無視する
   if (std::isspace(line[0])) return;
