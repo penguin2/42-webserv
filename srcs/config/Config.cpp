@@ -4,9 +4,9 @@ Config::Config() {}
 
 // Config::Config(const char* config_file) { (void)config_file; }
 
-Config::Config(const Config&) {}
+// Config::Config(const Config&) {}
 
-Config& Config::operator=(const Config&) { return *this; }
+// Config& Config::operator=(const Config&) { return *this; }
 
 Config::~Config() {}
 
