@@ -8,23 +8,20 @@
 
 class Config {
  private:
-  Config() {}
-  Config(const char* config_file) {}
+  Config();
+  Config(const char* config_file);
   Config(const Config&);
   Config& operator=(const Config&);
-  ~Config() {}
+  ~Config();
 
   std::vector<ServerConfig> servers;
 
  public:
-  static Config& getInstance(const char* config_file) {
-    static Config instance(config_file);
-    return instance;
-  }
+  static Config& getInstance(const char* config_file);
 
-  void addServer(const ServerConfig& server) {}
+  void addServer(const ServerConfig& server);
 
-  const std::vector<ServerConfig>& getServers() const {}
+  const std::vector<ServerConfig>& getServers() const;
 };
 
 #endif

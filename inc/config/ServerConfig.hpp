@@ -16,28 +16,28 @@ class ServerConfig {
   std::map<std::string, LocationConfig> location_configs;
 
  public:
-  ServerConfig() {}
+  ServerConfig();
   ServerConfig(const ServerConfig&);
   ServerConfig& operator=(const ServerConfig&);
 
-  void setServerName(const std::string& server_name) {}
+  void setServerName(const std::string& server_name);
 
-  void setListenAddress(const std::string& listen_address) {}
+  void setListenAddress(const std::string& listen_address);
 
-  void addErrorPage(int error_code, const std::string& error_page) {}
+  void addErrorPage(int error_code, const std::string& error_page);
 
   void addLocationConfig(const std::string& location_path,
-                         const LocationConfig& location_config) {}
+                         const LocationConfig& location_config);
 
-  const std::string& getServerName() const {}
+  const std::string& getServerName() const;
 
-  const std::string& getListenAddress() const {}
+  const std::string& getListenAddress() const;
 
-  const std::string& getErrorPage(int error_code) const {}
+  const std::string& getErrorPage(int error_code) const;
 
-  const std::map<std::string, LocationConfig>& getLocationConfigs() const {}
+  const std::map<std::string, LocationConfig>& getLocationConfigs() const;
 
-  const LocationConfig& getLocationConfig() {}
+  const LocationConfig& getLocationConfig(const std::string& location_path) const;
 };
 
 #endif
