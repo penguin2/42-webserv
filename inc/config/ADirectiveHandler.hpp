@@ -3,19 +3,23 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "ConfigEnums.hpp"
+#include "Config.hpp"
 #include "ServerConfig.hpp"
 
 class ADirectiveHandler {
  protected:
   Context directive_context_;
+  std::vector<std::string> tokens;
 
  public:
   ADirectiveHandler();
-  virtual bool isValid(const std::vector<std::string>& tokens) const = 0;
+  virtual bool isValid() const = 0;
   virtual bool isMatchContext(Context context);
-  virtual void setConfig(ServerConfig& server_config) = 0;
+  virtual void setToken(const std::vector<std::string>& tokens);
+  virtual void setConfig(long unsigned int server_num ,std::string location_path) = 0;
 };
 
 #endif

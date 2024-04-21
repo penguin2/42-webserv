@@ -40,11 +40,13 @@ const std::string& ServerConfig::getErrorPage(int error_code) const {
   return default_error_page;
 }
 
-const LocationConfig& ServerConfig::getLocationConfig(const std::string& location_path) const {
-  std::map<std::string, LocationConfig>::const_iterator it = location_configs.find(location_path);
+LocationConfig& ServerConfig::getLocationConfig(const std::string& location_path) {
+  std::map<std::string, LocationConfig>::iterator it = location_configs.find(location_path);
   if (it != location_configs.end()) {
     return it->second;
   }
+  // 指定された場所のLocationConfigが見つからなかった場合、新しいLocationConfigを作成してマップに追加する
   static const LocationConfig default_location_config;
-  return default_location_config;
+  location_configs[location_path] = default_location_config;
+  return location_configs[location_path];
 }

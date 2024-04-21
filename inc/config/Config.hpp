@@ -17,9 +17,11 @@ class Config {
   std::vector<ServerConfig> servers;
 
  public:
-  static Config& getInstance(const char* config_file);
+  static Config& getInstance();
 
   void addServer(const ServerConfig& server);
+
+  ServerConfig& getServer(long unsigned int server_num);
 
   const std::vector<ServerConfig>& getServers() const;
 };

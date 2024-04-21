@@ -88,6 +88,8 @@ void ConfigParser::parseLine(const std::string& line) {
       handleError("syntax error : location too many path");
     }
 
+    this->current_location_path_ = tokens[1];
+
     current_context_ = LOCATION;
   } else if (tokens[0] == "}") {
     if (current_context_ == DEFAULT) {
@@ -114,6 +116,7 @@ void ConfigParser::parseLine(const std::string& line) {
 }
 
 void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
+
   if (this->handlers[tokens[0]] == NULL) {
     handleError(tokens[0] + " does not exist");
   }
@@ -122,21 +125,19 @@ void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
     handleError(tokens[0] + " exists in invalid location");
   }
 
+  this->handlers[tokens[0]]->setToken(tokens);
+  if (!this->handlers[tokens[0]]->isValid()) {
+      handleError("syntax error : " + tokens[0] + " is invalid");
+  }
+  this->handlers[tokens[0]]->setConfig(this->server_count_,
+                                       this->current_location_path_);
+
   switch (current_context_) {
     case HTTP:
       std::cout << "Inside HTTP block: " << tokens[0] << std::endl;
       break;
     case SERVER:
       std::cout << "Inside server block: " << tokens[0] << std::endl;
-      // if (tokens[0] == "listen"){
-      //   if(this->Handlers[tokens[0]]->isValid(tokens)){
-      //     std::cout << "valid " << tokens[0] << std::endl;
-
-      //   }else{
-      //     std::cout << "invalid " << tokens[0] << std::endl;
-
-      //   }
-      // }
       break;
     case LOCATION:
       std::cout << "Inside location block: " << tokens[0] << std::endl;

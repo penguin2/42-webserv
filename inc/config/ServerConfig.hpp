@@ -1,10 +1,11 @@
 #ifndef SERVER_CONFIG_HPP
 #define SERVER_CONFIG_HPP
 
+#include <map>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
-#include <map>
 
 #include "LocationConfig.hpp"
 
@@ -37,7 +38,33 @@ class ServerConfig {
 
   const std::map<std::string, LocationConfig>& getLocationConfigs() const;
 
-  const LocationConfig& getLocationConfig(const std::string& location_path) const;
+  LocationConfig& getLocationConfig(const std::string& location_path);
 };
+
+// for debug
+//  std::ostream& operator<<(std::ostream& os, const ServerConfig& serverConfig)
+//  {
+//      os << "Server Name: " << serverConfig.getServerName() << std::endl;
+//      os << "Listen Address: " << serverConfig.getListenAddress() <<
+//      std::endl;
+
+//     os << "Error Pages:" << std::endl;
+//     // const std::map<int, std::string>& errorPages =
+//     serverConfig.getErrorPages();
+//     // for (std::map<int, std::string>::const_iterator it =
+//     errorPages.begin(); it != errorPages.end(); ++it) {
+//     //     os << "  " << it->first << ": " << it->second << std::endl;
+//     // }
+
+//     os << "Location Configurations:" << std::endl;
+//     const std::map<std::string, LocationConfig>& locationConfigs =
+//     serverConfig.getLocationConfigs(); for (std::map<std::string,
+//     LocationConfig>::const_iterator it = locationConfigs.begin(); it !=
+//     locationConfigs.end(); ++it) {
+//         os << "  Location Path: " << it->first << std::endl;
+//         // os << "  Location Config: " << it->second << std::endl;
+//     }
+//     return os;
+// }
 
 #endif
