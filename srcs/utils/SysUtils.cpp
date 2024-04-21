@@ -18,6 +18,14 @@ int SysUtils::addNonblockingFlag(int fd) {
   return 0;
 }
 
+int SysUtils::addCloseOnExecFlag(int fd) {
+  if (fcntl(fd, F_SETFD, FD_CLOEXEC) < 0) {
+    LOG(WARN, "fcntl(F_SETFD): ", std::strerror(errno));
+    return -1;
+  }
+  return 0;
+}
+
 int SysUtils::makeListenSocket(const std::string& port, int backlog) {
   int socket_fd;
   struct addrinfo hints, *listp, *p;
@@ -48,7 +56,9 @@ int SysUtils::makeListenSocket(const std::string& port, int backlog) {
     }
   }
   freeaddrinfo(listp);
-  if (p == NULL || SysUtils::addNonblockingFlag(socket_fd) < 0) return -1;
+  if (p == NULL || SysUtils::addNonblockingFlag(socket_fd) < 0 ||
+      SysUtils::addCloseOnExecFlag(socket_fd) < 0)
+    return -1;
 
   if (listen(socket_fd, backlog) < 0) {
     LOG(WARN, "listen: ", std::strerror(errno));
@@ -79,4 +89,12 @@ void SysUtils::deleteCstringArray(char* const* c_str_array) {
   for (std::size_t idx = 0; c_str_array[idx] != NULL; ++idx)
     delete[] c_str_array[idx];
   delete[] c_str_array;
+}
+
+int SysUtils::clearFd(int* fd) {
+  if (*fd != -1) {
+    if (close(*fd) < 0) return -1;
+    *fd = -1;
+  }
+  return 0;
 }
