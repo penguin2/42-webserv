@@ -29,15 +29,16 @@
    * 2. listen 引数にIPアドレスが存在しない
    * 3. listen 引数が数字ではない
    * 4. listen 引数が複数存在する
+   * 5. listen 引数のportが範囲外(0～65535)
 * 5. server_name
    * 1. server_nameに引数がない
    * 2. server_nameに複数の引数がある
+   * 3. server_nameに使用不可能な文字が含まれる場合
 * 6. error_page
    * 1. error_pageにPathの引数が存在しない
    * 2. error_pageに複数のPathの引数がある
 * 7. allow_methods
    * 1. allow_methodsにつづくメソッドが存在しない
-   * 2. allow_methodsに複数のメソッドが存在する
 * 8. root
    * 1. rootに引数がない
    * 2. rootに複数の引数がある
@@ -48,5 +49,5 @@
    * 1. autoindexに引数がない
    * 2. autoindexに複数の引数がある
 * 11. return
-   * 1. 300番台以外の引数がある
+   * 1. 301, 302, 303, 307, 308以外の引数がある
 ...
