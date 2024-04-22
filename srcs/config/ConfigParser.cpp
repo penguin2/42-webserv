@@ -125,7 +125,7 @@ void ConfigParser::parseLine(const std::string& line) {
 }
 
 void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
-  if (this->handlers[tokens[0]] == NULL) {
+  if (this->handlers.find(tokens[0]) == this->handlers.end()) {
     handleError(tokens[0] + " does not exist");
   }
 
