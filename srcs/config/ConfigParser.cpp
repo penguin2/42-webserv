@@ -1,12 +1,11 @@
 #include "./config/ConfigParser.hpp"
 
-ConfigParser::ConfigParser() {
-  this->current_context_ = ConfigEnums::DEFAULT;
-  this->current_delimiter_ = ConfigEnums::SPACE;
-  this->http_count_ = 0;
-  this->server_count_ = 0;
-  this->location_count_ = 0;
-
+ConfigParser::ConfigParser()
+    : current_context_(ConfigEnums::DEFAULT),
+      current_delimiter_(ConfigEnums::SPACE),
+      http_count_(0),
+      server_count_(0),
+      location_count_(0) {
   this->handlers["listen"] = new ListenDirectiveHandler();
   this->handlers["server_name"] = new ServerNameDirectiveHandler();
   this->handlers["error_page"] = new ErrorPageDirectiveHandler();
@@ -18,10 +17,12 @@ ConfigParser::ConfigParser() {
 }
 
 ConfigParser::~ConfigParser() {
-    for (std::map<std::string, ADirectiveHandler*>::iterator it = handlers.begin(); it != handlers.end(); ++it) {
-        delete it->second;
-    }
-    handlers.clear();
+  for (std::map<std::string, ADirectiveHandler*>::iterator it =
+           handlers.begin();
+       it != handlers.end(); ++it) {
+    delete it->second;
+  }
+  handlers.clear();
 }
 
 void ConfigParser::parseConfig(const std::string& filename) {
@@ -113,8 +114,8 @@ void ConfigParser::parseLine(const std::string& line) {
       location_count_ = 0;
     }
     this->current_location_path_ = "";
-    current_context_ =
-        static_cast<ConfigEnums::Context>(static_cast<int>(current_context_) - 1);
+    current_context_ = static_cast<ConfigEnums::Context>(
+        static_cast<int>(current_context_) - 1);
     if (tokens.size() != 1) {
       handleError("syntax error : Unexpected argument after '}'");
     }
@@ -124,18 +125,17 @@ void ConfigParser::parseLine(const std::string& line) {
 }
 
 void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
-
   if (this->handlers[tokens[0]] == NULL) {
     handleError(tokens[0] + " does not exist");
   }
-  
-  if (!this->handlers[tokens[0]]->isMatchContext(current_context_)){
+
+  if (!this->handlers[tokens[0]]->isMatchContext(current_context_)) {
     handleError(tokens[0] + " exists in invalid location");
   }
 
   this->handlers[tokens[0]]->setToken(tokens);
   if (!this->handlers[tokens[0]]->isValid()) {
-      handleError("syntax error : " + tokens[0] + " is invalid");
+    handleError("syntax error : " + tokens[0] + " is invalid");
   }
   this->handlers[tokens[0]]->setConfig(this->server_count_,
                                        this->current_location_path_);
