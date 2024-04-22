@@ -1,7 +1,7 @@
 #include "./config/TryFilesDirectiveHandler.hpp"
 
 TryFilesDirectiveHandler::TryFilesDirectiveHandler() {
-  this->directive_context_ = LOCATION;
+  this->directive_context_ = ConfigEnums::LOCATION;
 }
 
 bool TryFilesDirectiveHandler::isValid() const {

@@ -1,7 +1,7 @@
 #include "./config/ListenDirectiveHandler.hpp"
 
 ListenDirectiveHandler::ListenDirectiveHandler() {
-  this->directive_context_ = SERVER;
+  this->directive_context_ = ConfigEnums::SERVER;
 }
 
 bool ListenDirectiveHandler::isValid() const {

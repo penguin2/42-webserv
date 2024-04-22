@@ -1,7 +1,7 @@
 #include "./config/ErrorPageDirectiveHandler.hpp"
 
 ErrorPageDirectiveHandler::ErrorPageDirectiveHandler() {
-  this->directive_context_ = SERVER;
+  this->directive_context_ = ConfigEnums::SERVER;
 }
 
 bool ErrorPageDirectiveHandler::isValid() const {

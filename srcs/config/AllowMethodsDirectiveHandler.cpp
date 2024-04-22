@@ -1,7 +1,7 @@
 #include "./config/AllowMethodsDirectiveHandler.hpp"
 
 AllowMethodsDirectiveHandler::AllowMethodsDirectiveHandler() {
-  this->directive_context_ = LOCATION;
+  this->directive_context_ = ConfigEnums::LOCATION;
 }
 
 bool AllowMethodsDirectiveHandler::isValid() const {

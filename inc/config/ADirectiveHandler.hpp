@@ -11,14 +11,14 @@
 
 class ADirectiveHandler {
  protected:
-  Context directive_context_;
+  ConfigEnums::Context directive_context_;
   std::vector<std::string> tokens;
 
  public:
   ADirectiveHandler();
   virtual ~ADirectiveHandler();
   virtual bool isValid() const = 0;
-  virtual bool isMatchContext(Context context);
+  virtual bool isMatchContext(ConfigEnums::Context context);
   virtual void setToken(const std::vector<std::string>& tokens);
   virtual void setConfig(long unsigned int server_num ,std::string location_path) = 0;
 };

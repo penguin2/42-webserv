@@ -1,7 +1,7 @@
 #include "./config/RootDirectiveHandler.hpp"
 
 RootDirectiveHandler::RootDirectiveHandler() {
-  this->directive_context_ = LOCATION;
+  this->directive_context_ = ConfigEnums::LOCATION;
 }
 
 bool RootDirectiveHandler::isValid() const {

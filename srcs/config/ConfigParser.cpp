@@ -1,8 +1,8 @@
 #include "./config/ConfigParser.hpp"
 
 ConfigParser::ConfigParser() {
-  this->current_context_ = DEFAULT;
-  this->current_delimiter_ = SPACE;
+  this->current_context_ = ConfigEnums::DEFAULT;
+  this->current_delimiter_ = ConfigEnums::SPACE;
   this->http_count_ = 0;
   this->server_count_ = 0;
   this->location_count_ = 0;
@@ -35,7 +35,7 @@ void ConfigParser::parseConfig(const std::string& filename) {
     parseLine(line);
   }
 
-  if (current_context_ != DEFAULT) {
+  if (current_context_ != ConfigEnums::DEFAULT) {
     handleError("syntax error : '}' is not enough");
   }
 
@@ -63,7 +63,7 @@ void ConfigParser::parseLine(const std::string& line) {
 
   if (tokens[0] == "http" && last_tokens == "{") {
     http_count_++;
-    if (current_context_ != DEFAULT) {
+    if (current_context_ != ConfigEnums::DEFAULT) {
       handleError("syntax error : http context must be in default context");
     }
     if (tokens.size() != 2) {
@@ -72,19 +72,19 @@ void ConfigParser::parseLine(const std::string& line) {
     if (http_count_ > 1) {
       handleError("syntax error: HTTP block must appear exactly once");
     }
-    current_context_ = HTTP;
+    current_context_ = ConfigEnums::HTTP;
   } else if (tokens[0] == "server" && last_tokens == "{") {
     server_count_++;
-    if (current_context_ != HTTP) {
+    if (current_context_ != ConfigEnums::HTTP) {
       handleError("syntax error : server context must be in http context");
     }
     if (tokens.size() != 2) {
       handleError("syntax error : server requires no arguments");
     }
-    current_context_ = SERVER;
+    current_context_ = ConfigEnums::SERVER;
   } else if (tokens[0] == "location" && last_tokens == "{") {
     location_count_++;
-    if (current_context_ != SERVER) {
+    if (current_context_ != ConfigEnums::SERVER) {
       handleError("syntax error : location context must be in server context");
     }
     if (tokens.size() == 2) {
@@ -97,16 +97,16 @@ void ConfigParser::parseLine(const std::string& line) {
 
     this->current_location_path_ = tokens[1];
 
-    current_context_ = LOCATION;
+    current_context_ = ConfigEnums::LOCATION;
   } else if (tokens[0] == "}") {
-    if (current_context_ == DEFAULT) {
+    if (current_context_ == ConfigEnums::DEFAULT) {
       handleError("syntax error : Unexpected '}' outside any block");
-    } else if (current_context_ == HTTP) {
+    } else if (current_context_ == ConfigEnums::HTTP) {
       if (server_count_ == 0) {
         handleError("syntax error : http requires one or more server");
       }
       server_count_ = 0;
-    } else if (current_context_ == SERVER) {
+    } else if (current_context_ == ConfigEnums::SERVER) {
       if (location_count_ == 0) {
         handleError("syntax error : server requires one or more location");
       }
@@ -114,7 +114,7 @@ void ConfigParser::parseLine(const std::string& line) {
     }
     this->current_location_path_ = "";
     current_context_ =
-        static_cast<Context>(static_cast<int>(current_context_) - 1);
+        static_cast<ConfigEnums::Context>(static_cast<int>(current_context_) - 1);
     if (tokens.size() != 1) {
       handleError("syntax error : Unexpected argument after '}'");
     }
@@ -141,13 +141,13 @@ void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
                                        this->current_location_path_);
 
   switch (current_context_) {
-    case HTTP:
+    case ConfigEnums::HTTP:
       std::cout << "Inside HTTP block: " << tokens[0] << std::endl;
       break;
-    case SERVER:
+    case ConfigEnums::SERVER:
       std::cout << "Inside server block: " << tokens[0] << std::endl;
       break;
-    case LOCATION:
+    case ConfigEnums::LOCATION:
       std::cout << "Inside location block: " << tokens[0] << std::endl;
       break;
     default:
@@ -163,15 +163,15 @@ void ConfigParser::tokenize(const std::string& line,
   char c;
   while (iss.get(c)) {
     switch (c) {
-      case static_cast<char>(SPACE):
+      case static_cast<char>(ConfigEnums::SPACE):
         if (!token.empty()) {
           tokens.push_back(token);
           token.clear();
         }
         break;
-      case static_cast<char>(LEFT_BRACE):
-      case static_cast<char>(RIGHT_BRACE):
-      case static_cast<char>(SEMICOLON):
+      case static_cast<char>(ConfigEnums::LEFT_BRACE):
+      case static_cast<char>(ConfigEnums::RIGHT_BRACE):
+      case static_cast<char>(ConfigEnums::SEMICOLON):
         if (!token.empty()) {
           tokens.push_back(token);
           token.clear();

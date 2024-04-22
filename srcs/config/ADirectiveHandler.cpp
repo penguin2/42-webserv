@@ -4,7 +4,7 @@ ADirectiveHandler::ADirectiveHandler(){}
 
 ADirectiveHandler::~ADirectiveHandler(){}
 
-bool ADirectiveHandler::isMatchContext(Context context) {
+bool ADirectiveHandler::isMatchContext(ConfigEnums::Context context) {
   return directive_context_ == context;
 }
 

@@ -1,7 +1,7 @@
 #include "./config/ServerNameDirectiveHandler.hpp"
 
 ServerNameDirectiveHandler::ServerNameDirectiveHandler() {
-  this->directive_context_ = SERVER;
+  this->directive_context_ = ConfigEnums::SERVER;
 }
 
 bool ServerNameDirectiveHandler::isValid() const {

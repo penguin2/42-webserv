@@ -33,8 +33,8 @@ class ConfigParser {
   size_t server_count_;
   size_t location_count_;
   std::string current_location_path_;
-  Context current_context_;
-  Delimiter current_delimiter_;
+  ConfigEnums::Context current_context_;
+  ConfigEnums::Delimiter current_delimiter_;
 
   void parseLine(const std::string& line);
 

@@ -1,7 +1,7 @@
 #include "./config/IndexDirectiveHandler.hpp"
 
 IndexDirectiveHandler::IndexDirectiveHandler() {
-  this->directive_context_ = LOCATION;
+  this->directive_context_ = ConfigEnums::LOCATION;
 }
 
 bool IndexDirectiveHandler::isValid() const {

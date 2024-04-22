@@ -1,7 +1,7 @@
 #include "./config/AutoIndexDirectiveHandler.hpp"
 
 AutoIndexDirectiveHandler::AutoIndexDirectiveHandler() {
-  this->directive_context_ = LOCATION;
+  this->directive_context_ = ConfigEnums::LOCATION;
 }
 
 bool AutoIndexDirectiveHandler::isValid() const {
