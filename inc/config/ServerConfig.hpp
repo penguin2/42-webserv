@@ -36,8 +36,6 @@ class ServerConfig {
 
   const std::string& getErrorPage(int error_code) const;
 
-  const std::map<std::string, LocationConfig>& getLocationConfigs() const;
-
   LocationConfig& getLocationConfig(const std::string& location_path);
 };
 
