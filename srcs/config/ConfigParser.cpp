@@ -46,7 +46,7 @@ void ConfigParser::parseConfig(const std::string& filename) {
 }
 
 void ConfigParser::parseLine(const std::string& line) {
-  if (line.empty() || line[0] == '#') {
+  if (line.empty()) {
     return;
   }
 
