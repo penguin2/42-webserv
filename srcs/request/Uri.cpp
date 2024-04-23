@@ -130,7 +130,8 @@ void Uri::setAndCheckPort(const std::string& port) {
 }
 
 void Uri::setAndCheckAndDecodePath(const std::string& path) {
-  this->path_ = path;
+  // ".." "." "//"を整形し親ディレクトリを参照する場合、ServerExceptionをthrow
+  this->path_ = UriUtils::removeDotSegments(path);
   // (使用不可文字を含む or デコードに失敗)
   if (!Utils::isContainsOnly(this->path_, UriUtils::isPathCharset) ||
       UriUtils::decodeUrlEncoding(this->path_) == false)
