@@ -1,11 +1,11 @@
 #include "./config/ConfigParser.hpp"
 
 ConfigParser::ConfigParser()
-    : current_context_(ConfigEnums::DEFAULT),
-      current_delimiter_(ConfigEnums::SPACE),
-      http_count_(0),
+    : http_count_(0),
       server_count_(0),
-      location_count_(0) {
+      location_count_(0),
+      current_context_(ConfigEnums::DEFAULT),
+      current_delimiter_(ConfigEnums::SPACE) {
   this->handlers["listen"] = new ListenDirectiveHandler();
   this->handlers["server_name"] = new ServerNameDirectiveHandler();
   this->handlers["error_page"] = new ErrorPageDirectiveHandler();
