@@ -15,7 +15,6 @@ void ListenDirectiveHandler::setConfig(long unsigned int server_num,
                                              std::string location_path) {
   Config& config = Config::getInstance();
   ServerConfig serverConfig = config.getServer(server_num);
-  LocationConfig locationConfig;
   if (!serverConfig.hasLocationConfig(location_path)) {
     LocationConfig* newLocationConfig = new LocationConfig();
     serverConfig.addLocationConfig(location_path, *newLocationConfig);
