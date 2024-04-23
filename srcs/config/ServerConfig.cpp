@@ -50,3 +50,7 @@ LocationConfig& ServerConfig::getLocationConfig(const std::string& location_path
   location_configs[location_path] = default_location_config;
   return location_configs[location_path];
 }
+
+const std::map<std::string, LocationConfig>& ServerConfig::getLocationConfigs() const {
+    return location_configs;
+}
