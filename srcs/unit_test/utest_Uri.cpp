@@ -70,13 +70,10 @@ TEST(Uri, ABSOLUTE_FORM_SUCCESS) {
                    true);
   testAbsoluteForm("http://1:23/index.html", "http", "", "1", 23, "/index.html",
                    "", "", true);
-  // "/../" のような文字列はURIの構文上問題ではないがread時にエラーとして弾く
-  testAbsoluteForm("http://:@255.255.255.255:255/../bin/ls", "http", ":",
-                   "255.255.255.255", 255, "/../bin/ls", "", "", true);
   testAbsoluteForm("http://0.0.0.0/./././././index.html", "http", "", "0.0.0.0",
-                   80, "/./././././index.html", "", "", true);
+                   80, "/index.html", "", "", true);
   testAbsoluteForm("http://localhost//////////////////", "http", "",
-                   "localhost", 80, "//////////////////", "", "", true);
+                   "localhost", 80, "/", "", "", true);
   testAbsoluteForm("http://localhost/?", "http", "", "localhost", 80, "/", "",
                    "", true);
   testAbsoluteForm("http://localhost/?#", "http", "", "localhost", 80, "/", "",
@@ -203,6 +200,8 @@ TEST(Uri, ABSOLUTE_FORM_ERROR) {
   testAbsoluteForm("http://:@:/index.html", "", "", "", -1, "", "", "", false);
   testAbsoluteForm("http://:example.com", "", "", "", -1, "", "", "", false);
   testAbsoluteForm("http://\"localhost\"/", "", "", "", -1, "", "", "", false);
+  testAbsoluteForm("http://:@255.255.255.255:255/../bin/ls", "", "", "", -1, "",
+                   "", "", false);
 
   // CHATGPT
   testAbsoluteForm("http:/example.com", "", "", "", -1, "", "", "", false);
