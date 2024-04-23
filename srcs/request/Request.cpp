@@ -8,7 +8,8 @@
 #include "ServerException.hpp"
 #include "Utils.hpp"
 
-Request::Request(void) : state_(METHOD), header_line_counter_(0) {
+Request::Request(void)
+    : state_(METHOD), header_line_counter_(0), crlf_counter_before_method_(0) {
   this->data_ = new RequestData;
 }
 
@@ -22,6 +23,7 @@ bool Request::parse(std::string& buffer) {
     delete this->data_;
     this->data_ = new RequestData;
     header_line_counter_ = 0;
+    crlf_counter_before_method_ = 0;
   }
   switch (this->state_) {
     case METHOD:
@@ -52,8 +54,15 @@ bool Request::parse(std::string& buffer) {
 }
 
 void Request::parseMethod(std::string& buffer) {
-  // リクエストラインの前に複数のCRLFを置いて良い
-  while (buffer.find("\r\n") == 0) buffer.erase(0, 2);
+  // リクエストラインの前に多少のCRLFを置いて良い
+  while (buffer.find("\r\n") == 0) {
+    buffer.erase(0, 2);
+    crlf_counter_before_method_++;
+    if (ConfigAdapter::getMaxNumberOfCrlfBeforeMethod() <
+        crlf_counter_before_method_)
+      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                            "Too many CRLF before Method");
+  }
   if (buffer.size() == 0 || (buffer.size() == 1 && buffer[0] == '\r')) return;
   const size_t pos_first_space = buffer.find(' ');
   // 対応するMethodの最大文字数+MethodとURIを区切る空白1文字)よりも大きい

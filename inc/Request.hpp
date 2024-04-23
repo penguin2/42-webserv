@@ -31,6 +31,7 @@ class Request {
   RequestState state_;
   size_t body_size_;
   size_t header_line_counter_;
+  size_t crlf_counter_before_method_;
 
   void parseMethod(std::string& buffer);
   void parseUri(std::string& buffer);

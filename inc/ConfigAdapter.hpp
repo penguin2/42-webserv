@@ -53,6 +53,8 @@ size_t getMaxBodySize(const std::string& host, size_t port,
 
 size_t getMaxMethodSize(void);
 
+size_t getMaxNumberOfCrlfBeforeMethod(void);
+
 }  // namespace ConfigAdapter
 
 #endif

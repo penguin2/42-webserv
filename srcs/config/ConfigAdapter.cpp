@@ -137,6 +137,8 @@ size_t ConfigAdapter::getMaxMethodSize(void) {
   return 6;
 }
 
+size_t ConfigAdapter::getMaxNumberOfCrlfBeforeMethod(void) { return 10; }
+
 // #include <iostream>
 // using namespace ConfigAdapter;
 // using namespace std;
