@@ -23,9 +23,7 @@ void ServerConfig::addLocationConfig(const std::string& location_path,
   this->location_configs[location_path] = location_config;
 }
 
-const std::string& ServerConfig::getServerName() const {
-  return server_name;
-}
+const std::string& ServerConfig::getServerName() const { return server_name; }
 
 const std::string& ServerConfig::getListenAddress() const {
   return listen_address;
@@ -40,17 +38,23 @@ const std::string& ServerConfig::getErrorPage(int error_code) const {
   return default_error_page;
 }
 
-LocationConfig& ServerConfig::getLocationConfig(const std::string& location_path) {
-  std::map<std::string, LocationConfig>::iterator it = location_configs.find(location_path);
+const LocationConfig& ServerConfig::getLocationConfig(
+    const std::string& location_path) {
+  std::map<std::string, LocationConfig>::iterator it =
+      location_configs.find(location_path);
   if (it != location_configs.end()) {
     return it->second;
   }
   // 指定された場所のLocationConfigが見つからなかった場合、新しいLocationConfigを作成してマップに追加する
   static const LocationConfig default_location_config;
-  location_configs[location_path] = default_location_config;
-  return location_configs[location_path];
+  return default_location_config;
 }
 
-const std::map<std::string, LocationConfig>& ServerConfig::getLocationConfigs() const {
-    return location_configs;
+const std::map<std::string, LocationConfig>& ServerConfig::getLocationConfigs()
+    const {
+  return location_configs;
+}
+
+bool ServerConfig::hasLocationConfig(const std::string& location_path) const {
+  return location_configs.find(location_path) != location_configs.end();
 }
