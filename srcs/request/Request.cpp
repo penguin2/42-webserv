@@ -3,10 +3,10 @@
 #include <iostream>
 #include <sstream>
 
-#include "ConfigAdapter.hpp"
 #include "RequestData.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
+#include "config/ConfigAdapter.hpp"
 
 Request::Request(void)
     : state_(METHOD), header_line_counter_(0), crlf_counter_before_method_(0) {

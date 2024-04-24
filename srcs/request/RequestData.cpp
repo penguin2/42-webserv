@@ -1,9 +1,9 @@
 #include "RequestData.hpp"
 
-#include "ConfigAdapter.hpp"
 #include "ServerException.hpp"
 #include "Uri.hpp"
 #include "Utils.hpp"
+#include "config/ConfigAdapter.hpp"
 
 RequestData::RequestData(void) {}
 RequestData::~RequestData(void) {}

@@ -4,11 +4,11 @@
 #include <string>
 #include <vector>
 
-#include "ConfigAdapter.hpp"
 #include "ConnectionState.hpp"
 #include "HttpUtils.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
+#include "config/ConfigAdapter.hpp"
 
 Http::Http() : state_(Http::RECV), keep_alive_flag_(true) {}
 Http::~Http() {}
