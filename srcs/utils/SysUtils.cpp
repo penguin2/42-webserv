@@ -68,6 +68,14 @@ int SysUtils::makeListenSocket(const std::string& port, int backlog) {
   return socket_fd;
 }
 
+char* SysUtils::convertToCstring(const std::string& str) {
+  char* cstr = new char[str.size() + 1];
+  std::strcpy(cstr, str.c_str());
+  return cstr;
+}
+
+void SysUtils::deleteCstring(char* cstr) { delete cstr; }
+
 char* const* SysUtils::convertToEnvp(
     const std::map<std::string, std::string> envp_map) {
   const std::size_t envp_size = envp_map.size();

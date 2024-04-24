@@ -11,19 +11,21 @@ class CgiRequestMock {
 
   const std::map<std::string, std::string>& getEnvVars() const;
   std::string getMessage() const;
-  char* getDirectory() const;
-  char* getFilename() const;
+  std::string getDirectory() const;
+  std::string getFilename() const;
 
   void addEnvVar(const std::string& key, const std::string& value);
   void setMessage(const std::string& message);
+  void setDirectory(std::string directory);
+  void setFilename(std::string filename);
 
   static CgiRequestMock* createCgiRequest(const std::string& requests_message);
 
  private:
   std::map<std::string, std::string> env_vars_;
   std::string message_;
-  char* directory_;
-  char* filename_;
+  std::string directory_;
+  std::string filename_;
 
   CgiRequestMock(const CgiRequestMock&);
   CgiRequestMock& operator=(const CgiRequestMock&);

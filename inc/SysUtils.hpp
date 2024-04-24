@@ -9,6 +9,8 @@ class SysUtils {
   static int addNonblockingFlag(int fd);
   static int addCloseOnExecFlag(int fd);
   static int makeListenSocket(const std::string& port, int backlog);
+  static char* convertToCstring(const std::string& str);
+  static void deleteCstring(char* cstr);
   static char* const* convertToEnvp(
       const std::map<std::string, std::string> envp_map);
   static void deleteCstringArray(char* const* c_str_array);

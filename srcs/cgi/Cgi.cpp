@@ -115,18 +115,22 @@ Cgi* Cgi::createCgi(const CgiRequestMock* cgi_request) {
   if (cgi_pid == 0) {
     if (dup2(write_pipe[Cgi::READ_END], STDIN_FILENO) < 0 ||
         dup2(read_pipe[Cgi::WRITE_END], STDOUT_FILENO) < 0 ||
-        close(STDERR_FILENO) < 0 || chdir(cgi_request->getDirectory()) < 0) {
+        close(STDERR_FILENO) < 0 ||
+        chdir(cgi_request->getDirectory().c_str()) < 0) {
       LOG(WARN, "cgi script init: ", std::strerror(errno));
       std::exit(EXIT_FAILURE);
     }
 
+    char* filename = SysUtils::convertToCstring(cgi_request->getFilename());
     char* const* envp = SysUtils::convertToEnvp(cgi_request->getEnvVars());
-    char* const argv[2] = {cgi_request->getFilename(), NULL};
+    char* const argv[2] = {filename, NULL};
 
-    execve(cgi_request->getFilename(), argv, envp);
+    execve(filename, argv, envp);
 
     LOG(WARN, "execve(cgi): ", std::strerror(errno));
     SysUtils::deleteCstringArray(envp);
+    SysUtils::deleteCstring(filename);
+
     std::exit(EXIT_FAILURE);
   }
   //
