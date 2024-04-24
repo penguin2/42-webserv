@@ -3,7 +3,7 @@
 
 namespace connection {
 
-typedef enum eState { RECV, SEND, CLOSED } State;
+typedef enum eState { RECV, SEND, CGI, CLOSED } State;
 
 }
 

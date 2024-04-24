@@ -3,25 +3,33 @@
 #include <sys/socket.h>
 
 #include <string>
+#include <utility>
 
 #include "EventManager.hpp"
+#include "Logger.hpp"
 #include "Server.hpp"
 
 char Connection::recv_buffer_[Connection::kRecvBufferSize];
 
-Connection::Connection(int socket_fd)
-    : ASocket(socket_fd), state_(connection::RECV) {}
+Connection::Connection(int socket_fd, EventManager* event_manager)
+    : ASocket(socket_fd),
+      state_(connection::RECV),
+      event_manager_(event_manager),
+      cgi_(NULL) {}
 
-Connection::~Connection() {}
+Connection::~Connection() { clearCgi(); }
 
-int Connection::handler(Server* server, EventManager* event_manager) {
+int Connection::handler(Server* server) {
   int status;
   switch (state_) {
     case connection::RECV:
-      status = handlerRecv(event_manager);
+      status = handlerRecv();
       break;
     case connection::SEND:
-      status = handlerSend(event_manager);
+      status = handlerSend();
+      break;
+    case connection::CGI:
+      status = handlerCgi();
       break;
     case connection::CLOSED:
     default:
@@ -32,20 +40,20 @@ int Connection::handler(Server* server, EventManager* event_manager) {
   return status;
 }
 
-int Connection::handlerRecv(EventManager* event_manager) {
+int Connection::handlerRecv() {
   const int recv_size = recv(socket_fd_, Connection::recv_buffer_,
                              Connection::kRecvBufferSize, 0);
   if (recv_size <= 0) {
-    updateState(connection::CLOSED, event_manager);
+    updateState(connection::CLOSED);
     return -1;
   }
   http_.appendClientData(std::string(Connection::recv_buffer_, recv_size));
   const connection::State next_state = http_.httpHandler();
-  if (updateState(next_state, event_manager) < 0) return -1;
+  if (updateState(next_state) < 0) return -1;
   return 0;
 }
 
-int Connection::handlerSend(EventManager* event_manager) {
+int Connection::handlerSend() {
   if (response_.empty()) {
     response_ = http_.getResponse();
     response_sent_size_ = 0;
@@ -54,7 +62,7 @@ int Connection::handlerSend(EventManager* event_manager) {
       send(socket_fd_, response_.c_str() + response_sent_size_,
            response_.size() - response_sent_size_, 0);
   if (send_size <= 0) {
-    updateState(connection::CLOSED, event_manager);
+    updateState(connection::CLOSED);
     return -1;
   }
   response_sent_size_ += send_size;
@@ -62,30 +70,98 @@ int Connection::handlerSend(EventManager* event_manager) {
     response_.clear();
     response_sent_size_ = 0;
     const connection::State next_state = http_.httpHandler();
-    if (updateState(next_state, event_manager) < 0) return -1;
+    if (updateState(next_state) < 0) return -1;
   }
   return 0;
 }
 
-int Connection::updateState(connection::State new_state,
-                            EventManager* event_manager) {
+int Connection::handlerCgi() {
+  const bool is_write_event = EventManager::isWriteEvent(getEventType());
+  const bool is_read_event = EventManager::isReadEvent(getEventType());
+
+  if (is_write_event && handlerCgiWrite() < 0) return -1;
+  if (is_read_event && handlerCgiRead() < 0) return -1;
+
+  return 0;
+}
+
+int Connection::handlerCgiRead() {
+  if (cgi_->readMessage() < 0) return -1;
+  if (cgi_->isReadDone()) {
+    if (event_manager_->erase(cgi_->getReadFd()) < 0 || cgi_->clearReadFd() < 0)
+      return -1;
+    http_.setCgiResponseMessage(cgi_->getCgiResponseMessage());
+    const connection::State next_state = http_.httpHandler();
+    if (updateState(next_state) < 0) return -1;
+  }
+  return 0;
+}
+
+int Connection::handlerCgiWrite() {
+  if (cgi_->writeMessage() < 0) return -1;
+  if (cgi_->isWriteDone() && (event_manager_->erase(cgi_->getWriteFd()) < 0 ||
+                              cgi_->clearWriteFd() < 0))
+    return -1;
+  return 0;
+}
+
+void Connection::clearCgi() {
+  if (cgi_ != NULL) {
+    if (cgi_->getReadFd() != -1) event_manager_->erase(cgi_->getReadFd());
+    if (cgi_->getWriteFd() != -1) event_manager_->erase(cgi_->getWriteFd());
+    delete cgi_;
+    cgi_ = NULL;
+  }
+}
+
+int Connection::updateState(connection::State new_state) {
   if (state_ == new_state) return 0;
 
   const connection::State prev_state = state_;
   state_ = new_state;
 
-  switch (new_state) {
-    case connection::RECV:
-      if (prev_state == connection::SEND)
-        return event_manager->modify(socket_fd_, this, EventManager::kRead);
-      break;
-    case connection::SEND:
-      if (prev_state == connection::RECV)
-        return event_manager->modify(socket_fd_, this, EventManager::kWrite);
-      break;
-    case connection::CLOSED:
-    default:
-      break;
-  }
+  Connection::TransitHandlerMap::const_iterator it =
+      Connection::transitHandlers.find(std::make_pair(prev_state, new_state));
+  if (it == Connection::transitHandlers.end()) return -1;
+  return it->second(this);
+}
+
+Connection::TransitHandlerMap Connection::transitHandlers;
+
+void Connection::initTransitHandlers() {
+  Connection::transitHandlers[std::make_pair(
+      connection::RECV, connection::SEND)] = Connection::recvToSend;
+  Connection::transitHandlers[std::make_pair(
+      connection::RECV, connection::CGI)] = Connection::recvToCgi;
+  Connection::transitHandlers[std::make_pair(
+      connection::SEND, connection::RECV)] = Connection::sendToRecv;
+  Connection::transitHandlers[std::make_pair(
+      connection::CGI, connection::SEND)] = Connection::cgiToSend;
+}
+
+int Connection::recvToSend(Connection* conn) {
+  return conn->event_manager_->modify(conn->socket_fd_, conn,
+                                      EventManager::kEventTypeWrite);
+}
+
+int Connection::recvToCgi(Connection* conn) {
+  conn->cgi_ = Cgi::createCgi(conn->http_.getCgiRequest());
+  if (conn->cgi_ == NULL || conn->event_manager_->erase(conn->socket_fd_) < 0 ||
+      conn->event_manager_->insert(conn->cgi_->getReadFd(), conn,
+                                   EventManager::kEventTypeRead) < 0 ||
+      conn->event_manager_->insert(conn->cgi_->getWriteFd(), conn,
+                                   EventManager::kEventTypeWrite) < 0)
+    return -1;
   return 0;
+}
+
+int Connection::sendToRecv(Connection* conn) {
+  return conn->event_manager_->modify(conn->socket_fd_, conn,
+                                      EventManager::kEventTypeRead);
+}
+
+int Connection::cgiToSend(Connection* conn) {
+  conn->clearCgi();
+  return conn->event_manager_->insert(conn->socket_fd_, conn,
+                                      EventManager::kEventTypeWrite);
 }
