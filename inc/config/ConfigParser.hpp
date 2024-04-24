@@ -9,19 +9,22 @@
 #include <string>
 #include <vector>
 #include <cstdlib> 
-
-enum Context { DEFAULT, HTTP, SERVER, LOCATION };
-enum Delimiter {
-  SPACE = ' ',
-  LEFT_BRACE = '{',
-  RIGHT_BRACE = '}',
-  SEMICOLON = ';',
-  STRING = '*'
-};
+#include <map>
+#include "ADirectiveHandler.hpp"
+#include "ListenDirectiveHandler.hpp"
+#include "ServerNameDirectiveHandler.hpp"
+#include "ErrorPageDirectiveHandler.hpp"
+#include "AllowMethodsDirectiveHandler.hpp"
+#include "RootDirectiveHandler.hpp"
+#include "IndexDirectiveHandler.hpp"
+#include "AutoIndexDirectiveHandler.hpp"
+#include "TryFilesDirectiveHandler.hpp"
+#include "ConfigEnums.hpp"
 
 class ConfigParser {
  public:
   ConfigParser();
+  ~ConfigParser();
 
   void parseConfig(const std::string& filename);
 
@@ -29,8 +32,9 @@ class ConfigParser {
   size_t http_count_;
   size_t server_count_;
   size_t location_count_;
-  Context current_context_;
-  Delimiter current_delimiter_;
+  std::string current_location_path_;
+  ConfigEnums::Context current_context_;
+  ConfigEnums::Delimiter current_delimiter_;
 
   void parseLine(const std::string& line);
 
@@ -41,6 +45,8 @@ class ConfigParser {
   bool isValidPath(const std::string& path);
 
   void handleError(const std::string& errorMessage);
+  
+  std::map<std::string, ADirectiveHandler*> handlers;
 };
 
 #endif
