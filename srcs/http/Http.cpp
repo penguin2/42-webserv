@@ -4,13 +4,17 @@
 #include <string>
 #include <vector>
 
-#include "ConfigAdapter.hpp"
 #include "ConnectionState.hpp"
 #include "HttpUtils.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
+#include "config/ConfigAdapter.hpp"
 
-Http::Http() : state_(Http::RECV), keep_alive_flag_(true) {}
+Http::Http() : state_(Http::RECV), keep_alive_flag_(true) {
+  method_handler_map_["GET"] = &Http::getMethodHandler;
+  method_handler_map_["POST"] = &Http::postMethodHandler;
+  method_handler_map_["DELETE"] = &Http::deleteMethodHandler;
+}
 Http::~Http() {}
 
 connection::State Http::httpHandler() {
@@ -67,26 +71,25 @@ void Http::insertCommonHeaders(bool keep_alive) {
 connection::State Http::dispatchRequestHandler(void) {
   const Uri& uri = request_.getRequestData()->getUri();
 
+  if (!ConfigAdapter::isAllowMethods(uri.getHost(), uri.getPort(),
+                                     uri.getPath(),
+                                     request_.getRequestData()->getMethod()))
+    throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
+                          "Method not allowed");
+
   const std::string* redirect_uri = ConfigAdapter::searchRedirectUri(
       uri.getHost(), uri.getPort(), uri.getPath());
   if (redirect_uri != NULL) {
     return redirectHandler(*redirect_uri);
   }
-  // TODO if (拡張子がCGIプログラム) return cgiHandler();
-  // TODO if (静的ファイルの要求) return staticContentHandler();
-  {
-    response_.appendBody(HttpUtils::readAllDataFromFile(uri.getPath()));
-    response_.insertContentLengthIfNotSet();
-    response_.insertHeader("Content-Type",
-                           HttpUtils::convertPathToContentType(uri.getPath()));
-    insertCommonHeaders(haveConnectionCloseHeader() == false);
-    response_.setStatusLine(200, "OK");
-    response_.getResponseRawData(raw_response_data_);
-    this->state_ = Http::SEND;
-    return connection::SEND;
+  // TODO CGI Handle
+  // else if (ConfigAdapter::isCgiPath(uri.getHost(), uri.getPort(),
+  //   		  uri.getPath())) {
+  //     return cgiHandler();
+  // }
+  else {
+    return staticContentHandler();
   }
-  // TODO if (どれにも当てはまらない == true)
-  // throw ServerException(404, "Not Found");
 }
 
 connection::State Http::errorContentHandler(int status_code,
@@ -129,4 +132,43 @@ connection::State Http::redirectHandler(const std::string& redirect_uri) {
   response_.getResponseRawData(raw_response_data_);
   this->state_ = Http::SEND;
   return connection::SEND;
+}
+
+connection::State Http::staticContentHandler(void) {
+  const Uri& uri = request_.getRequestData()->getUri();
+  const std::string& method = request_.getRequestData()->getMethod();
+  std::vector<std::string> paths = ConfigAdapter::makeAbsolutePaths(
+      uri.getHost(), uri.getPort(), uri.getPath());
+
+  return (this->*method_handler_map_[method])(paths);
+}
+
+// (仮)
+connection::State Http::getMethodHandler(std::vector<std::string>& paths) {
+  const Uri& uri = request_.getRequestData()->getUri();
+
+  response_.appendBody(HttpUtils::readAllDataFromFile(uri.getPath()));
+  response_.insertContentLengthIfNotSet();
+  response_.insertHeader("Content-Type",
+                         HttpUtils::convertPathToContentType(uri.getPath()));
+  insertCommonHeaders(haveConnectionCloseHeader() == false);
+  response_.setStatusLine(200, "OK");
+  response_.getResponseRawData(raw_response_data_);
+  this->state_ = Http::SEND;
+  return connection::SEND;
+  (void)paths;
+}
+
+// (仮)
+connection::State Http::postMethodHandler(std::vector<std::string>& paths) {
+  this->state_ = Http::SEND;
+  return connection::SEND;
+  (void)paths;
+}
+
+// (仮)
+connection::State Http::deleteMethodHandler(std::vector<std::string>& paths) {
+  this->state_ = Http::SEND;
+  return connection::SEND;
+  (void)paths;
 }

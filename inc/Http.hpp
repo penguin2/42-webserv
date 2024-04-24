@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "ConnectionState.hpp"
 #include "Request.hpp"
@@ -29,15 +30,23 @@ class Http {
   bool haveConnectionCloseHeader(void) const;
   void insertCommonHeaders(bool keep_alive);
 
-  // TODO CGI以外のWebServer機能の実装
   connection::State dispatchRequestHandler(void);
+  // RequestHandler
   connection::State errorContentHandler(int status_code,
                                         const std::string& phrase);
   connection::State redirectHandler(const std::string& redirect_uri);
-  // connection::State staticContentHandler(void);
-
+  connection::State staticContentHandler(void);
   // TODO CGIを処理する機能
   // connection::State cgiHandler(void);
+
+  // MethodHandler
+  typedef connection::State (Http::*MethodHandler)(
+      std::vector<std::string>& paths);
+  std::map<std::string, MethodHandler> method_handler_map_;
+
+  connection::State getMethodHandler(std::vector<std::string>& paths);
+  connection::State postMethodHandler(std::vector<std::string>& paths);
+  connection::State deleteMethodHandler(std::vector<std::string>& paths);
 
   Http(const Http&);
   void operator=(const Http&);
