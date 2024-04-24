@@ -44,6 +44,12 @@ void Http::appendClientData(const std::string& data) {
 
 std::string Http::getResponse() const { return raw_response_data_.str(); }
 
+CgiRequest* Http::getCgiRequest() const { return cgi_request_; }
+
+void Http::setCgiResponseMessage(const std::string& message) {
+  cgi_response_message_ = message;
+}
+
 bool Http::haveConnectionCloseHeader(void) const {
   const std::map<std::string, std::string> headers =
       request_.getRequestData()->getHeaders();

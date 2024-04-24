@@ -3,14 +3,18 @@
 
 #include "Time.hpp"
 class Server;
-class EventManager;
 
 class ASocket {
  public:
   int getSocketFd() const;
+
   Time getTimeout() const;
   void setTimeout(const Time& timeout);
-  virtual int handler(Server* server, EventManager* event_manager) = 0;
+
+  int getEventType() const;
+  void setEventType(int event_type);
+
+  virtual int handler(Server* server) = 0;
   virtual ~ASocket();
 
  protected:
@@ -20,6 +24,7 @@ class ASocket {
 
  private:
   Time timeout_;
+  int event_type_;
 
   ASocket();
   ASocket(const ASocket&);

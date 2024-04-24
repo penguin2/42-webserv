@@ -8,6 +8,10 @@
 #include "Request.hpp"
 #include "Response.hpp"
 
+// TODO: CgiRequestMock -> CgiRequest
+// #include "CgiRequest.hpp"
+#include "CgiRequestMock.hpp"
+
 class Http {
  public:
   Http(void);
@@ -17,6 +21,9 @@ class Http {
   void appendClientData(const std::string& data);
   std::string getResponse(void) const;
 
+  CgiRequest* getCgiRequest() const;
+  void setCgiResponseMessage(const std::string& message);
+
  private:
   typedef enum eHttpState { RECV, SEND } HttpState;
   HttpState state_;
@@ -25,6 +32,9 @@ class Http {
   bool keep_alive_flag_;
   Request request_;
   Response response_;
+
+  CgiRequest* cgi_request_;
+  std::string cgi_response_message_;
 
   bool haveConnectionCloseHeader(void) const;
   void insertCommonHeaders(bool keep_alive);
