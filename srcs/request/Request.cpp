@@ -65,9 +65,9 @@ void Request::parseMethod(std::string& buffer) {
   }
   if (buffer.size() == 0 || (buffer.size() == 1 && buffer[0] == '\r')) return;
   const size_t pos_first_space = buffer.find(' ');
-  // 対応するMethodの最大文字数+MethodとURIを区切る空白1文字)よりも大きい
+  // 対応するMethodの最大文字数よりも大きい
   if (pos_first_space == std::string::npos &&
-      (ConfigAdapter::getMaxMethodSize() + 1) < buffer.size())
+      ConfigAdapter::getMaxMethodSize() < buffer.size())
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad method");
   if (pos_first_space == std::string::npos) return;
