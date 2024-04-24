@@ -1,11 +1,12 @@
-#include "ConfigAdapter.hpp"
+#include "./config/ConfigAdapter.hpp"
 
 #include <cstdlib>
 
 const std::string *ConfigAdapter::searchRedirectUri(const std::string &host,
                                                     size_t port,
                                                     const std::string &path) {
-  static const std::string mock_redirect_uri("/var/www/new-location");
+  static const std::string mock_redirect_uri(
+      "/var/www/html/new-location/index.html");
 
   if (rand() % 2 == 0) return &mock_redirect_uri;
   return NULL;
@@ -59,7 +60,7 @@ bool ConfigAdapter::isCgiPath(const std::string &host, size_t port,
 const std::string *ConfigAdapter::searchErrorPage(const std::string &host,
                                                   size_t port,
                                                   size_t status_code) {
-  static const std::string mock_error_page("/var/www/error/4xx.html");
+  static const std::string mock_error_page("/var/www/html/error/error.html");
 
   if (rand() % 2 == 0) return &mock_error_page;
   return NULL;
