@@ -3,7 +3,6 @@
 
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include "ConnectionState.hpp"
 #include "Request.hpp"
@@ -50,13 +49,12 @@ class Http {
   // connection::State cgiHandler(void);
 
   // MethodHandler
-  typedef connection::State (Http::*MethodHandler)(
-      std::vector<std::string>& paths);
+  typedef connection::State (Http::*MethodHandler)(void);
   std::map<std::string, MethodHandler> method_handler_map_;
 
-  connection::State getMethodHandler(std::vector<std::string>& paths);
-  connection::State postMethodHandler(std::vector<std::string>& paths);
-  connection::State deleteMethodHandler(std::vector<std::string>& paths);
+  connection::State getMethodHandler(void);
+  connection::State postMethodHandler(void);
+  connection::State deleteMethodHandler(void);
 
   Http(const Http&);
   void operator=(const Http&);

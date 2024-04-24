@@ -141,17 +141,20 @@ connection::State Http::redirectHandler(const std::string& redirect_uri) {
 }
 
 connection::State Http::staticContentHandler(void) {
-  const Uri& uri = request_.getRequestData()->getUri();
   const std::string& method = request_.getRequestData()->getMethod();
-  std::vector<std::string> paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
 
-  return (this->*method_handler_map_[method])(paths);
+  if (method_handler_map_.find(method) == method_handler_map_.end()) {
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Unknown method");
+  }
+  return (this->*method_handler_map_[method])();
 }
 
 // (仮)
-connection::State Http::getMethodHandler(std::vector<std::string>& paths) {
+connection::State Http::getMethodHandler(void) {
   const Uri& uri = request_.getRequestData()->getUri();
+  std::vector<std::string> paths = ConfigAdapter::makeAbsolutePaths(
+      uri.getHost(), uri.getPort(), uri.getPath());
 
   response_.appendBody(HttpUtils::readAllDataFromFile(uri.getPath()));
   response_.insertContentLengthIfNotSet();
@@ -166,14 +169,22 @@ connection::State Http::getMethodHandler(std::vector<std::string>& paths) {
 }
 
 // (仮)
-connection::State Http::postMethodHandler(std::vector<std::string>& paths) {
+connection::State Http::postMethodHandler(void) {
+  const Uri& uri = request_.getRequestData()->getUri();
+  std::vector<std::string> paths = ConfigAdapter::makeAbsolutePaths(
+      uri.getHost(), uri.getPort(), uri.getPath());
+
   this->state_ = Http::SEND;
   return connection::SEND;
   (void)paths;
 }
 
 // (仮)
-connection::State Http::deleteMethodHandler(std::vector<std::string>& paths) {
+connection::State Http::deleteMethodHandler(void) {
+  const Uri& uri = request_.getRequestData()->getUri();
+  std::vector<std::string> paths = ConfigAdapter::makeAbsolutePaths(
+      uri.getHost(), uri.getPort(), uri.getPath());
+
   this->state_ = Http::SEND;
   return connection::SEND;
   (void)paths;
