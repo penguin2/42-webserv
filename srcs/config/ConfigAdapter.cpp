@@ -1,4 +1,4 @@
-#include "ConfigAdapter.hpp"
+#include "./config/ConfigAdapter.hpp"
 
 #include <cstdlib>
 

@@ -21,29 +21,29 @@ class LocationConfig {
   std::string cgi_ext;
 
  public:
-  LocationConfig(){}
+  LocationConfig();
 
-  const std::string& getRoot() const {}
+  const std::string& getRoot() const;
 
-  const std::string& getIndex() const {}
+  const std::string& getIndex() const;
 
-  const std::string& getTryFilesPath() const {}
+  const std::string& getTryFilesPath() const;
 
-  int getTryFilesErrorCode() const {}
+  int getTryFilesErrorCode() const;
 
-  const std::string& getClientMaxBodySize() const {}
+  const std::string& getClientMaxBodySize() const;
 
-  bool getAutoindex() const {}
+  bool getAutoindex() const;
 
-  const std::vector<HttpMethod>& getLimitExceptMethods() const {}
+  const std::vector<HttpMethod>& getLimitExceptMethods() const;
 
-  const std::string& getReturnStatusCode() const {}
+  const std::string& getReturnStatusCode() const;
 
-  const std::string& getReturnUri() const {}
+  const std::string& getReturnUri() const;
 
-  const std::string& getCgiPath() const {}
+  const std::string& getCgiPath() const;
 
-  const std::string& getCgiExt() const {}
+  const std::string& getCgiExt() const;
 };
 
 #endif
