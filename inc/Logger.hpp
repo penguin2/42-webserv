@@ -9,6 +9,8 @@
 #define LOG_VAR(LEVEL, VAR) \
   Logger::getInstance().log(Logger::LEVEL, #VAR ": ", VAR)
 
+#define LOG_DEBUG(VAR) LOG_VAR(Logger::DEBUG, VAR)
+
 class Logger {
  public:
   typedef enum eLevel { ERROR = 0, WARN = 10, INFO = 20, DEBUG = 30 } Level;
