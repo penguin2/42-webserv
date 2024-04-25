@@ -1,7 +1,6 @@
 #ifndef WEBSERV_CONFIGADAPTER_H_
 #define WEBSERV_CONFIGADAPTER_H_
 
-#include <list>
 #include <string>
 #include <vector>
 
@@ -35,9 +34,9 @@ std::vector<std::string> getAllowMethods(const std::string& host, size_t port,
                                          const std::string& path);
 
 // 静的ファイルの組み立てをする際に使用
-// try_files,root,index,Pathコンポーネントから絶対パスのlistを組み立てる
-std::list<std::string> makeAbsolutePaths(const std::string& host, size_t port,
-                                         const std::string& path);
+// try_files,root,index,Pathコンポーネントから絶対パスのvectorを組み立てる
+std::vector<std::string> makeAbsolutePaths(const std::string& host, size_t port,
+                                           const std::string& path);
 
 // Uriの最大サイズ(一般的には2000bytes)
 size_t getMaxUriSize(void);
