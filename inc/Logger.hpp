@@ -2,6 +2,8 @@
 #define LOG_HPP
 
 #include <iostream>
+#include <sstream>
+#include <vector>
 
 #define LOG(LEVEL, CATEGORY, VAR) \
   Logger::getInstance().log(Logger::LEVEL, CATEGORY, VAR)
@@ -19,9 +21,11 @@ class Logger {
 
   template <typename X>
   void log(Level level, const X& x);
-
   template <typename X, typename Y>
   void log(Level level, const X& x, const Y& y);
+
+  void init();
+  void addOutStream(std::ostream& out_stream);
 
   void setDebugMode(bool debug_mode);
   void setLimitLevel(Level limit_level);
@@ -29,35 +33,58 @@ class Logger {
  private:
   static const Level kDefaultLimitLevel_ = INFO;
 
-  std::ostream& out_stream_;
+  std::vector<std::ostream*> out_streams_;
   Level limit_level_;
   bool debug_mode_;
 
-  Logger(std::ostream& out_stream);
+  Logger();
   ~Logger();
 
-  bool checkLevel(Level level);
+  bool checkLevel(Level level) const;
 
-  std::string levelToString(Level level);
-  std::string getTimeStamp();
+  std::string levelToString(Level level) const;
+  std::string getTimeStamp() const;
+  std::string getLogPrefix(Level level) const;
 
-  Logger();
+  template <typename X>
+  std::string writeLogMessage(Level level, const X& x);
+  template <typename X, typename Y>
+  std::string writeLogMessage(Level level, const X& x, const Y& y);
+
   Logger(const Logger&);
   Logger& operator=(const Logger&);
 };
 
 template <typename X>
+std::string Logger::writeLogMessage(Level level, const X& x) {
+  std::stringstream ss;
+  ss << getLogPrefix(level) << x << '\n';
+  return ss.str();
+}
+
+template <typename X, typename Y>
+std::string Logger::writeLogMessage(Level level, const X& x, const Y& y) {
+  std::stringstream ss;
+  ss << getLogPrefix(level) << x << y << '\n';
+  return ss.str();
+}
+
+template <typename X>
 void Logger::log(Level level, const X& x) {
   if (checkLevel(level) == false) return;
-  out_stream_ << Logger::getTimeStamp() << " [" << Logger::levelToString(level)
-              << "] " << x << std::endl;
+  const std::string& log_msg = Logger::writeLogMessage(level, x);
+  for (std::vector<std::ostream*>::iterator it = out_streams_.begin();
+       it != out_streams_.end(); ++it)
+    **it << log_msg << std::flush;
 }
 
 template <typename X, typename Y>
 void Logger::log(Level level, const X& x, const Y& y) {
   if (checkLevel(level) == false) return;
-  out_stream_ << Logger::getTimeStamp() << " [" << Logger::levelToString(level)
-              << "] " << x << y << std::endl;
+  const std::string& log_msg = Logger::writeLogMessage(level, x, y);
+  for (std::vector<std::ostream*>::iterator it = out_streams_.begin();
+       it != out_streams_.end(); ++it)
+    **it << log_msg << std::flush;
 }
 
 #endif
