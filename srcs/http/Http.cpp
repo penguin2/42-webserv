@@ -153,7 +153,7 @@ connection::State Http::staticContentHandler(void) {
 // (仮)
 connection::State Http::getMethodHandler(void) {
   const Uri& uri = request_.getRequestData()->getUri();
-  std::vector<std::string> paths = ConfigAdapter::makeAbsolutePaths(
+  std::list<std::string> paths = ConfigAdapter::makeAbsolutePaths(
       uri.getHost(), uri.getPort(), uri.getPath());
 
   response_.appendBody(HttpUtils::readAllDataFromFile(uri.getPath()));
@@ -171,7 +171,7 @@ connection::State Http::getMethodHandler(void) {
 // (仮)
 connection::State Http::postMethodHandler(void) {
   const Uri& uri = request_.getRequestData()->getUri();
-  std::vector<std::string> paths = ConfigAdapter::makeAbsolutePaths(
+  std::list<std::string> paths = ConfigAdapter::makeAbsolutePaths(
       uri.getHost(), uri.getPort(), uri.getPath());
 
   this->state_ = Http::SEND;
@@ -182,7 +182,7 @@ connection::State Http::postMethodHandler(void) {
 // (仮)
 connection::State Http::deleteMethodHandler(void) {
   const Uri& uri = request_.getRequestData()->getUri();
-  std::vector<std::string> paths = ConfigAdapter::makeAbsolutePaths(
+  std::list<std::string> paths = ConfigAdapter::makeAbsolutePaths(
       uri.getHost(), uri.getPort(), uri.getPath());
 
   this->state_ = Http::SEND;

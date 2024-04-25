@@ -92,11 +92,11 @@ std::vector<std::string> ConfigAdapter::getAllowMethods(
   (void)path;
 }
 
-std::vector<std::string> ConfigAdapter::makeAbsolutePaths(
+std::list<std::string> ConfigAdapter::makeAbsolutePaths(
     const std::string &host, size_t port, const std::string &path) {
   const std::string base_dir("/var/www/html");
   const std::string base_cgi_dir("/lib");
-  std::vector<std::string> absolute_paths;
+  std::list<std::string> absolute_paths;
 
   if (path.compare(0, 9, "/cgi-bin/") == 0) {
     absolute_paths.push_back(base_cgi_dir + path);
