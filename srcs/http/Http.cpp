@@ -55,7 +55,7 @@ void Http::setCgiResponseMessage(const std::string& message) {
 }
 
 bool Http::haveConnectionCloseHeader(void) const {
-  const std::map<std::string, std::string> headers =
+  const std::map<std::string, std::string>& headers =
       request_.getRequestData()->getHeaders();
   const std::map<std::string, std::string>::const_iterator connection_header =
       headers.find("connection");
