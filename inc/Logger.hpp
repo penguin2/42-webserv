@@ -24,7 +24,7 @@ class Logger {
   void setDebugMode(bool debug_mode);
 
  private:
-  static const Level default_limit_level_ = INFO;
+  static const Level kDefaultLimitLevel_ = INFO;
 
   std::ostream& out_stream_;
   Level limit_level_;

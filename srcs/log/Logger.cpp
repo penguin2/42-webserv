@@ -10,7 +10,9 @@ Logger& Logger::getInstance() {
 void Logger::setDebugMode(bool debug_mode) { debug_mode_ = debug_mode; }
 
 Logger::Logger(std::ostream& out_stream)
-    : out_stream_(out_stream), limit_level_(Logger::INFO), debug_mode_(false) {}
+    : out_stream_(out_stream),
+      limit_level_(kDefaultLimitLevel_),
+      debug_mode_(false) {}
 
 Logger::~Logger() {}
 
