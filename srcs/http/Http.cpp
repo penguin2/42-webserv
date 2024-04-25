@@ -29,7 +29,7 @@ connection::State Http::httpHandler() {
         return errorContentHandler(e.code(), e.what());
       }
     case (Http::SEND):
-      if (keep_alive_flag_ == false) return connection::CLOSED;
+      if (!keep_alive_flag_) return connection::CLOSED;
       raw_response_data_.clear();
       raw_response_data_.str("");
       response_.resetResponseData();
@@ -123,7 +123,7 @@ connection::State Http::redirectHandler(const std::string& redirect_uri) {
   const int redirect_status_code = ConfigAdapter::searchRedirectStatusCode(
       uri.getHost(), uri.getPort(), uri.getPath());
 
-  if (HttpUtils::isRedirectStatusCode(redirect_status_code) == false)
+  if (!HttpUtils::isRedirectStatusCode(redirect_status_code))
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Return directive is invalid");
   const std::string* error_page = ConfigAdapter::searchErrorPage(
