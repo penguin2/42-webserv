@@ -21,7 +21,7 @@ static void printRequest(const RequestData* request) {
   std::cout << "Method  : " << request->getMethod() << std::endl;
   std::cout << "Uri     : " << request->getUri().getPath() << std::endl;
   std::cout << "Version : " << request->getVersion() << std::endl;
-  std::map<std::string, std::string> headers = request->getHeaders();
+  const std::map<std::string, std::string>& headers = request->getHeaders();
   std::cout << "Headers :";
   for (typename std::map<std::string, std::string>::const_iterator it =
            headers.begin();

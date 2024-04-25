@@ -6,7 +6,7 @@ Response::Response(void) { this->data_ = new ResponseData; }
 Response::~Response(void) { delete this->data_; }
 
 void Response::getResponseRawData(std::stringstream &ss) const {
-  const std::map<std::string, std::string> headers = data_->getHeaders();
+  const std::map<std::string, std::string> &headers = data_->getHeaders();
 
   ss << "HTTP/1.1 " << data_->getStatusCode() << " " << data_->getPhrase();
   ss << "\r\n";
@@ -36,7 +36,7 @@ void Response::resetResponseData(void) {
 }
 
 void Response::insertContentLengthIfNotSet(void) {
-  const std::map<std::string, std::string> headers = data_->getHeaders();
+  const std::map<std::string, std::string> &headers = data_->getHeaders();
   if (headers.find("content-length") != headers.end()) return;
   const size_t body_size = data_->getBody().size();
   std::stringstream ss;

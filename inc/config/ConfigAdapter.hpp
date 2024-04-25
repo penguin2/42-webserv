@@ -34,7 +34,7 @@ std::vector<std::string> getAllowMethods(const std::string& host, size_t port,
                                          const std::string& path);
 
 // 静的ファイルの組み立てをする際に使用
-// try_files,root,index,Pathコンポーネントから絶対パスのベクターを組み立てる
+// try_files,root,index,Pathコンポーネントから絶対パスのvectorを組み立てる
 std::vector<std::string> makeAbsolutePaths(const std::string& host, size_t port,
                                            const std::string& path);
 

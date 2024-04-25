@@ -39,15 +39,22 @@ class Http {
   bool haveConnectionCloseHeader(void) const;
   void insertCommonHeaders(bool keep_alive);
 
-  // TODO CGI以外のWebServer機能の実装
   connection::State dispatchRequestHandler(void);
+  // RequestHandler
   connection::State errorContentHandler(int status_code,
                                         const std::string& phrase);
   connection::State redirectHandler(const std::string& redirect_uri);
-  // connection::State staticContentHandler(void);
-
+  connection::State staticContentHandler(void);
   // TODO CGIを処理する機能
   // connection::State cgiHandler(void);
+
+  // MethodHandler
+  typedef connection::State (Http::*MethodHandler)(void);
+  std::map<std::string, MethodHandler> method_handler_map_;
+
+  connection::State getMethodHandler(void);
+  connection::State postMethodHandler(void);
+  connection::State deleteMethodHandler(void);
 
   Http(const Http&);
   void operator=(const Http&);
