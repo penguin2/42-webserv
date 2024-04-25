@@ -22,6 +22,7 @@ class Logger {
   void log(Level level, const X& x, const Y& y);
 
   void setDebugMode(bool debug_mode);
+  void setLimitLevel(Level limit_level);
 
  private:
   static const Level kDefaultLimitLevel_ = INFO;

@@ -9,6 +9,8 @@ Logger& Logger::getInstance() {
 
 void Logger::setDebugMode(bool debug_mode) { debug_mode_ = debug_mode; }
 
+void Logger::setLimitLevel(Level limit_level) { limit_level_ = limit_level; }
+
 Logger::Logger(std::ostream& out_stream)
     : out_stream_(out_stream),
       limit_level_(kDefaultLimitLevel_),
