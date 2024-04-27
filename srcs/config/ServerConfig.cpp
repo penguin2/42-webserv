@@ -58,3 +58,23 @@ const std::map<std::string, LocationConfig>& ServerConfig::getLocationConfigs()
 bool ServerConfig::hasLocationConfig(const std::string& location_path) const {
   return location_configs.find(location_path) != location_configs.end();
 }
+
+void ServerConfig::print() {
+  std::cout << "server_name: " << this->server_name << std::endl;
+  std::cout << "listen_address: " << this->listen_address << std::endl;
+
+  for (std::map<int, std::string>::iterator it = this->error_pages.begin();
+       it != this->error_pages.end(); ++it) {
+    std::cout << "error_code: " << it->first << ", error_page: " << it->second
+              << std::endl;
+  }
+
+  for (std::map<std::string, LocationConfig>::iterator it =
+           this->location_configs.begin();
+       it != this->location_configs.end(); ++it) {
+    std::cout << "location: " << std::endl;
+    std::cout << "********************************" << std::endl;
+    std::cout << "  path: " << it->first << std::endl;
+    it->second.print();
+  }
+}

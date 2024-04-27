@@ -41,6 +41,8 @@ class ServerConfig {
   const std::map<std::string, LocationConfig>& getLocationConfigs() const;
 
   bool hasLocationConfig(const std::string& location_path) const;
+
+  void print();
 };
 
 // for debug

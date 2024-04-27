@@ -27,6 +27,13 @@ ServerConfig& Config::getServer(long unsigned int server_num) {
   return servers[server_num];
 }
 
-const std::vector<ServerConfig>& Config::getServers() const {
-  return servers;
+const std::vector<ServerConfig>& Config::getServers() const { return servers; }
+
+void Config::print() {
+  size_t i = 0;
+  while (i < this->servers.size()) {
+    std::cout << "********** server **********" << std::endl;
+    servers[i].print();
+    i++;
+  }
 }

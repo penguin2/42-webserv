@@ -45,3 +45,10 @@ const std::string& LocationConfig::getCgiPath() const {
 const std::string& LocationConfig::getCgiExt() const {
   return cgi_ext;
 }
+
+void LocationConfig::print() { 
+  std::cout << "autoindex: " << this->autoindex << std::endl;
+  std::cout << "cgi_ext: " << this->cgi_ext << std::endl;
+  std::cout << "cgi_path: " << this->cgi_path << std::endl;
+  std::cout << "client_max_body_size: " << this->client_max_body_size << std::endl;
+}

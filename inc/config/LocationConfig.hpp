@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 enum HttpMethod { GET, POST, HEAD, PUT, DELETE, OPTIONS, TRACE, CONNECT };
 
@@ -44,6 +45,8 @@ class LocationConfig {
   const std::string& getCgiPath() const;
 
   const std::string& getCgiExt() const;
+
+  void print();
 };
 
 #endif
