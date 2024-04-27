@@ -1,9 +1,9 @@
 #ifndef LOCATION_CONFIG_HPP
 #define LOCATION_CONFIG_HPP
 
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 enum HttpMethod { GET, POST, HEAD, PUT, DELETE, OPTIONS, TRACE, CONNECT };
 
@@ -25,26 +25,37 @@ class LocationConfig {
   LocationConfig();
 
   const std::string& getRoot() const;
+  void setLocationRoot(const std::string& newRoot);
 
   const std::string& getIndex() const;
+  void setIndex(const std::string& newIndex);
 
   const std::string& getTryFilesPath() const;
+  void setTryFilesPath(const std::string& newPath);
 
   int getTryFilesErrorCode() const;
+  void setTryFilesErrorCode(int newErrorCode);
 
   const std::string& getClientMaxBodySize() const;
+  void setClientMaxBodySize(const std::string& newSize);
 
   bool getAutoindex() const;
+  void setAutoindex(bool newAutoindex);
 
-  const std::vector<HttpMethod>& getLimitExceptMethods() const;
+  const std::vector<HttpMethod>& getAllowMethods() const;
+  void setAllowMethods(const std::vector<HttpMethod> new_methods);
 
   const std::string& getReturnStatusCode() const;
+  void setReturnStatusCode(const std::string& newStatusCode);
 
   const std::string& getReturnUri() const;
+  void setReturnUri(const std::string& newUri);
 
   const std::string& getCgiPath() const;
+  void setCgiPath(const std::string& newPath);
 
   const std::string& getCgiExt() const;
+  void setCgiExt(const std::string& newExt);
 
   void print();
 };
