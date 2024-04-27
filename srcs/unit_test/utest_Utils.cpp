@@ -25,6 +25,15 @@ void testStrToSize_T(std::string str, int base, size_t expect_value,
   if (ret == true) EXPECT_EQ(num, expect_value) << str << " -> " << num;
 }
 
+void testSplit(std::string str, char separator,
+               std::vector<std::string> expect_vector) {
+  std::vector<std::string> vec = Utils::split(str, separator);
+  ASSERT_EQ(vec.size(), expect_vector.size());
+  for (size_t i = vec.size(); i < vec.size(); ++i) {
+    ASSERT_STREQ(vec[i].c_str(), expect_vector[i].c_str());
+  }
+}
+
 void testJoinStrings(std::vector<std::string> vec, std::string delim,
                      const char* expect_str) {
   EXPECT_STREQ(Utils::joinStrings(vec, delim).c_str(), expect_str);
@@ -189,6 +198,18 @@ TEST(Utils, GET_EXTENSION) {
   EXPECT_STREQ(Utils::getExtension("/0.0.0.0/a.py?f=a.zip").c_str(), "zip");
   EXPECT_STREQ(Utils::getExtension("......").c_str(), "");
   EXPECT_STREQ(Utils::getExtension("../").c_str(), "");
+}
+
+TEST(Utils, SPLIT) {
+  testSplit("/a/b/c/", '/', {"a", "b", "c"});
+  testSplit("///a/b/c///", '/', {"a", "b", "c"});
+  testSplit("/api/form/./../../admin", '/',
+            {"api", "form", ".", "..", "..", "admin"});
+  testSplit("a/b/c/", '/', {"a", "b", "c"});
+  testSplit("a/b/c", '/', {"a", "b", "c"});
+  testSplit("a/b/c", '=', {"abc"});
+  testSplit("", '=', {});
+  testSplit("", '\0', {});
 }
 
 TEST(Utils, JOIN_STRINGS) {

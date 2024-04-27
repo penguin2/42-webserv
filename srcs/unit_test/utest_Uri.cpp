@@ -6,17 +6,11 @@
 void testAbsoluteForm(std::string uri, const char* scheme,
                       const char* user_info, const char* host, int port,
                       const char* path, const char* query, const char* fragment,
-                      bool expect) {
+                      bool expect_no_throw) {
   Uri URI_instance;
-  bool is_correct_request = true;
 
-  try {
-    URI_instance.parse(uri);
-  } catch (ServerException& e) {
-    is_correct_request = false;
-  }
-  ASSERT_EQ(is_correct_request, expect) << uri;
-  if (is_correct_request == true) {
+  if (expect_no_throw) {
+    ASSERT_NO_THROW(URI_instance.parse(uri));
     EXPECT_STREQ(URI_instance.getScheme().c_str(), scheme);
     EXPECT_STREQ(URI_instance.getUserInfo().c_str(), user_info);
     EXPECT_STREQ(URI_instance.getHost().c_str(), host);
@@ -24,24 +18,19 @@ void testAbsoluteForm(std::string uri, const char* scheme,
     EXPECT_STREQ(URI_instance.getPath().c_str(), path);
     EXPECT_STREQ(URI_instance.getQuery().c_str(), query);
     EXPECT_STREQ(URI_instance.getFragment().c_str(), fragment);
-  }
+  } else
+    ASSERT_THROW(URI_instance.parse(uri), ServerException);
 }
 
 void testOriginForm(std::string uri, std::string host_header_value,
                     const char* scheme, const char* user_info, const char* host,
                     int port, const char* path, const char* query,
-                    const char* fragment, bool expect) {
+                    const char* fragment, bool expect_no_throw) {
   Uri URI_instance;
-  bool is_correct_request = true;
 
-  try {
-    URI_instance.parse(uri);
-    URI_instance.overwriteAuthorityIfNotSet(host_header_value);
-  } catch (ServerException& e) {
-    is_correct_request = false;
-  }
-  ASSERT_EQ(is_correct_request, expect) << uri << " " << host_header_value;
-  if (is_correct_request == true) {
+  if (expect_no_throw) {
+    ASSERT_NO_THROW(URI_instance.parse(uri));
+    ASSERT_NO_THROW(URI_instance.overwriteAuthorityIfNotSet(host_header_value));
     EXPECT_STREQ(URI_instance.getScheme().c_str(), scheme);
     EXPECT_STREQ(URI_instance.getUserInfo().c_str(), user_info);
     EXPECT_STREQ(URI_instance.getHost().c_str(), host);
@@ -49,6 +38,10 @@ void testOriginForm(std::string uri, std::string host_header_value,
     EXPECT_STREQ(URI_instance.getPath().c_str(), path);
     EXPECT_STREQ(URI_instance.getQuery().c_str(), query);
     EXPECT_STREQ(URI_instance.getFragment().c_str(), fragment);
+  } else {
+    EXPECT_THROW((URI_instance.parse(uri),
+                  URI_instance.overwriteAuthorityIfNotSet(host_header_value)),
+                 ServerException);
   }
 }
 
@@ -70,13 +63,10 @@ TEST(Uri, ABSOLUTE_FORM_SUCCESS) {
                    true);
   testAbsoluteForm("http://1:23/index.html", "http", "", "1", 23, "/index.html",
                    "", "", true);
-  // "/../" のような文字列はURIの構文上問題ではないがread時にエラーとして弾く
-  testAbsoluteForm("http://:@255.255.255.255:255/../bin/ls", "http", ":",
-                   "255.255.255.255", 255, "/../bin/ls", "", "", true);
   testAbsoluteForm("http://0.0.0.0/./././././index.html", "http", "", "0.0.0.0",
-                   80, "/./././././index.html", "", "", true);
+                   80, "/index.html", "", "", true);
   testAbsoluteForm("http://localhost//////////////////", "http", "",
-                   "localhost", 80, "//////////////////", "", "", true);
+                   "localhost", 80, "/", "", "", true);
   testAbsoluteForm("http://localhost/?", "http", "", "localhost", 80, "/", "",
                    "", true);
   testAbsoluteForm("http://localhost/?#", "http", "", "localhost", 80, "/", "",
@@ -203,6 +193,8 @@ TEST(Uri, ABSOLUTE_FORM_ERROR) {
   testAbsoluteForm("http://:@:/index.html", "", "", "", -1, "", "", "", false);
   testAbsoluteForm("http://:example.com", "", "", "", -1, "", "", "", false);
   testAbsoluteForm("http://\"localhost\"/", "", "", "", -1, "", "", "", false);
+  testAbsoluteForm("http://:@255.255.255.255:255/../bin/ls", "", "", "", -1, "",
+                   "", "", false);
 
   // CHATGPT
   testAbsoluteForm("http:/example.com", "", "", "", -1, "", "", "", false);

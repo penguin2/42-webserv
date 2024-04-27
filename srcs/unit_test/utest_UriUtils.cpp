@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "ServerException.hpp"
 #include "UriUtils.hpp"
 
 void testDecodeUrlEncoding(const char* target, const char* expect_str,
@@ -8,6 +9,16 @@ void testDecodeUrlEncoding(const char* target, const char* expect_str,
   bool ret = UriUtils::decodeUrlEncoding(target_string);
   EXPECT_EQ(ret, expect);
   if (ret == true) EXPECT_STREQ(target_string.c_str(), expect_str);
+}
+
+void testRemoveDotSegments(const char* target, const char* expect_str,
+                           bool expect_no_throw) {
+  if (expect_no_throw) {
+    std::string result_str;
+    ASSERT_NO_THROW((result_str = UriUtils::removeDotSegments(target)));
+    EXPECT_STREQ(result_str.c_str(), expect_str);
+  } else
+    ASSERT_THROW(UriUtils::removeDotSegments(target), ServerException);
 }
 
 TEST(UriUtils, DECODE_URL_ENCODING_SUCCESS) {
@@ -57,4 +68,19 @@ TEST(UriUtils, IS_IPV4_ADDRESS) {
   EXPECT_EQ(UriUtils::isIPv4Address("001.0.0.0"), false);
   EXPECT_EQ(UriUtils::isIPv4Address("255.255.255.256"), false);
   EXPECT_EQ(UriUtils::isIPv4Address("localhost"), false);
+}
+
+TEST(UriUtils, REMOVE_DOT_SEGMENTS) {
+  // 不正なPathのときは値を比較しないので第二引数は空文字列でOK
+  testRemoveDotSegments("/path/to/file", "/path/to/file", true);
+  testRemoveDotSegments("/path/to/dir/", "/path/to/dir/", true);
+  testRemoveDotSegments("//path//to//file", "/path/to/file", true);
+  testRemoveDotSegments("//path//to//dir//", "/path/to/dir/", true);
+  testRemoveDotSegments("/1/2/3/../../../4", "/4", true);
+  testRemoveDotSegments("/1/2/3/4/5/../../../../../6/", "/6/", true);
+  testRemoveDotSegments("", "", true);
+  testRemoveDotSegments("/", "/", true);
+  testRemoveDotSegments("/././/////", "/", true);
+  testRemoveDotSegments("/../fail", "", false);
+  testRemoveDotSegments("/1/./../../2", "", false);
 }
