@@ -17,6 +17,8 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
 
+  Logger::getInstance().init();
+
   Server server(argv[1]);
 
   if (server.start() < 0) return EXIT_FAILURE;
