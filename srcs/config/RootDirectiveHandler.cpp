@@ -12,7 +12,7 @@ bool RootDirectiveHandler::isValid() const {
 void RootDirectiveHandler::setConfig(long unsigned int server_num,
                                              std::string location_path) {
   Config& config = Config::getInstance();
-  ServerConfig serverConfig = config.getServer(server_num);
+  ServerConfig& serverConfig = config.getServer(server_num);
   if (!serverConfig.hasLocationConfig(location_path)) {
     LocationConfig* newLocationConfig = new LocationConfig();
     serverConfig.addLocationConfig(location_path, *newLocationConfig);

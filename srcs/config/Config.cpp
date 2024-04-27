@@ -24,7 +24,7 @@ ServerConfig& Config::getServer(long unsigned int server_index) {
     // 新しいサーバーコンフィグを作成して追加
     addServer(ServerConfig());
   }
-  return servers[server_index];
+  return servers[server_index - 1];
 }
 
 const std::vector<ServerConfig>& Config::getServers() const { return servers; }

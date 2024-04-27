@@ -56,6 +56,9 @@ const std::map<std::string, LocationConfig>& ServerConfig::getLocationConfigs()
 }
 
 bool ServerConfig::hasLocationConfig(const std::string& location_path) const {
+  if (location_path == "") {
+    return true;
+  }
   return location_configs.find(location_path) != location_configs.end();
 }
 
@@ -72,8 +75,7 @@ void ServerConfig::print() {
   for (std::map<std::string, LocationConfig>::iterator it =
            this->location_configs.begin();
        it != this->location_configs.end(); ++it) {
-    std::cout << "location: " << std::endl;
-    std::cout << "********************************" << std::endl;
+    std::cout << "      ********** location **********" << std::endl;
     std::cout << "  path: " << it->first << std::endl;
     it->second.print();
   }
