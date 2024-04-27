@@ -24,6 +24,10 @@ ServerConfig& Config::getServer(long unsigned int server_index) {
     // 新しいサーバーコンフィグを作成して追加
     addServer(ServerConfig());
   }
+  if (server_index < 1) {
+    std::cerr << "server count is invalid" << std::endl;
+    exit(1);
+  }
   return servers[server_index - 1];
 }
 
