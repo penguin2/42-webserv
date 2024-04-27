@@ -27,7 +27,7 @@ bool LocationConfig::getAutoindex() const {
 }
 
 const std::vector<HttpMethod>& LocationConfig::getLimitExceptMethods() const {
-  return limit_except_methods;
+  return allow_methods;
 }
 
 const std::string& LocationConfig::getReturnStatusCode() const {
