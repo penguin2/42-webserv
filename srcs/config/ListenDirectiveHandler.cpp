@@ -11,6 +11,12 @@ bool ListenDirectiveHandler::isValid() const {
   return true;
 }
 
+void ListenDirectiveHandler::parseAddressAndPort(const std::string& input, std::string& address, int& port) {
+    std::stringstream ss(input);
+    std::getline(ss, address, ':');
+    ss >> port;
+}
+
 void ListenDirectiveHandler::setConfig(long unsigned int server_num,
                                              std::string location_path) {
   Config& config = Config::getInstance();
@@ -20,7 +26,15 @@ void ListenDirectiveHandler::setConfig(long unsigned int server_num,
     serverConfig.addLocationConfig(location_path, *newLocationConfig);
   }
 
-  LocationConfig locationConfig = serverConfig.getLocationConfig(location_path);
+  std::string address;
+  int port;
+
+  parseAddressAndPort(tokens[1], address, port);
+
+  serverConfig.setListenAddress(address);
+  serverConfig.setListenPort(port);
+
+  // LocationConfig& locationConfig = serverConfig.getLocationConfig(location_path);
   std::cout << "setting : " << this->tokens[0] << std::endl;
   std::cout << "server num : " << server_num << std::endl;
   std::cout << "location path : " << location_path << std::endl;

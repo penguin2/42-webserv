@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-enum HttpMethod { GET, POST, HEAD, PUT, DELETE, OPTIONS, TRACE, CONNECT };
+enum HttpMethod { GET, POST, DELETE};
 
 class LocationConfig {
  private:

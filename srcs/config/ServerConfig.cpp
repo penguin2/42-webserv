@@ -14,7 +14,7 @@ void ServerConfig::setListenAddress(const std::string& listen_address) {
   this->listen_address = listen_address;
 }
 
-void ServerConfig::setListenPort(const std::string& listen_port) {
+void ServerConfig::setListenPort(const size_t listen_port) {
   this->listen_port = listen_port;
 }
 
@@ -42,7 +42,7 @@ const std::string& ServerConfig::getErrorPage(int error_code) const {
   return default_error_page;
 }
 
-const LocationConfig& ServerConfig::getLocationConfig(
+LocationConfig& ServerConfig::getLocationConfig(
     const std::string& location_path) {
   std::map<std::string, LocationConfig>::iterator it =
       location_configs.find(location_path);
@@ -50,7 +50,7 @@ const LocationConfig& ServerConfig::getLocationConfig(
     return it->second;
   }
   // 指定された場所のLocationConfigが見つからなかった場合、新しいLocationConfigを作成してマップに追加する
-  static const LocationConfig default_location_config;
+  static LocationConfig default_location_config;
   return default_location_config;
 }
 

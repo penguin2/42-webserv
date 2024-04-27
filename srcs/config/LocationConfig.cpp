@@ -72,6 +72,7 @@ void LocationConfig::print() {
   std::cout << "cgi_path: " << this->cgi_path << std::endl;
   std::cout << "client_max_body_size: " << this->client_max_body_size
             << std::endl;
+  std::cout << "root: " << this->root << std::endl;
   std::cout << "allow_methods: ";
 
   for (size_t i = 0; i < allow_methods.size(); i++) {

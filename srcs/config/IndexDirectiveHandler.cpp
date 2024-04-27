@@ -18,8 +18,10 @@ void IndexDirectiveHandler::setConfig(long unsigned int server_num,
     serverConfig.addLocationConfig(location_path, *newLocationConfig);
   }
 
-  LocationConfig locationConfig = serverConfig.getLocationConfig(location_path);
+  LocationConfig& locationConfig = serverConfig.getLocationConfig(location_path);
   std::cout << "setting : " << this->tokens[0] << std::endl;
   std::cout << "server num : " << server_num << std::endl;
   std::cout << "location path : " << location_path << std::endl;
+
+  locationConfig.setIndex(tokens[1]);
 }
