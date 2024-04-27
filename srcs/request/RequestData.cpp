@@ -3,13 +3,22 @@
 #include "ServerException.hpp"
 #include "Uri.hpp"
 #include "Utils.hpp"
+#include "config/ConfigAdapter.hpp"
 
 RequestData::RequestData(void) {}
 RequestData::~RequestData(void) {}
 
-void RequestData::setMethod(const std::string &method) { method_ = method; }
+void RequestData::setMethod(const std::string &method) {
+  if (ConfigAdapter::getMaxMethodSize() < method.size())
+    ServerException(ServerException::SERVER_ERROR_BAD_REQUEST, "Bad Method");
+  this->method_ = method;
+}
 
-void RequestData::setUri(const std::string &uri) { this->uri_.parse(uri); }
+void RequestData::setUri(const std::string &uri) {
+  if (ConfigAdapter::getMaxUriSize() < uri.size())
+    ServerException(ServerException::SERVER_ERROR_URI_TOO_LONG, "Too long URI");
+  this->uri_.parse(uri);
+}
 
 void RequestData::setVersion(const std::string &version) { version_ = version; }
 

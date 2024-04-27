@@ -1,13 +1,28 @@
 #include "HttpMock.hpp"
 
-HttpMock::HttpMock() : state_(HttpMock::RECV) {}
+#include "Utils.hpp"
 
-HttpMock::~HttpMock() {}
+const std::string HttpMock::kCgiCheckString = "CGI\r\n";
+
+HttpMock::HttpMock() : state_(HttpMock::RECV), cgi_request_(NULL) {}
+
+HttpMock::~HttpMock() { clearCgiHandling(); }
 
 connection::State HttpMock::httpHandler() {
   switch (state_) {
     case HttpMock::RECV:
-      if (checkResponse()) {
+      if (isCgi()) {
+        std::string client_request = Utils::popFrontSubstr(
+            client_data_, HttpMock::kCgiCheckString.size());
+        cgi_request_ = CgiRequestMock::createCgiRequest(client_request);
+        if (cgi_request_ == NULL) {
+          raw_response_data_ << "ECHO/1.0 502 Bad Gateway\n";
+          state_ = HttpMock::SEND;
+          return connection::SEND;
+        }
+        state_ = HttpMock::CGI;
+        return connection::CGI;
+      } else if (checkResponse()) {
         makeResponse();
         state_ = HttpMock::SEND;
         return connection::SEND;
@@ -18,6 +33,11 @@ connection::State HttpMock::httpHandler() {
       raw_response_data_.str("");
       state_ = HttpMock::RECV;
       return connection::RECV;
+    case HttpMock::CGI:
+      makeCgiResponse();
+      clearCgiHandling();
+      state_ = HttpMock::SEND;
+      return connection::SEND;
     default:
       break;
   }
@@ -29,6 +49,12 @@ void HttpMock::appendClientData(const std::string& data) {
 }
 
 std::string HttpMock::getResponse() const { return raw_response_data_.str(); }
+
+CgiRequestMock* HttpMock::getCgiRequest() const { return cgi_request_; }
+
+void HttpMock::setCgiResponseMessage(const std::string& message) {
+  cgi_response_message_ = message;
+}
 
 bool HttpMock::checkResponse() const {
   return client_data_.find('\n') != std::string::npos;
@@ -44,4 +70,22 @@ void HttpMock::makeResponse() {
                      << client_data_.substr(0, new_line_index + 1);
   client_data_.erase(0, new_line_index + 1);
   return;
+}
+
+bool HttpMock::isCgi() const {
+  return Utils::isStartsWith(client_data_, HttpMock::kCgiCheckString);
+}
+
+void HttpMock::makeCgiResponse() {
+  raw_response_data_ << "----- (from cgi-script) -----\n";
+  raw_response_data_ << cgi_response_message_;
+  raw_response_data_ << "-----------------------------\n";
+}
+
+void HttpMock::clearCgiHandling() {
+  if (cgi_request_ != NULL) {
+    delete cgi_request_;
+    cgi_request_ = NULL;
+  }
+  cgi_response_message_.clear();
 }

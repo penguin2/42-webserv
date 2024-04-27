@@ -8,7 +8,7 @@ class ListenSocket : public ASocket {
   ListenSocket(int socket_fd);
   ~ListenSocket();
 
-  int handler(Server* server, EventManager* event_manager);
+  int handler(Server* server);
 
  private:
   ListenSocket();

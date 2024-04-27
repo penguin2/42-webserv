@@ -1,6 +1,20 @@
 #include <gtest/gtest.h>
 
+#include <cstring>
+
 #include "SysUtils.hpp"
+
+static void testConvertToCstring(const std::string& src) {
+  char* dst = SysUtils::convertToCstring(src);
+  EXPECT_TRUE(std::strcmp(dst, src.c_str()) == 0);
+  SysUtils::deleteCstring(dst);
+}
+
+TEST(SysUtils, convertToCstring) {
+  testConvertToCstring("");
+  testConvertToCstring("hello_world!");
+  testConvertToCstring("42");
+}
 
 TEST(SysUtils, convertToEnvp) {
   std::map<std::string, std::string> test_map;

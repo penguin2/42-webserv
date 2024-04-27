@@ -104,3 +104,15 @@ std::vector<std::string> Utils::split(const std::string &str, char separator) {
   }
   return strings;
 }
+
+std::string Utils::joinStrings(const std::vector<std::string> &strings,
+                               std::string delimiter) {
+  std::stringstream ss;
+  for (std::vector<std::string>::const_iterator it = strings.begin();
+       it != strings.end();) {
+    ss << *it;
+    ++it;
+    if (it != strings.end()) ss << delimiter;
+  }
+  return ss.str();
+}

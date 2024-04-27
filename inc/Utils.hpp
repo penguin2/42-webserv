@@ -17,6 +17,8 @@ class Utils {
   static std::string popFrontSubstr(std::string& str, std::size_t n);
   static std::string getExtension(const std::string& file);
   static std::vector<std::string> split(const std::string& str, char separator);
+  static std::string joinStrings(const std::vector<std::string>& strings,
+                                 std::string delimiter);
 
  private:
   Utils(void);

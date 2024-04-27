@@ -34,6 +34,11 @@ void testSplit(std::string str, char separator,
   }
 }
 
+void testJoinStrings(std::vector<std::string> vec, std::string delim,
+                     const char* expect_str) {
+  EXPECT_STREQ(Utils::joinStrings(vec, delim).c_str(), expect_str);
+}
+
 TEST(Utils, STR_TRIM) {
   // target_string, charset, expect(string)
   testStrTrim("TEST1 ", " ", "TEST1");
@@ -205,4 +210,14 @@ TEST(Utils, SPLIT) {
   testSplit("a/b/c", '=', {"abc"});
   testSplit("", '=', {});
   testSplit("", '\0', {});
+}
+
+TEST(Utils, JOIN_STRINGS) {
+  testJoinStrings({"GET", "POST", "DELETE"}, ", ", "GET, POST, DELETE");
+  testJoinStrings({"GET", "POST", "DELETE"}, "", "GETPOSTDELETE");
+  testJoinStrings({"PATH", "TO", "FILE"}, "/", "PATH/TO/FILE");
+  testJoinStrings({"ONE", "TWO"}, "&&", "ONE&&TWO");
+  testJoinStrings({"WORD"}, "/", "WORD");
+  testJoinStrings({}, "/", "");
+  testJoinStrings({"a", "b", "c"}, " -> ", "a -> b -> c");
 }
