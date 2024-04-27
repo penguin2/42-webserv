@@ -20,7 +20,7 @@ void Config::addServer(const ServerConfig& server) {
 }
 
 ServerConfig& Config::getServer(long unsigned int server_index) {
-  while (server_index >= servers.size()) {
+  while (server_index > servers.size()) {
     // 新しいサーバーコンフィグを作成して追加
     addServer(ServerConfig());
   }
