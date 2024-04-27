@@ -1,5 +1,8 @@
 #include "HttpUtils.hpp"
 
+#include <dirent.h>
+#include <sys/stat.h>
+
 #include <algorithm>
 #include <ctime>
 #include <fstream>
@@ -7,11 +10,57 @@
 #include <map>
 #include <set>
 #include <sstream>
-#include <utility>
 
 #include "FileUtils.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
+
+// ディレクトリの存在、権限等は確認済みである前提
+bool HttpUtils::generateAutoindexPage(const std::string& dir,
+                                      std::stringstream& ss) {
+  std::vector<struct dirent> dir_data = FileUtils::readDirData(dir);
+  if (dir_data.size() == 0) return false;
+
+  ss << "<html>\r\n"
+     << "<head>\r\n"
+     << "<title>Index of /autoindex/</title>\r\n"
+     << "</head>\r\n"
+     << "<body>\r\n"
+     << "<h1>Index of /autoindex/</h1>\r\n"
+     << "<hr>\r\n"
+     << "<pre>\r\n"
+     << "<a href=\"../\">../</a>\r\n";
+  for (std::vector<struct dirent>::const_iterator it = dir_data.begin();
+       it != dir_data.end(); ++it) {
+    if (generateDirectoryIndex(*it, dir, ss) == false) return false;
+  }
+  ss << "<pre>\r\n"
+     << "<hr>\r\n"
+     << "</body>\r\n"
+     << "</html>\r\n";
+  return true;
+}
+
+bool HttpUtils::generateDirectoryIndex(struct dirent entry,
+                                       const std::string& dir,
+                                       std::stringstream& ss) {
+  if (entry.d_name == std::string(".") || entry.d_name == std::string(".."))
+    return true;
+  bool is_dir_file_type = (entry.d_type == DT_DIR);
+  std::string file_name(entry.d_name);
+  if (is_dir_file_type) file_name.push_back('/');
+  ss << "<a href=\"" << file_name << "\">" << file_name << "</a>\r\n";
+  ss << "\" " << generateDateValue("%d-%b-%Y %H:%M") << " ";
+  if (is_dir_file_type) {
+    ss << '_';
+  } else {
+    off_t file_size = FileUtils::getFileSize(dir + "/" + entry.d_name);
+    if (file_size < 0) return false;
+    ss << file_size;
+  }
+  ss << " \"\r\n";
+  return true;
+}
 
 // デフォルトのエラーページHTMLをプログラムで生成
 std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
@@ -71,16 +120,9 @@ std::string HttpUtils::generateErrorPage(const std::string* file, int code,
   return ss.str();
 }
 
-std::string HttpUtils::generateDateValue(void) {
-  // "Fri, 12 Apr 2024 01:12:16 GMT":29文字
-  // %a(Fri) :3文字 曜日省略形
-  // %d(12)  :2文字 Day
-  // %b(Apr) :3文字 月名省略形
-  // %Y(2024):4文字 Year
-  // %H(01)  :2文字 Hour
-  // %M(12)  :2文字 Min
-  // %S(16)  :2文字 Sec
-  const int buffer_size = 32;
+// (注)フォーマットサイズが大きすぎるとバッファオーバーフローします
+std::string HttpUtils::generateDateValue(const std::string& fmt) {
+  const int buffer_size = 256;
   char buf[buffer_size];
   std::time_t raw_time;
 
@@ -88,7 +130,7 @@ std::string HttpUtils::generateDateValue(void) {
   std::time(&raw_time);
   timeinfo = std::gmtime(&raw_time);
 
-  std::strftime(buf, buffer_size, "%a, %d %b %Y %H:%M:%S GMT", timeinfo);
+  std::strftime(buf, buffer_size, fmt.c_str(), timeinfo);
   return std::string(buf);
 }
 
