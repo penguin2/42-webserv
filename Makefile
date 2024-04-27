@@ -10,6 +10,10 @@ INC_DIR		= ./inc
 
 SRCS		= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp" -and ! -name "utest*.cpp")
 
+ifeq ($(MAKECMDGOALS), mock)
+	CXXFLAGS += -DMOCK
+endif
+
 ifeq ($(MAKECMDGOALS), request_parse_test)
 	SRCS += ./test_main/main_request_parse.cpp
 else ifeq ($(MAKECMDGOALS), unit_test)
@@ -74,5 +78,7 @@ fclean : clean
 .PHONY : re
 re : fclean all
 
+.PHONY : mock
+mock: fclean $(NAME)
 
 -include $(DEPS)

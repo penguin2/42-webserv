@@ -19,25 +19,22 @@ Server::Server(const char* config_file) {
 }
 
 Server::~Server() {
-  delete event_manager_;
-  delete timeout_manager_;
-
   for (std::map<int, ASocket*>::iterator it = sockets_.begin();
        it != sockets_.end(); ++it) {
     ASocket* socket = it->second;
     close(socket->getSocketFd());
     delete socket;
   }
+  delete event_manager_;
+  delete timeout_manager_;
 }
 
 int Server::acceptListenSocket(int listen_socket_fd) {
   const int connected_socket_fd = accept(listen_socket_fd, NULL, NULL);
   if (connected_socket_fd < 0) return -1;
-  if (SysUtils::addNonblockingFlag(connected_socket_fd) < 0) {
-    close(connected_socket_fd);
-    return -1;
-  }
-  if (addConnection(connected_socket_fd) < 0) {
+  if (SysUtils::addNonblockingFlag(connected_socket_fd) < 0 ||
+      SysUtils::addCloseOnExecFlag(connected_socket_fd) < 0 ||
+      addConnection(connected_socket_fd) < 0) {
     close(connected_socket_fd);
     return -1;
   }
@@ -51,6 +48,8 @@ int Server::updateTimeout(ASocket* socket) {
 
 int Server::start() {
   LOG(INFO, "server: ", "start()");
+
+  Connection::initTransitHandlers();
 
   if (loop() < 0) return -1;
 
@@ -77,18 +76,27 @@ int Server::loop() {
 
 int Server::addConnection(int connected_socket_fd) {
   if (sockets_.find(connected_socket_fd) != sockets_.end()) {
-    LOG(WARN, "addConnection: ", "already occupied fd!");
+    LOG(WARN, "addConnection: ", connected_socket_fd);
     return -1;
   }
 
-  Connection* new_connection = new Connection(connected_socket_fd);
+  Connection* new_connection =
+      new Connection(connected_socket_fd, event_manager_);
+
   if (event_manager_->insert(connected_socket_fd, new_connection,
-                             EventManager::kRead) < 0 ||
-      timeout_manager_->insert(new_connection) < 0) {
+                             EventManager::kEventTypeRead) < 0) {
     delete new_connection;
     return -1;
   }
+
+  if (timeout_manager_->insert(new_connection) < 0) {
+    event_manager_->erase(connected_socket_fd);
+    delete new_connection;
+    return -1;
+  }
+
   sockets_[connected_socket_fd] = new_connection;
+
   return 0;
 }
 
@@ -97,7 +105,7 @@ int Server::executeEventSockets(const std::vector<ASocket*>& event_sockets,
   for (std::vector<ASocket*>::const_iterator it = event_sockets.begin();
        it != event_sockets.end(); ++it) {
     ASocket* event_socket = *it;
-    if (event_socket->handler(this, event_manager_) < 0)
+    if (event_socket->handler(this) < 0)
       closing_sockets.push_back(event_socket);
   }
   return 0;
