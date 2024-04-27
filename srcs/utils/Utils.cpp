@@ -91,3 +91,28 @@ std::string Utils::getExtension(const std::string &file) {
     return "";
   return file.substr(pos_last_of_period + 1);
 }
+
+std::vector<std::string> Utils::split(const std::string &str, char separator) {
+  std::vector<std::string> strings;
+  std::string buf;
+  std::stringstream ss(str);
+
+  while (std::getline(ss, buf, separator)) {
+    if (!buf.empty()) {
+      strings.push_back(buf);
+    }
+  }
+  return strings;
+}
+
+std::string Utils::joinStrings(const std::vector<std::string> &strings,
+                               std::string delimiter) {
+  std::stringstream ss;
+  for (std::vector<std::string>::const_iterator it = strings.begin();
+       it != strings.end();) {
+    ss << *it;
+    ++it;
+    if (it != strings.end()) ss << delimiter;
+  }
+  return ss.str();
+}

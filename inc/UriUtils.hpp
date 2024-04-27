@@ -15,6 +15,7 @@ class UriUtils {
 
   static bool decodeUrlEncoding(std::string& str);
   static bool isIPv4Address(const std::string& str);
+  static std::string removeDotSegments(const std::string& path);
 
  private:
   UriUtils(void);
