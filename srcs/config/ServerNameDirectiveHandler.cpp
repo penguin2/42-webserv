@@ -18,6 +18,8 @@ void ServerNameDirectiveHandler::setConfig(long unsigned int server_num,
     serverConfig.addLocationConfig(location_path, *newLocationConfig);
   }
 
+  serverConfig.setServerName(this->tokens[1]);
+
   LocationConfig locationConfig = serverConfig.getLocationConfig(location_path);
   std::cout << "setting : " << this->tokens[0] << std::endl;
   std::cout << "server num : " << server_num << std::endl;
