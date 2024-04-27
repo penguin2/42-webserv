@@ -7,7 +7,6 @@
 
 class HttpUtils {
  public:
-  static std::string readAllDataFromFile(const std::string& file);
   static std::string generateErrorPage(int code, const std::string& phrase);
   static std::string generateErrorPage(const std::string* file, int code,
                                        const std::string& phrase);

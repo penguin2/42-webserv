@@ -1,10 +1,13 @@
 #include "Http.hpp"
 
+#include <fcntl.h>
+
 #include <map>
 #include <string>
 #include <vector>
 
 #include "ConnectionState.hpp"
+#include "FileUtils.hpp"
 #include "HttpUtils.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
@@ -161,7 +164,17 @@ connection::State Http::getMethodHandler(void) {
   const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
       uri.getHost(), uri.getPort(), uri.getPath());
 
-  response_.appendBody(HttpUtils::readAllDataFromFile(uri.getPath()));
+  if (!FileUtils::isExistFile(uri.getPath()))
+    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND,
+                          "File not Found");
+  if (!FileUtils::hasFilePermission(uri.getPath(), R_OK))
+    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
+                          "Has not permission");
+  std::stringstream ss;
+  if (FileUtils::readAllDataFromFile(uri.getPath(), ss) == false)
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Internal Server Error");
+  response_.appendBody(ss.str());
   response_.insertContentLengthIfNotSet();
   response_.insertHeader("Content-Type",
                          HttpUtils::convertPathToContentType(uri.getPath()));

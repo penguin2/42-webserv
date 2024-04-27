@@ -5,27 +5,8 @@
 #include "HttpUtils.hpp"
 #include "ServerException.hpp"
 
-void testGeneratePage(const std::string& file, bool expect_no_throw) {
-  if (expect_no_throw)
-    ASSERT_NO_THROW(HttpUtils::readAllDataFromFile(file));
-  else
-    ASSERT_THROW(HttpUtils::readAllDataFromFile(file), ServerException);
-}
-
 void testGenerateContentType(const std::string& path, const char* expect) {
   EXPECT_STREQ(HttpUtils::convertPathToContentType(path).c_str(), expect);
-}
-
-TEST(HttpUtils, GENERATE_PAGE) {
-  // file, directoryの判定や権限確認は対象外、ファイルが存在すれば成功
-  testGeneratePage("/bin/ls", true);
-  testGeneratePage("./Makefile", true);
-  testGeneratePage("./inc/", true);
-  testGeneratePage("./inc", true);
-  testGeneratePage("/etc/nginx/", true);
-  testGeneratePage("", false);
-  testGeneratePage("./nofile", false);
-  testGeneratePage("./nofile.html", false);
 }
 
 TEST(HttpUtils, GENERATE_CONTENT_TYPE) {

@@ -9,25 +9,9 @@
 #include <sstream>
 #include <utility>
 
+#include "FileUtils.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
-
-// ファイルからデータを読み取り文字列に変換
-// file or dir の確認や権限確認はこの関数外で行う想定
-std::string HttpUtils::readAllDataFromFile(const std::string& file) {
-  std::ifstream ifs;
-  std::stringstream ss;
-
-  ifs.open(file.c_str(), std::ios::binary);
-  if (ifs.fail())
-    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
-  ss << ifs.rdbuf();
-  ifs.close();
-  if (ifs.eof() == false && ifs.fail())
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Internal Server Error");
-  return ss.str();
-}
 
 // デフォルトのエラーページHTMLをプログラムで生成
 std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
@@ -80,12 +64,11 @@ std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
 // ファイルがなかったり読み取りエラーとなった場合はプログラムで生成
 std::string HttpUtils::generateErrorPage(const std::string* file, int code,
                                          const std::string& phrase) {
-  if (file == NULL) return HttpUtils::generateErrorPage(code, phrase);
-  try {
-    return HttpUtils::readAllDataFromFile(*file);
-  } catch (ServerException& e) {
+  std::stringstream ss;
+  if (file == NULL ||
+      FileUtils::readAllDataFromFile(file->c_str(), ss) == false)
     return HttpUtils::generateErrorPage(code, phrase);
-  }
+  return ss.str();
 }
 
 std::string HttpUtils::generateDateValue(void) {
