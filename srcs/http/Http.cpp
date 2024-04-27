@@ -108,8 +108,13 @@ connection::State Http::errorContentHandler(int status_code,
       HttpUtils::generateErrorPage(error_page, status_code, phrase));
   response_.insertHeader("Content-Type", "text/html");
   response_.insertContentLengthIfNotSet();
-  // TODO Configクラスを見て何のメソッドが使用可能かを取得する処理
-  if (status_code == 405) response_.insertHeader("Allow", "GET, POST, DELETE");
+  if (status_code == 405) {
+    const Uri& uri = request_.getRequestData()->getUri();
+    const std::vector<std::string> allow_methods =
+        ConfigAdapter::getAllowMethods(uri.getHost(), uri.getPort(),
+                                       uri.getPath());
+    response_.insertHeader("Allow", Utils::joinStrings(allow_methods, " ,"));
+  }
   insertCommonHeaders(haveConnectionCloseHeader() == false &&
                       HttpUtils::isMaintainConnection(status_code));
   response_.setStatusLine(status_code, phrase);

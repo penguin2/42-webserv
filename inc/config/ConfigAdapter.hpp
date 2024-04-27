@@ -33,6 +33,8 @@ bool isAllowMethods(const std::string& host, size_t port,
 std::vector<std::string> getAllowMethods(const std::string& host, size_t port,
                                          const std::string& path);
 
+bool isCorrespondingMethod(const std::string& method);
+
 // 静的ファイルの組み立てをする際に使用
 // try_files,root,index,Pathコンポーネントから絶対パスのvectorを組み立てる
 std::vector<std::string> makeAbsolutePaths(const std::string& host, size_t port,
@@ -42,9 +44,26 @@ std::vector<std::string> makeAbsolutePaths(const std::string& host, size_t port,
 size_t getMaxUriSize(void);
 // Headerの最大サイズ(1つのHeaderの最大サイズを想定)
 size_t getMaxHeaderSize(void);
+// Headerの最大個数
+size_t getMaxNumberOfHeaders(void);
+
 // ボディの最大サイズ(client_max_body_sizeが存在しない場合、defaultの値を返す)
 size_t getMaxBodySize(const std::string& host, size_t port,
                       const std::string& path);
+
+size_t getMaxMethodSize(void);
+
+size_t getMaxNumberOfCrlfBeforeMethod(void);
+
+namespace INTERNAL {
+const size_t DEFAULT_MAX_URI_SIZE = 2000;
+const size_t DEFAULT_MAX_HEADER_SIZE = 200;
+const size_t DEFAULT_MAX_NUMBER_OF_HEADERS = 100;
+const size_t DEFAULT_MAX_BODY_SIZE = 10000;
+// (std::string("DELETE").size() == 6)
+const size_t DEFAULT_MAX_METHOD_SIZE = 6;
+const size_t DEFAULT_MAX_NUMBER_OF_CRLF_BEFORE_METHOD = 10;
+}  // namespace INTERNAL
 
 }  // namespace ConfigAdapter
 
