@@ -19,12 +19,12 @@ void Config::addServer(const ServerConfig& server) {
   servers.push_back(server);
 }
 
-ServerConfig& Config::getServer(long unsigned int server_num) {
-  while (server_num >= servers.size()) {
+ServerConfig& Config::getServer(long unsigned int server_index) {
+  while (server_index >= servers.size()) {
     // 新しいサーバーコンフィグを作成して追加
     addServer(ServerConfig());
   }
-  return servers[server_num];
+  return servers[server_index];
 }
 
 const std::vector<ServerConfig>& Config::getServers() const { return servers; }
