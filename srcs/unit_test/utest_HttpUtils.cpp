@@ -5,15 +5,11 @@
 #include "HttpUtils.hpp"
 #include "ServerException.hpp"
 
-void testGeneratePage(const std::string& file, bool expect) {
-  bool result;
-  try {
-    std::string page = HttpUtils::readAllDataFromFile(file);
-    result = true;
-  } catch (ServerException& e) {
-    result = false;
-  }
-  EXPECT_EQ(result, expect);
+void testGeneratePage(const std::string& file, bool expect_no_throw) {
+  if (expect_no_throw)
+    ASSERT_NO_THROW(HttpUtils::readAllDataFromFile(file));
+  else
+    ASSERT_THROW(HttpUtils::readAllDataFromFile(file), ServerException);
 }
 
 void testGenerateContentType(const std::string& path, const char* expect) {

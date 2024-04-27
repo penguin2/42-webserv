@@ -12,16 +12,13 @@ void testDecodeUrlEncoding(const char* target, const char* expect_str,
 }
 
 void testRemoveDotSegments(const char* target, const char* expect_str,
-                           bool expect) {
-  bool is_success;
-
-  try {
-    EXPECT_STREQ(UriUtils::removeDotSegments(target).c_str(), expect_str);
-    is_success = true;
-  } catch (ServerException& e) {
-    is_success = false;
-  }
-  EXPECT_EQ(is_success, expect);
+                           bool expect_no_throw) {
+  if (expect_no_throw) {
+    std::string result_str;
+    ASSERT_NO_THROW((result_str = UriUtils::removeDotSegments(target)));
+    EXPECT_STREQ(result_str.c_str(), expect_str);
+  } else
+    ASSERT_THROW(UriUtils::removeDotSegments(target), ServerException);
 }
 
 TEST(UriUtils, DECODE_URL_ENCODING_SUCCESS) {
