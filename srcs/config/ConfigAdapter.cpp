@@ -120,24 +120,31 @@ std::vector<std::string> ConfigAdapter::makeAbsolutePaths(
 
 size_t ConfigAdapter::getMaxBodySize(const std::string &host, size_t port,
                                      const std::string &path) {
-  return 10000;
+  return INTERNAL::DEFAULT_MAX_BODY_SIZE;
   (void)host;
   (void)port;
   (void)path;
 }
 
-size_t ConfigAdapter::getMaxHeaderSize(void) { return 200; }
-
-size_t ConfigAdapter::getMaxNumberOfHeaders(void) { return 100; }
-
-size_t ConfigAdapter::getMaxUriSize(void) { return 2000; }
-
-size_t ConfigAdapter::getMaxMethodSize(void) {
-  // std::string("DELETE").size()
-  return 6;
+size_t ConfigAdapter::getMaxHeaderSize(void) {
+  return INTERNAL::DEFAULT_MAX_HEADER_SIZE;
 }
 
-size_t ConfigAdapter::getMaxNumberOfCrlfBeforeMethod(void) { return 10; }
+size_t ConfigAdapter::getMaxNumberOfHeaders(void) {
+  return INTERNAL::DEFAULT_MAX_NUMBER_OF_HEADERS;
+}
+
+size_t ConfigAdapter::getMaxUriSize(void) {
+  return INTERNAL::DEFAULT_MAX_URI_SIZE;
+}
+
+size_t ConfigAdapter::getMaxMethodSize(void) {
+  return INTERNAL::DEFAULT_MAX_METHOD_SIZE;
+}
+
+size_t ConfigAdapter::getMaxNumberOfCrlfBeforeMethod(void) {
+  return INTERNAL::DEFAULT_MAX_NUMBER_OF_CRLF_BEFORE_METHOD;
+}
 
 // #include <iostream>
 // using namespace ConfigAdapter;

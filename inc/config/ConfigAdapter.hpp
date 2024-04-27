@@ -55,6 +55,16 @@ size_t getMaxMethodSize(void);
 
 size_t getMaxNumberOfCrlfBeforeMethod(void);
 
+namespace INTERNAL {
+const size_t DEFAULT_MAX_URI_SIZE = 2000;
+const size_t DEFAULT_MAX_HEADER_SIZE = 200;
+const size_t DEFAULT_MAX_NUMBER_OF_HEADERS = 100;
+const size_t DEFAULT_MAX_BODY_SIZE = 10000;
+// (std::string("DELETE").size() == 6)
+const size_t DEFAULT_MAX_METHOD_SIZE = 6;
+const size_t DEFAULT_MAX_NUMBER_OF_CRLF_BEFORE_METHOD = 10;
+}  // namespace INTERNAL
+
 }  // namespace ConfigAdapter
 
 #endif
