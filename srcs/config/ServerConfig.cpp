@@ -14,6 +14,10 @@ void ServerConfig::setListenAddress(const std::string& listen_address) {
   this->listen_address = listen_address;
 }
 
+void ServerConfig::setListenPort(const std::string& listen_port) {
+  this->listen_port = listen_port;
+}
+
 void ServerConfig::addErrorPage(int error_code, const std::string& error_page) {
   this->error_pages[error_code] = error_page;
 }
