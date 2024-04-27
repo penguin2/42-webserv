@@ -12,7 +12,8 @@ void Logger::init() {
   addOutStream(std::cerr);
 
   // TODO: check log files
-  static std::ofstream log_file("log_webserv.txt", std::ofstream::out);
+  static std::ofstream log_file("log_webserv.txt",
+                                std::ios::out | std::ios::app);
   if (log_file.is_open()) addOutStream(log_file);
 }
 
