@@ -1,39 +1,35 @@
 #ifndef WEBSERV_HTTPUTILS_H_
 #define WEBSERV_HTTPUTILS_H_
 
+#include <dirent.h>
+
 #include <map>
 #include <set>
 #include <string>
 
-class HttpUtils {
- public:
-  static bool generateAutoindexPage(const std::string& dir,
-                                    std::stringstream& ss);
-  static bool generateDirectoryIndex(struct dirent, const std::string& dir,
-                                     std::stringstream& ss);
-  static bool compareDirent(struct dirent& entry1, struct dirent& entry2);
-  static void generateFileLink(const std::string& file_name,
-                                    std::stringstream& ss);
-  static bool generateFileDetail(const std::string& file_path, bool is_dir,
-                                      std::stringstream& ss);
-  static bool generateFileDetailTimestamp(const std::string& path,
-                                          std::stringstream& ss);
-  static std::string generateErrorPage(int code, const std::string& phrase);
-  static std::string generateErrorPage(const std::string* file, int code,
-                                       const std::string& phrase);
-  static std::string generateDateValue(void);
-  static std::string convertPathToContentType(const std::string& path);
-  static bool isMaintainConnection(int code);
-  static bool isRedirectStatusCode(int code);
-  static std::map<std::string, std::string> makeContentTypeMap(void);
-  static std::set<int> makeDisconnectCodeSet(void);
-  static std::set<int> makeRedirectCodeSet(void);
+namespace HttpUtils {
+std::string generateErrorPage(int code, const std::string& phrase);
+std::string generateErrorPage(const std::string* file, int code,
+                              const std::string& phrase);
+std::string generateDateValue(void);
+std::string convertPathToContentType(const std::string& path);
+bool isMaintainConnection(int code);
+bool isRedirectStatusCode(int code);
+std::map<std::string, std::string> makeContentTypeMap(void);
+std::set<int> makeDisconnectCodeSet(void);
+std::set<int> makeRedirectCodeSet(void);
+bool generateAutoindexPage(const std::string& dir, std::stringstream& ss);
 
- private:
-  HttpUtils(void);
-  ~HttpUtils(void);
-  HttpUtils(const HttpUtils&);
-  void operator=(const HttpUtils&);
-};
+namespace AutoindexUtils {
+bool generateDirectoryIndex(const struct dirent& entry, const std::string& dir,
+                            std::stringstream& ss);
+bool compareDirent(struct dirent& entry1, struct dirent& entry2);
+void generateFileLink(const std::string& file_name, std::stringstream& ss);
+bool generateFileDetail(const std::string& file_path, bool is_dir,
+                        std::stringstream& ss);
+bool generateFileDetailTimestamp(const std::string& path,
+                                 std::stringstream& ss);
+}  // namespace AutoindexUtils
+}  // namespace HttpUtils
 
 #endif
