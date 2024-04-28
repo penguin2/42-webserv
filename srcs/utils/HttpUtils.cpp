@@ -120,8 +120,7 @@ std::string HttpUtils::generateErrorPage(const std::string* file, int code,
   return ss.str();
 }
 
-// (注)フォーマットサイズが大きすぎるとバッファオーバーフローします
-std::string HttpUtils::generateDateValue() {
+std::string HttpUtils::generateDateValue(void) {
   // "Fri, 12 Apr 2024 01:12:16 GMT":29文字
   // %a(Fri) :3文字 曜日省略形
   // %d(12)  :2文字 Day
