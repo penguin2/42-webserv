@@ -50,7 +50,7 @@ bool HttpUtils::generateDirectoryIndex(struct dirent entry,
   std::string file_name(entry.d_name);
   if (is_dir_file_type) file_name.push_back('/');
   ss << "<a href=\"" << file_name << "\">" << file_name << "</a>\r\n";
-  ss << "\" " << generateDateValue("%d-%b-%Y %H:%M") << " ";
+  ss << "\" " << generateDateValue() << " ";
   if (is_dir_file_type) {
     ss << '_';
   } else {
@@ -121,8 +121,16 @@ std::string HttpUtils::generateErrorPage(const std::string* file, int code,
 }
 
 // (注)フォーマットサイズが大きすぎるとバッファオーバーフローします
-std::string HttpUtils::generateDateValue(const std::string& fmt) {
-  const int buffer_size = 256;
+std::string HttpUtils::generateDateValue() {
+  // "Fri, 12 Apr 2024 01:12:16 GMT":29文字
+  // %a(Fri) :3文字 曜日省略形
+  // %d(12)  :2文字 Day
+  // %b(Apr) :3文字 月名省略形
+  // %Y(2024):4文字 Year
+  // %H(01)  :2文字 Hour
+  // %M(12)  :2文字 Min
+  // %S(16)  :2文字 Sec
+  const int buffer_size = 32;
   char buf[buffer_size];
   std::time_t raw_time;
 
@@ -130,7 +138,7 @@ std::string HttpUtils::generateDateValue(const std::string& fmt) {
   std::time(&raw_time);
   timeinfo = std::gmtime(&raw_time);
 
-  std::strftime(buf, buffer_size, fmt.c_str(), timeinfo);
+  std::strftime(buf, buffer_size, "%a, %d %b %Y %H:%M:%S GMT", timeinfo);
   return std::string(buf);
 }
 

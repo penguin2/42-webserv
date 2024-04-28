@@ -14,7 +14,7 @@ class HttpUtils {
   static std::string generateErrorPage(int code, const std::string& phrase);
   static std::string generateErrorPage(const std::string* file, int code,
                                        const std::string& phrase);
-  static std::string generateDateValue(const std::string& fmt);
+  static std::string generateDateValue(void);
   static std::string convertPathToContentType(const std::string& path);
   static bool isMaintainConnection(int code);
   static bool isRedirectStatusCode(int code);
