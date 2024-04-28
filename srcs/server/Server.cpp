@@ -84,7 +84,7 @@ int Server::addConnection(int connected_socket_fd) {
       new Connection(connected_socket_fd, event_manager_);
 
   if (event_manager_->insert(connected_socket_fd, new_connection,
-                             EventManager::kEventTypeRead) < 0) {
+                             EventType::READ) < 0) {
     delete new_connection;
     return -1;
   }

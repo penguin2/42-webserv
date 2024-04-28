@@ -76,8 +76,8 @@ int Connection::handlerSend() {
 }
 
 int Connection::handlerCgi() {
-  const bool is_write_event = EventManager::isWriteEvent(getEventType());
-  const bool is_read_event = EventManager::isReadEvent(getEventType());
+  const bool is_write_event = EventType::isWrite(getEventType());
+  const bool is_read_event = EventType::isRead(getEventType());
 
   if (is_write_event && handlerCgiWrite() < 0) return -1;
   if (is_read_event && handlerCgiRead() < 0) return -1;
@@ -140,28 +140,25 @@ void Connection::initTransitHandlers() {
 }
 
 int Connection::recvToSend(Connection* conn) {
-  return conn->event_manager_->modify(conn->socket_fd_, conn,
-                                      EventManager::kEventTypeWrite);
+  return conn->event_manager_->modify(conn->socket_fd_, conn, EventType::WRITE);
 }
 
 int Connection::recvToCgi(Connection* conn) {
   conn->cgi_ = Cgi::createCgi(conn->http_.getCgiRequest());
   if (conn->cgi_ == NULL || conn->event_manager_->erase(conn->socket_fd_) < 0 ||
       conn->event_manager_->insert(conn->cgi_->getReadFd(), conn,
-                                   EventManager::kEventTypeRead) < 0 ||
+                                   EventType::READ) < 0 ||
       conn->event_manager_->insert(conn->cgi_->getWriteFd(), conn,
-                                   EventManager::kEventTypeWrite) < 0)
+                                   EventType::WRITE) < 0)
     return -1;
   return 0;
 }
 
 int Connection::sendToRecv(Connection* conn) {
-  return conn->event_manager_->modify(conn->socket_fd_, conn,
-                                      EventManager::kEventTypeRead);
+  return conn->event_manager_->modify(conn->socket_fd_, conn, EventType::READ);
 }
 
 int Connection::cgiToSend(Connection* conn) {
   conn->clearCgi();
-  return conn->event_manager_->insert(conn->socket_fd_, conn,
-                                      EventManager::kEventTypeWrite);
+  return conn->event_manager_->insert(conn->socket_fd_, conn, EventType::WRITE);
 }
