@@ -41,9 +41,7 @@ bool FileUtils::writeAllDataToFile(const std::string &file_path,
   return true;
 }
 
-// ファイルからデータを読み取り文字列に変換
-// file or dir の確認や権限確認はこの関数外で行う想定
-// if return is false -> ServerException(500)
+// file or dir の確認や権限確認はこの関数外で行う
 bool FileUtils::readAllDataFromFile(const std::string &file,
                                     std::stringstream &ss) {
   std::ifstream ifs(file.c_str(), std::ios::binary);

@@ -15,110 +15,6 @@
 #include "ServerException.hpp"
 #include "Utils.hpp"
 
-// ディレクトリの存在、権限等は確認済みである前提
-bool HttpUtils::generateAutoindexPage(const std::string& dir,
-                                      std::stringstream& ss) {
-  std::vector<struct dirent> dir_data = FileUtils::readDirData(dir);
-  if (dir_data.size() == 0) return false;
-  std::sort(dir_data.begin(), dir_data.end(), AutoindexUtils::compareDirent);
-
-  ss << "<html>\r\n"
-     << "<head>\r\n"
-     << "<title>Index of /autoindex/</title>\r\n"
-     << "</head>\r\n"
-     << "<body>\r\n"
-     << "<h1>Index of /autoindex/</h1>\r\n"
-     << "<hr>\r\n"
-     << "<pre>\r\n"
-     << "<a href=\"../\">../</a>\r\n";
-  for (std::vector<struct dirent>::const_iterator it = dir_data.begin();
-       it != dir_data.end(); ++it) {
-    if (AutoindexUtils::generateDirectoryIndex(*it, dir, ss) == false)
-      return false;
-  }
-  ss << "<pre>\r\n"
-     << "<hr>\r\n"
-     << "</body>\r\n"
-     << "</html>\r\n";
-  return true;
-}
-
-bool HttpUtils::AutoindexUtils::generateDirectoryIndex(
-    const struct dirent& entry, const std::string& dir, std::stringstream& ss) {
-  const std::string absolute_path(dir + "/" + entry.d_name);
-
-  if (entry.d_name == std::string(".") || entry.d_name == std::string(".."))
-    return true;
-  bool is_dir_file_type = (entry.d_type == DT_DIR);
-  std::string file_name(entry.d_name);
-  if (is_dir_file_type) file_name.push_back('/');
-  AutoindexUtils::generateFileLink(file_name, ss);
-  if (AutoindexUtils::generateFileDetail(absolute_path, is_dir_file_type, ss) ==
-      false)
-    return false;
-  return true;
-}
-
-void HttpUtils::AutoindexUtils::generateFileLink(const std::string& file_name,
-                                                 std::stringstream& ss) {
-  const int n = 50;
-
-  ss << "<a href=\"" << file_name << "\">";
-  if (file_name.size() <= n)
-    ss << file_name;
-  else
-    ss << file_name.substr(0, n - 2) << "..>";
-  ss << "</a> ";
-  if (file_name.size() <= n) {
-    for (size_t i = 0; i < (n - file_name.size()); i++) ss << ' ';
-  }
-}
-
-bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
-                                                   bool is_dir,
-                                                   std::stringstream& ss) {
-  const int n = 20;
-
-  if (generateFileDetailTimestamp(file_path, ss) == false) return false;
-  if (is_dir) {
-    for (size_t i = 1; i < n; i++) ss << ' ';
-    ss << '_';
-  } else {
-    off_t file_size = FileUtils::getFileSize(file_path);
-    if (file_size < 0) return false;
-    std::stringstream ss_file_size;
-    ss_file_size << file_size;
-    for (size_t i = ss_file_size.str().size(); i < n; i++) ss << ' ';
-    ss << ss_file_size.str();
-  }
-  ss << " \r\n";
-  return true;
-}
-
-bool HttpUtils::AutoindexUtils::generateFileDetailTimestamp(
-    const std::string& path, std::stringstream& ss) {
-  struct stat st;
-  const int buffer_size = 256;
-  char date_str[buffer_size];
-
-  if (stat(path.c_str(), &st) < 0) return false;
-
-  std::tm* timeinfo;
-  timeinfo = std::gmtime(&st.st_mtime);
-
-  std::strftime(date_str, (buffer_size - 1), "%d-%b-%Y %H:%M", timeinfo);
-  ss << date_str;
-  return true;
-}
-
-bool HttpUtils::AutoindexUtils::compareDirent(struct dirent& entry1,
-                                              struct dirent& entry2) {
-  if (entry1.d_type == entry2.d_type)
-    return (std::string(entry1.d_name) < std::string(entry2.d_name));
-  if (entry1.d_type == DT_DIR) return true;
-  return false;
-}
-
 // デフォルトのエラーページHTMLをプログラムで生成
 std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
   std::stringstream ss;
@@ -177,24 +73,12 @@ std::string HttpUtils::generateErrorPage(const std::string* file, int code,
   return ss.str();
 }
 
-std::string HttpUtils::generateDateValue(void) {
-  // "Fri, 12 Apr 2024 01:12:16 GMT":29文字
-  // %a(Fri) :3文字 曜日省略形
-  // %d(12)  :2文字 Day
-  // %b(Apr) :3文字 月名省略形
-  // %Y(2024):4文字 Year
-  // %H(01)  :2文字 Hour
-  // %M(12)  :2文字 Min
-  // %S(16)  :2文字 Sec
-  const int buffer_size = 32;
+std::string HttpUtils::generateDateAsFormat(std::time_t t,
+                                            const std::string& fmt) {
+  const int buffer_size = 256;
   char buf[buffer_size];
-  std::time_t raw_time;
 
-  std::tm* timeinfo;
-  std::time(&raw_time);
-  timeinfo = std::gmtime(&raw_time);
-
-  std::strftime(buf, buffer_size, "%a, %d %b %Y %H:%M:%S GMT", timeinfo);
+  std::strftime(buf, buffer_size, fmt.c_str(), std::gmtime(&t));
   return std::string(buf);
 }
 
@@ -262,4 +146,93 @@ std::set<int> HttpUtils::makeRedirectCodeSet(void) {
   redirect_status_codes.insert(307);
   redirect_status_codes.insert(308);
   return redirect_status_codes;
+}
+
+bool HttpUtils::generateAutoindexPage(const std::string& dir,
+                                      std::stringstream& ss) {
+  std::vector<struct dirent> dir_data = FileUtils::readDirData(dir);
+  if (dir_data.size() == 0) return false;
+  std::sort(dir_data.begin(), dir_data.end(), AutoindexUtils::compareDirent);
+
+  ss << "<html>\r\n"
+     << "<head>\r\n"
+     << "<title>Index of /autoindex/</title>\r\n"
+     << "</head>\r\n"
+     << "<body>\r\n"
+     << "<h1>Index of /autoindex/</h1>\r\n"
+     << "<hr>\r\n"
+     << "<pre>\r\n"
+     << "<a href=\"../\">../</a>\r\n";
+  for (std::vector<struct dirent>::const_iterator it = dir_data.begin();
+       it != dir_data.end(); ++it) {
+    if (AutoindexUtils::generateFileRecord(*it, dir, ss) == false) return false;
+  }
+  ss << "<pre>\r\n"
+     << "<hr>\r\n"
+     << "</body>\r\n"
+     << "</html>\r\n";
+  return true;
+}
+
+bool HttpUtils::AutoindexUtils::generateFileRecord(const struct dirent& entry,
+                                                   const std::string& dir,
+                                                   std::stringstream& ss) {
+  const std::string absolute_path(dir + "/" + entry.d_name);
+
+  if (entry.d_name == std::string(".") || entry.d_name == std::string(".."))
+    return true;
+  bool is_dir_file_type = (entry.d_type == DT_DIR);
+  std::string file_name(entry.d_name);
+  if (is_dir_file_type) file_name.push_back('/');
+  AutoindexUtils::generateFileLink(file_name, ss);
+  if (AutoindexUtils::generateFileDetail(absolute_path, is_dir_file_type, ss) ==
+      false)
+    return false;
+  return true;
+}
+
+void HttpUtils::AutoindexUtils::generateFileLink(const std::string& file_name,
+                                                 std::stringstream& ss) {
+  const int n = 50;
+
+  ss << "<a href=\"" << file_name << "\">";
+  if (file_name.size() <= n)
+    ss << file_name;
+  else
+    ss << file_name.substr(0, n - 3) << "..>";
+  ss << "</a> ";
+  if (file_name.size() <= n) {
+    for (size_t i = 0; i < (n - file_name.size()); i++) ss << ' ';
+  }
+}
+
+bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
+                                                   bool is_dir,
+                                                   std::stringstream& ss) {
+  const int n = 20;
+  struct stat st;
+
+  if (stat(file_path.c_str(), &st) < 0) return false;
+  ss << generateDateAsFormat(st.st_mtime, "%d-%b-%Y %H:%M");
+  if (is_dir) {
+    for (size_t i = 1; i < n; i++) ss << ' ';
+    ss << '_';
+  } else {
+    off_t file_size = FileUtils::getFileSize(file_path);
+    if (file_size < 0) return false;
+    std::stringstream ss_file_size;
+    ss_file_size << file_size;
+    for (size_t i = ss_file_size.str().size(); i < n; i++) ss << ' ';
+    ss << ss_file_size.str();
+  }
+  ss << " \r\n";
+  return true;
+}
+
+bool HttpUtils::AutoindexUtils::compareDirent(struct dirent& entry1,
+                                              struct dirent& entry2) {
+  if (entry1.d_type == entry2.d_type)
+    return (std::string(entry1.d_name) < std::string(entry2.d_name));
+  if (entry1.d_type == DT_DIR) return true;
+  return false;
 }

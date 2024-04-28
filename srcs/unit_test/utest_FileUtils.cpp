@@ -38,7 +38,7 @@ TEST(FileUtils, HAS_FILE_PERMISSION) {
   EXPECT_EQ(FileUtils::hasFilePermission("/", R_OK), true);
 }
 
-TEST(FileUtils, GENERATE_PAGE) {
+TEST(FileUtils, READ_ALL_DATA_FROM_FILE) {
   // file, directoryの判定や権限確認は対象外、ファイルが存在すれば成功
   testReadAllDataFromFile("/bin/ls", true);
   testReadAllDataFromFile("./Makefile", true);
