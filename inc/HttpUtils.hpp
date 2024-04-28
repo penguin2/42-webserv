@@ -11,6 +11,13 @@ class HttpUtils {
                                     std::stringstream& ss);
   static bool generateDirectoryIndex(struct dirent, const std::string& dir,
                                      std::stringstream& ss);
+  static bool compareDirent(struct dirent& entry1, struct dirent& entry2);
+  static void generateFileLink(const std::string& file_name,
+                                    std::stringstream& ss);
+  static bool generateFileDetail(const std::string& file_path, bool is_dir,
+                                      std::stringstream& ss);
+  static bool generateFileDetailTimestamp(const std::string& path,
+                                          std::stringstream& ss);
   static std::string generateErrorPage(int code, const std::string& phrase);
   static std::string generateErrorPage(const std::string* file, int code,
                                        const std::string& phrase);

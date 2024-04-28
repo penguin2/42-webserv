@@ -20,6 +20,7 @@ bool HttpUtils::generateAutoindexPage(const std::string& dir,
                                       std::stringstream& ss) {
   std::vector<struct dirent> dir_data = FileUtils::readDirData(dir);
   if (dir_data.size() == 0) return false;
+  std::sort(dir_data.begin(), dir_data.end(), HttpUtils::compareDirent);
 
   ss << "<html>\r\n"
      << "<head>\r\n"
@@ -44,22 +45,76 @@ bool HttpUtils::generateAutoindexPage(const std::string& dir,
 bool HttpUtils::generateDirectoryIndex(struct dirent entry,
                                        const std::string& dir,
                                        std::stringstream& ss) {
+  const std::string absolute_path(dir + "/" + entry.d_name);
+
   if (entry.d_name == std::string(".") || entry.d_name == std::string(".."))
     return true;
   bool is_dir_file_type = (entry.d_type == DT_DIR);
   std::string file_name(entry.d_name);
   if (is_dir_file_type) file_name.push_back('/');
-  ss << "<a href=\"" << file_name << "\">" << file_name << "</a>\r\n";
-  ss << "\" " << generateDateValue() << " ";
-  if (is_dir_file_type) {
+  HttpUtils::generateFileLink(file_name, ss);
+  if (HttpUtils::generateFileDetail(absolute_path, is_dir_file_type, ss) ==
+      false)
+    return false;
+  return true;
+}
+
+void HttpUtils::generateFileLink(const std::string& file_name,
+                                 std::stringstream& ss) {
+  const int n = 50;
+
+  ss << "<a href=\"" << file_name << "\">";
+  if (file_name.size() <= n)
+    ss << file_name;
+  else
+    ss << file_name.substr(0, n - 2) << "..>";
+  ss << "</a> ";
+  if (file_name.size() <= n) {
+    for (size_t i = 0; i < (n - file_name.size()); i++) ss << ' ';
+  }
+}
+
+bool HttpUtils::generateFileDetail(const std::string& file_path, bool is_dir,
+                                   std::stringstream& ss) {
+  const int n = 20;
+
+  if (generateFileDetailTimestamp(file_path, ss) == false) return false;
+  if (is_dir) {
+    for (size_t i = 1; i < n; i++) ss << ' ';
     ss << '_';
   } else {
-    off_t file_size = FileUtils::getFileSize(dir + "/" + entry.d_name);
+    off_t file_size = FileUtils::getFileSize(file_path);
     if (file_size < 0) return false;
-    ss << file_size;
+    std::stringstream ss_file_size;
+    ss_file_size << file_size;
+    for (size_t i = ss_file_size.str().size(); i < n; i++) ss << ' ';
+    ss << ss_file_size.str();
   }
-  ss << " \"\r\n";
+  ss << " \r\n";
   return true;
+}
+
+bool HttpUtils::generateFileDetailTimestamp(const std::string& path,
+                                            std::stringstream& ss) {
+  struct stat st;
+  const int buffer_size = 256;
+  char date_str[buffer_size];
+
+  if (stat(path.c_str(), &st) < 0) return false;
+
+  std::tm* timeinfo;
+  timeinfo = std::gmtime(&st.st_mtime);
+
+  std::strftime(date_str, (buffer_size - 1), "%d-%b-%Y %H:%M", timeinfo);
+  ss << date_str;
+  return true;
+}
+
+bool HttpUtils::compareDirent(struct dirent& entry1, struct dirent& entry2) {
+  if (entry1.d_type == entry2.d_type)
+    return (std::string(entry1.d_name) < std::string(entry2.d_name));
+  if (entry1.d_type == DT_DIR) return true;
+  return false;
 }
 
 // デフォルトのエラーページHTMLをプログラムで生成
