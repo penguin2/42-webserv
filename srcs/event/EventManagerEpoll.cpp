@@ -54,7 +54,7 @@ int EventManagerEpoll::wait(std::vector<ASocket*>& event_sockets,
       ready_list_[i].events = EPOLLIN;
 
     current_socket->setEventType(
-        EventManagerEpoll::convertEpollEventType(ready_list_[i].events));
+        EventManagerEpoll::makeEventType(ready_list_[i].events));
 
     if (ready_list_[i].events & (EPOLLIN | EPOLLOUT))
       event_sockets.push_back(current_socket);
@@ -67,7 +67,7 @@ int EventManagerEpoll::wait(std::vector<ASocket*>& event_sockets,
 
 int EventManagerEpoll::insert(int fd, ASocket* socket, int event_type) {
   struct epoll_event ev;
-  ev.events = EventManagerEpoll::getEpollEventType(event_type);
+  ev.events = EventManagerEpoll::makeEpollFlags(event_type);
   ev.data.ptr = reinterpret_cast<void*>(socket);
   if (epoll_ctl(ep_fd_, EPOLL_CTL_ADD, fd, &ev) < 0) {
     LOG(WARN, "epoll_ctl(insert): ", std::strerror(errno));
@@ -78,7 +78,7 @@ int EventManagerEpoll::insert(int fd, ASocket* socket, int event_type) {
 
 int EventManagerEpoll::modify(int fd, ASocket* socket, int new_event_type) {
   struct epoll_event ev;
-  ev.events = EventManagerEpoll::getEpollEventType(new_event_type);
+  ev.events = EventManagerEpoll::makeEpollFlags(new_event_type);
   ev.data.ptr = reinterpret_cast<void*>(socket);
   if (epoll_ctl(ep_fd_, EPOLL_CTL_MOD, fd, &ev) < 0) {
     LOG(WARN, "epoll_ctl(modify): ", std::strerror(errno));
@@ -95,16 +95,16 @@ int EventManagerEpoll::erase(int fd) {
   return 0;
 }
 
-int EventManagerEpoll::convertEpollEventType(int epoll_event_type) {
+int EventManagerEpoll::makeEventType(int epoll_flags) {
   int event_type = 0;
-  if (epoll_event_type & EPOLLIN) event_type |= EventType::READ;
-  if (epoll_event_type & EPOLLOUT) event_type |= EventType::WRITE;
+  if (epoll_flags & EPOLLIN) event_type |= EventType::READ;
+  if (epoll_flags & EPOLLOUT) event_type |= EventType::WRITE;
   return event_type;
 }
 
-int EventManagerEpoll::getEpollEventType(int event_type) {
-  int epoll_event_type = 0;
-  if (event_type & EventType::READ) epoll_event_type |= EPOLLIN;
-  if (event_type & EventType::WRITE) epoll_event_type |= EPOLLOUT;
-  return epoll_event_type;
+int EventManagerEpoll::makeEpollFlags(int event_type) {
+  int epoll_flags = 0;
+  if (event_type & EventType::READ) epoll_flags |= EPOLLIN;
+  if (event_type & EventType::WRITE) epoll_flags |= EPOLLOUT;
+  return epoll_flags;
 }

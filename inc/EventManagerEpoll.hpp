@@ -25,8 +25,8 @@ class EventManagerEpoll {
   static const int kEvlistMaxSize = 1024;
   static struct epoll_event ready_list_[kEvlistMaxSize];
 
-  static int getEpollEventType(int event_type);
-  static int convertEpollEventType(int epoll_event_type);
+  static int makeEpollFlags(int event_type);
+  static int makeEventType(int epoll_flags);
 
   EventManagerEpoll();
   EventManagerEpoll(const EventManagerEpoll&);
