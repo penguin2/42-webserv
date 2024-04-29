@@ -1,3 +1,4 @@
+#if defined(__MACH__)
 #include "EventManagerKqueue.hpp"
 
 #include <sys/event.h>
@@ -102,3 +103,5 @@ int EventManagerKqueue::makeEventType(int kqueue_filter) {
   if (kqueue_filter == EVFILT_WRITE) return EventType::WRITE;
   return 0;
 }
+
+#endif

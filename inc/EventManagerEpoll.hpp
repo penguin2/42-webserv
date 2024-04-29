@@ -1,5 +1,6 @@
 #ifndef WEBSERV_EVENT_MANAGER_EPOLL_H
 #define WEBSERV_EVENT_MANAGER_EPOLL_H
+#if defined (__linux__)
 
 #include <map>
 #include <vector>
@@ -33,4 +34,5 @@ class EventManagerEpoll {
   EventManagerEpoll& operator=(const EventManagerEpoll&);
 };
 
+#endif
 #endif

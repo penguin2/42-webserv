@@ -1,3 +1,4 @@
+#if defined(__linux__)
 #include "EventManagerEpoll.hpp"
 
 #include <sys/epoll.h>
@@ -109,3 +110,5 @@ int EventManagerEpoll::makeEpollFlags(int event_type) {
   if (event_type & EventType::WRITE) epoll_flags |= EPOLLOUT;
   return epoll_flags;
 }
+
+#endif

@@ -8,24 +8,13 @@ SRC_DIR		= ./srcs
 OBJ_DIR		= ./obj
 INC_DIR		= ./inc
 
-
-SRCS		:= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp" -and ! -name "utest*.cpp")
+SRCS		= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp" -and ! -name "utest*.cpp")
 
 ### OS dependency
 OS			= $(shell uname -s)
-OS_SRCS		:= event/EventManagerEpoll.cpp \
-				event/EventManagerKqueue.cpp
-MACOS_SRCS	:= event/EventManagerKqueue.cpp
-LINUX_SRCS	:= event/EventManagerEpoll.cpp
-
-SRCS		:= $(filter-out $(OS_SRCS), $(SRCS))
 ifeq ($(OS), Darwin)
 # TODO: check flags: -pedantic-errors -Wall -Wextra -Werror
 CXXFLAGS	= -std=c++98 -MMD -MP
-CXXFLAGS	+= -DWEBSERV_MACOS
-SRCS		+= $(MACOS_SRCS)
-else ifeq ($(OS), Linux)
-SRCS		+= $(LINUX_SRCS)
 endif
 ###
 
@@ -36,9 +25,9 @@ endif
 ifeq ($(MAKECMDGOALS), request_parse_test)
 	SRCS += ./test_main/main_request_parse.cpp
 else ifeq ($(MAKECMDGOALS), unit_test)
-	CXXFLAGS	+= -std=c++11
+	CXXFLAGS	= -std=c++11
 	INCLUDE		+= -I$(gtestdir)
-	SRCS		+= $(shell cd $(SRC_DIR) && find * -name "utest*.cpp")
+	SRCS		= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp")
 else
 	SRCS += main.cpp
 endif

@@ -1,5 +1,6 @@
 #ifndef WEBSERV_EVENT_MANAGER_KQUEUE_H
 #define WEBSERV_EVENT_MANAGER_KQUEUE_H
+#if defined(__MACH__)
 
 #include <map>
 #include <vector>
@@ -35,4 +36,5 @@ class EventManagerKqueue {
   EventManagerKqueue& operator=(const EventManagerKqueue&);
 };
 
+#endif
 #endif
