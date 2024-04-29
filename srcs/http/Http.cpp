@@ -74,7 +74,11 @@ void Http::insertCommonHeaders(bool keep_alive) {
   this->keep_alive_flag_ = keep_alive;
   response_.insertHeader("Connection", (keep_alive ? "Keep-Alive" : "Close"));
   response_.insertHeader("Server", "Webserv");
-  response_.insertHeader("Date", HttpUtils::generateDateValue());
+
+  std::time_t raw_time;
+  std::time(&raw_time);
+  response_.insertHeader("Date", HttpUtils::generateDateAsFormat(
+                                     raw_time, "%a, %d %b %Y %H:%M:%S GMT"));
 }
 
 connection::State Http::dispatchRequestHandler(void) {
