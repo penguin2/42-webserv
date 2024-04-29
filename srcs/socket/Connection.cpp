@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "EventManager.hpp"
-#include "Logger.hpp"
 #include "Server.hpp"
 
 char Connection::recv_buffer_[Connection::kRecvBufferSize];
@@ -88,7 +87,8 @@ int Connection::handlerCgi() {
 int Connection::handlerCgiRead() {
   if (cgi_->readMessage() < 0) return -1;
   if (cgi_->isReadDone()) {
-    if (event_manager_->erase(cgi_->getReadFd()) < 0 || cgi_->clearReadFd() < 0)
+    if (event_manager_->erase(cgi_->getReadFd(), this, EventType::READ) < 0 ||
+        cgi_->clearReadFd() < 0)
       return -1;
     http_.setCgiResponseMessage(cgi_->getCgiResponseMessage());
     const connection::State next_state = http_.httpHandler();
@@ -99,16 +99,19 @@ int Connection::handlerCgiRead() {
 
 int Connection::handlerCgiWrite() {
   if (cgi_->writeMessage() < 0) return -1;
-  if (cgi_->isWriteDone() && (event_manager_->erase(cgi_->getWriteFd()) < 0 ||
-                              cgi_->clearWriteFd() < 0))
+  if (cgi_->isWriteDone() &&
+      (event_manager_->erase(cgi_->getWriteFd(), this, EventType::WRITE) < 0 ||
+       cgi_->clearWriteFd() < 0))
     return -1;
   return 0;
 }
 
 void Connection::clearCgi() {
   if (cgi_ != NULL) {
-    if (cgi_->getReadFd() != -1) event_manager_->erase(cgi_->getReadFd());
-    if (cgi_->getWriteFd() != -1) event_manager_->erase(cgi_->getWriteFd());
+    if (cgi_->getReadFd() != -1)
+      event_manager_->erase(cgi_->getReadFd(), this, EventType::READ);
+    if (cgi_->getWriteFd() != -1)
+      event_manager_->erase(cgi_->getWriteFd(), this, EventType::WRITE);
     delete cgi_;
     cgi_ = NULL;
   }
@@ -145,7 +148,9 @@ int Connection::recvToSend(Connection* conn) {
 
 int Connection::recvToCgi(Connection* conn) {
   conn->cgi_ = Cgi::createCgi(conn->http_.getCgiRequest());
-  if (conn->cgi_ == NULL || conn->event_manager_->erase(conn->socket_fd_) < 0 ||
+  if (conn->cgi_ == NULL ||
+      conn->event_manager_->erase(conn->socket_fd_, conn, EventType::READ) <
+          0 ||
       conn->event_manager_->insert(conn->cgi_->getReadFd(), conn,
                                    EventType::READ) < 0 ||
       conn->event_manager_->insert(conn->cgi_->getWriteFd(), conn,

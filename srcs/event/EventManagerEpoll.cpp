@@ -87,9 +87,10 @@ int EventManagerEpoll::modify(int fd, ASocket* socket, int new_event_type) {
   return 0;
 }
 
-int EventManagerEpoll::erase(int fd) {
+int EventManagerEpoll::erase(int fd, ASocket* socket, int event_type) {
+  (void)socket;
+  (void)event_type;
   if (epoll_ctl(ep_fd_, EPOLL_CTL_DEL, fd, NULL) < 0) {
-    LOG(DEBUG, "epoll_ctl(erase): ", std::strerror(errno));
     return -1;
   }
   return 0;

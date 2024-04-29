@@ -14,9 +14,9 @@ class EventManagerEpoll {
 
   int wait(std::vector<ASocket*>& event_sockets,
            std::vector<ASocket*>& closing_sockets);
-  int insert(int fd, ASocket* connection, int event_type);
-  int modify(int fd, ASocket* connection, int new_event_type);
-  int erase(int fd);
+  int insert(int fd, ASocket* socket, int event_type);
+  int modify(int fd, ASocket* socket, int new_event_type);
+  int erase(int fd, ASocket* socket, int event_type);
 
  private:
   int ep_fd_;

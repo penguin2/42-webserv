@@ -90,7 +90,7 @@ int Server::addConnection(int connected_socket_fd) {
   }
 
   if (timeout_manager_->insert(new_connection) < 0) {
-    event_manager_->erase(connected_socket_fd);
+    event_manager_->erase(connected_socket_fd, new_connection, EventType::READ);
     delete new_connection;
     return -1;
   }
@@ -114,7 +114,8 @@ int Server::executeEventSockets(const std::vector<ASocket*>& event_sockets,
 int Server::closeSocket(ASocket* socket) {
   const int closing_socket_fd = socket->getSocketFd();
 
-  event_manager_->erase(closing_socket_fd);
+  event_manager_->erase(closing_socket_fd, socket, EventType::READ);
+  event_manager_->erase(closing_socket_fd, socket, EventType::WRITE);
   timeout_manager_->erase(socket);
   sockets_.erase(closing_socket_fd);
   close(closing_socket_fd);
