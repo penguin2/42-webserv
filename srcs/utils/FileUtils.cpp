@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "Utils.hpp"
+
 bool FileUtils::isExistDir(const std::string& file_path) {
   struct stat st;
 
@@ -139,5 +141,5 @@ FileUtils::Entry::Type FileUtils::Entry::getFileType(void) const {
 }
 
 bool FileUtils::Entry::startWithDot(void) const {
-  return (this->file_name_[0] == '.');
+  return (Utils::isStartsWith(this->file_name_, "."));
 }
