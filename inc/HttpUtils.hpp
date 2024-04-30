@@ -8,6 +8,8 @@
 #include <set>
 #include <string>
 
+#include "FileUtils.hpp"
+
 namespace HttpUtils {
 std::string generateErrorPage(int code, const std::string& phrase);
 std::string generateErrorPage(const std::string* file, int code,
@@ -24,14 +26,14 @@ bool generateAutoindexPage(const std::string& path_component,
                            std::stringstream& ss);
 
 namespace AutoindexUtils {
-bool generateFileRecord(const struct dirent& entry, const std::string& dir,
+bool generateFileRecord(const FileUtils::Entry& entry, const std::string& dir,
                         std::stringstream& ss);
-bool compareDirent(struct dirent& entry1, struct dirent& entry2);
 void generateFileLink(const std::string& file_name, std::stringstream& ss);
 bool generateFileDetail(const std::string& file_path, bool is_dir,
                         std::stringstream& ss);
 bool generateFileDetailTimestamp(const std::string& path,
                                  std::stringstream& ss);
+
 }  // namespace AutoindexUtils
 }  // namespace HttpUtils
 

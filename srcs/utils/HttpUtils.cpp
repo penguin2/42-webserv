@@ -151,10 +151,10 @@ std::set<int> HttpUtils::makeRedirectCodeSet(void) {
 bool HttpUtils::generateAutoindexPage(const std::string& path_component,
                                       const std::string& absolute_dir_path,
                                       std::stringstream& ss) {
-  std::vector<struct dirent> dir_data =
-      FileUtils::readDirData(absolute_dir_path);
+  std::vector<FileUtils::Entry> dir_data =
+      FileUtils::Entry::readDirData(absolute_dir_path);
   if (dir_data.size() == 0) return false;
-  std::sort(dir_data.begin(), dir_data.end(), AutoindexUtils::compareDirent);
+  std::sort(dir_data.begin(), dir_data.end());
 
   ss << "<html>\r\n"
      << "<head>\r\n"
@@ -165,8 +165,11 @@ bool HttpUtils::generateAutoindexPage(const std::string& path_component,
      << "<hr>\r\n"
      << "<pre>\r\n"
      << "<a href=\"../\">../</a>\r\n";
-  for (std::vector<struct dirent>::const_iterator it = dir_data.begin();
+  for (std::vector<FileUtils::Entry>::const_iterator it = dir_data.begin();
        it != dir_data.end(); ++it) {
+    if (it->startWithDot() == true ||
+        it->getFileType() == FileUtils::Entry::UNKNOWN)
+      continue;
     if (AutoindexUtils::generateFileRecord(*it, absolute_dir_path, ss) == false)
       return false;
   }
@@ -177,18 +180,16 @@ bool HttpUtils::generateAutoindexPage(const std::string& path_component,
   return true;
 }
 
-bool HttpUtils::AutoindexUtils::generateFileRecord(const struct dirent& entry,
-                                                   const std::string& dir,
-                                                   std::stringstream& ss) {
-  const std::string absolute_path(dir + "/" + entry.d_name);
+bool HttpUtils::AutoindexUtils::generateFileRecord(
+    const FileUtils::Entry& entry, const std::string& dir,
+    std::stringstream& ss) {
+  const std::string absolute_path(dir + "/" + entry.getFileName());
 
-  if (entry.d_name == std::string(".") || entry.d_name == std::string(".."))
-    return true;
-  bool is_dir_file_type = (entry.d_type == DT_DIR);
-  std::string file_name(entry.d_name);
-  if (is_dir_file_type) file_name.push_back('/');
+  std::string file_name(entry.getFileName());
+  const bool is_dir_type = (entry.getFileType() == FileUtils::Entry::DIRECTORY);
+  if (is_dir_type) file_name.push_back('/');
   AutoindexUtils::generateFileLink(file_name, ss);
-  if (AutoindexUtils::generateFileDetail(absolute_path, is_dir_file_type, ss) ==
+  if (AutoindexUtils::generateFileDetail(absolute_path, is_dir_type, ss) ==
       false)
     return false;
   return true;
@@ -230,12 +231,4 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
   }
   ss << " \r\n";
   return true;
-}
-
-bool HttpUtils::AutoindexUtils::compareDirent(struct dirent& entry1,
-                                              struct dirent& entry2) {
-  if (entry1.d_type == entry2.d_type)
-    return (std::string(entry1.d_name) < std::string(entry2.d_name));
-  if (entry1.d_type == DT_DIR) return true;
-  return false;
 }
