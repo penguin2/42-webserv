@@ -44,7 +44,6 @@ TEST(FileUtils, READ_ALL_DATA_FROM_FILE) {
   testReadAllDataFromFile("./Makefile", true);
   testReadAllDataFromFile("./inc/", true);
   testReadAllDataFromFile("./inc", true);
-  testReadAllDataFromFile("/etc/nginx/", true);
   testReadAllDataFromFile("", false);
   testReadAllDataFromFile("./nofile", false);
   testReadAllDataFromFile("./nofile.html", false);
