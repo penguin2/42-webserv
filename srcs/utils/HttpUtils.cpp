@@ -148,24 +148,27 @@ std::set<int> HttpUtils::makeRedirectCodeSet(void) {
   return redirect_status_codes;
 }
 
-bool HttpUtils::generateAutoindexPage(const std::string& dir,
+bool HttpUtils::generateAutoindexPage(const std::string& path_component,
+                                      const std::string& absolute_dir_path,
                                       std::stringstream& ss) {
-  std::vector<struct dirent> dir_data = FileUtils::readDirData(dir);
+  std::vector<struct dirent> dir_data =
+      FileUtils::readDirData(absolute_dir_path);
   if (dir_data.size() == 0) return false;
   std::sort(dir_data.begin(), dir_data.end(), AutoindexUtils::compareDirent);
 
   ss << "<html>\r\n"
      << "<head>\r\n"
-     << "<title>Index of /autoindex/</title>\r\n"
+     << "<title>Index of " << path_component << "</title>\r\n"
      << "</head>\r\n"
      << "<body>\r\n"
-     << "<h1>Index of /autoindex/</h1>\r\n"
+     << "<h1>Index of " << path_component << "</h1>\r\n"
      << "<hr>\r\n"
      << "<pre>\r\n"
      << "<a href=\"../\">../</a>\r\n";
   for (std::vector<struct dirent>::const_iterator it = dir_data.begin();
        it != dir_data.end(); ++it) {
-    if (AutoindexUtils::generateFileRecord(*it, dir, ss) == false) return false;
+    if (AutoindexUtils::generateFileRecord(*it, absolute_dir_path, ss) == false)
+      return false;
   }
   ss << "<pre>\r\n"
      << "<hr>\r\n"
@@ -216,7 +219,7 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
   ss << generateDateAsFormat(st.st_mtime, "%d-%b-%Y %H:%M");
   if (is_dir) {
     for (size_t i = 1; i < n; i++) ss << ' ';
-    ss << '_';
+    ss << '-';
   } else {
     off_t file_size = FileUtils::getFileSize(file_path);
     if (file_size < 0) return false;

@@ -19,7 +19,9 @@ bool isRedirectStatusCode(int code);
 std::map<std::string, std::string> makeContentTypeMap(void);
 std::set<int> makeDisconnectCodeSet(void);
 std::set<int> makeRedirectCodeSet(void);
-bool generateAutoindexPage(const std::string& dir, std::stringstream& ss);
+bool generateAutoindexPage(const std::string& path_component,
+                           const std::string& absolute_dir_path,
+                           std::stringstream& ss);
 
 namespace AutoindexUtils {
 bool generateFileRecord(const struct dirent& entry, const std::string& dir,
