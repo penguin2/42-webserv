@@ -35,9 +35,9 @@ bool FileUtils::writeAllDataToFile(const std::string &file_path,
                                    const std::string &data) {
   std::ofstream ofs(file_path.c_str());
 
-  if (!ofs.is_open()) return false;
+  if (ofs.fail()) return false;
   ofs << data;
-  ofs.close();
+  if (ofs.fail()) return false;
   return true;
 }
 
@@ -48,8 +48,6 @@ bool FileUtils::readAllDataFromFile(const std::string &file,
 
   if (ifs.fail()) return false;
   ss << ifs.rdbuf();
-  ifs.close();
-  if (ifs.eof() == false && ifs.fail()) return false;
   return true;
 }
 
