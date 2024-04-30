@@ -197,36 +197,35 @@ bool HttpUtils::AutoindexUtils::generateFileRecord(
 
 void HttpUtils::AutoindexUtils::generateFileLink(const std::string& file_name,
                                                  std::stringstream& ss) {
-  const int n = 50;
+  static const int MAX_FILE_NAME_SIZE = 50;
 
   ss << "<a href=\"" << file_name << "\">";
-  if (file_name.size() <= n)
+  if (file_name.size() <= MAX_FILE_NAME_SIZE)
     ss << file_name;
   else
-    ss << file_name.substr(0, n - 3) << "..>";
+    ss << file_name.substr(0, MAX_FILE_NAME_SIZE - 3) << "..>";
   ss << "</a> ";
-  if (file_name.size() <= n) {
-    for (size_t i = 0; i < (n - file_name.size()); i++) ss << ' ';
+  if (file_name.size() <= MAX_FILE_NAME_SIZE) {
+    ss << std::string(MAX_FILE_NAME_SIZE - file_name.size(), ' ');
   }
 }
 
 bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
                                                    bool is_dir,
                                                    std::stringstream& ss) {
-  const int n = 20;
+  static const int MAX_FILE_DETAIL_SIZE = 20;
   struct stat st;
 
   if (stat(file_path.c_str(), &st) < 0) return false;
   ss << generateDateAsFormat(st.st_mtime, "%d-%b-%Y %H:%M");
   if (is_dir) {
-    for (size_t i = 1; i < n; i++) ss << ' ';
-    ss << '-';
+    ss << std::string(MAX_FILE_DETAIL_SIZE - 1, ' ') << '-';
   } else {
     off_t file_size = FileUtils::getFileSize(file_path);
     if (file_size < 0) return false;
     std::stringstream ss_file_size;
     ss_file_size << file_size;
-    for (size_t i = ss_file_size.str().size(); i < n; i++) ss << ' ';
+    ss << std::string(MAX_FILE_DETAIL_SIZE - ss_file_size.str().size(), ' ');
     ss << ss_file_size.str();
   }
   ss << " \r\n";
