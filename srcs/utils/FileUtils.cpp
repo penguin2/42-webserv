@@ -98,13 +98,11 @@ bool FileUtils::Entry::operator<(const Entry& entry) const {
 }
 
 bool FileUtils::Entry::operator>=(const Entry& entry) const {
-  if (this->type_ != entry.type_) return (this->type_ >= entry.type_);
-  return (this->file_name_ >= entry.file_name_);
+  return ((*this == entry) || (*this > entry));
 }
 
 bool FileUtils::Entry::operator<=(const Entry& entry) const {
-  if (this->type_ != entry.type_) return (this->type_ <= entry.type_);
-  return (this->file_name_ <= entry.file_name_);
+  return ((*this == entry) || (*this < entry));
 }
 
 bool FileUtils::Entry::operator==(const Entry& entry) const {
@@ -113,8 +111,7 @@ bool FileUtils::Entry::operator==(const Entry& entry) const {
 }
 
 bool FileUtils::Entry::operator!=(const Entry& entry) const {
-  return ((this->type_ != entry.type_) ||
-          (this->file_name_ != entry.file_name_));
+  return (!(*this == entry));
 }
 
 // 存在しないディレクトリなら空のvector
