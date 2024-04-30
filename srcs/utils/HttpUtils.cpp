@@ -172,6 +172,7 @@ bool HttpUtils::generateAutoindexPage(const std::string& path_component,
       continue;
     if (AutoindexUtils::generateFileRecord(*it, absolute_dir_path, ss) == false)
       return false;
+    ss << "\r\n";
   }
   ss << "<pre>\r\n"
      << "<hr>\r\n"
@@ -228,6 +229,5 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
     ss << std::string(MAX_FILE_DETAIL_SIZE - ss_file_size.str().size(), ' ');
     ss << ss_file_size.str();
   }
-  ss << " \r\n";
   return true;
 }
