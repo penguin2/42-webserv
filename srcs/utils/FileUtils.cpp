@@ -14,7 +14,7 @@ bool FileUtils::isExistDir(const std::string &file_path) {
   struct stat st;
 
   if (stat(file_path.c_str(), &st) < 0) return false;
-  if ((st.st_mode & S_IFMT) == S_IFDIR) return true;
+  if (S_ISDIR(st.st_mode)) return true;
   return false;
 }
 
@@ -22,7 +22,7 @@ bool FileUtils::isExistFile(const std::string &file_path) {
   struct stat st;
 
   if (stat(file_path.c_str(), &st) < 0) return false;
-  if ((st.st_mode & S_IFMT) == S_IFREG) return true;
+  if (S_ISREG(st.st_mode)) return true;
   return false;
 }
 
