@@ -13,12 +13,14 @@ connection::State errorRequestHandler(const Request& request,
 connection::State redirectHandler(const Request& request, Response& response);
 // connection::State cgiHandler(Request& request, Response& response);
 
+namespace MethodHandler {
 connection::State getMethodHandler(const Request& request, Response& response);
 connection::State postMethodHandler(const Request& request, Response& response);
 connection::State deleteMethodHandler(const Request& request,
                                       Response& response);
 connection::State unknownMethodHandler(const Request& request,
                                        Response& response);
+}  // namespace MethodHandler
 }  // namespace RequestHandler
 
 #endif
