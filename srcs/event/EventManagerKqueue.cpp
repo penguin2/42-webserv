@@ -74,8 +74,8 @@ int EventManagerKqueue::insert(int fd, ASocket* socket, int event_type) {
 int EventManagerKqueue::modify(int fd, ASocket* socket, int new_event_type) {
   const int other_event_type =
       EventType::isRead(new_event_type) ? EventType::WRITE : EventType::READ;
-  erase(fd, socket, other_event_type);
-  if (insert(fd, socket, new_event_type) < 0) {
+  if (erase(fd, socket, other_event_type) < 0 ||
+      insert(fd, socket, new_event_type) < 0) {
     LOG(WARN, "kevent(modify): ", std::strerror(errno));
     return -1;
   }
