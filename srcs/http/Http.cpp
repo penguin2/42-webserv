@@ -14,13 +14,13 @@
 #include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 
-Http::Http() : state_(Http::RECV), keep_alive_flag_(true) {}
+Http::Http() : keep_alive_flag_(true) {}
 
 Http::~Http() {}
 
-connection::State Http::httpHandler() {
-  switch (state_) {
-    case (Http::RECV):
+connection::State Http::httpHandler(connection::State state) {
+  switch (state) {
+    case (connection::RECV):
       try {
         if (request_.parse(this->client_data_) == true) {
           return callRequestHandler();
@@ -29,13 +29,12 @@ connection::State Http::httpHandler() {
       } catch (ServerException& e) {
         return errorContentHandler(e.code(), e.what());
       }
-    case (Http::SEND):
+    case (connection::SEND):
       if (!keep_alive_flag_) return connection::CLOSED;
       raw_response_data_.clear();
       raw_response_data_.str("");
       response_.resetResponseData();
-      state_ = Http::RECV;
-      if (this->client_data_.size()) return Http::httpHandler();
+      if (this->client_data_.size()) return Http::httpHandler(connection::RECV);
       return connection::RECV;
     default:
       break;
@@ -77,7 +76,6 @@ connection::State Http::errorContentHandler(int status_code,
   response_.insertCommonHeaders(this->keep_alive_flag_);
   response_.setStatusLine(status_code, phrase);
   response_.getResponseRawData(raw_response_data_);
-  this->state_ = Http::SEND;
   return connection::SEND;
 }
 
@@ -88,6 +86,5 @@ connection::State Http::callRequestHandler(void) {
        HttpUtils::isMaintainConnection(this->response_.getStatusCode()));
   response_.insertCommonHeaders(this->keep_alive_flag_);
   response_.getResponseRawData(raw_response_data_);
-  this->state_ = Http::SEND;
   return next_state;
 }

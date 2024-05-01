@@ -17,7 +17,7 @@ class Http {
   Http(void);
   ~Http(void);
 
-  connection::State httpHandler(void);
+  connection::State httpHandler(connection::State state);
   void appendClientData(const std::string& data);
   std::string getResponse(void) const;
 
@@ -25,8 +25,6 @@ class Http {
   void setCgiResponseMessage(const std::string& message);
 
  private:
-  typedef enum eHttpState { RECV, SEND } HttpState;
-  HttpState state_;
   std::string client_data_;
   std::stringstream raw_response_data_;
   bool keep_alive_flag_;
