@@ -5,7 +5,9 @@
 #include "ConnectionState.hpp"
 #include "HttpUtils.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
 #include "ServerException.hpp"
+#include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 
 connection::State RequestHandler::dispatch(const Request& request,
@@ -42,8 +44,8 @@ connection::State RequestHandler::dispatch(const Request& request,
 connection::State RequestHandler::redirectHandler(const Request& request,
                                                   Response& response) {
   const Uri& uri = request.getRequestData()->getUri();
-  const std::string* redirect_uri = ConfigAdapter::searchRedirectUri(
-      uri.getHost(), uri.getPort(), uri.getPath());
+  // const std::string* redirect_uri = ConfigAdapter::searchRedirectUri(
+  //    uri.getHost(), uri.getPort(), uri.getPath());
   const int redirect_status_code = ConfigAdapter::searchRedirectStatusCode(
       uri.getHost(), uri.getPort(), uri.getPath());
 
@@ -55,7 +57,8 @@ connection::State RequestHandler::redirectHandler(const Request& request,
   response.appendBody(HttpUtils::generateErrorPage(
       error_page, redirect_status_code, "Redirect"));
   response.insertContentLengthIfNotSet();
-  response.insertHeader("Location", *redirect_uri);
+  // TODO redirect_uri use config data
+  response.insertHeader("Location", "/var/www/html/new-location/index.html");
   response.setStatusLine(redirect_status_code, "Redirect");
   return connection::SEND;
 }
