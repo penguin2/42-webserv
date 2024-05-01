@@ -63,6 +63,28 @@ connection::State RequestHandler::redirectHandler(const Request& request,
   return connection::SEND;
 }
 
+connection::State RequestHandler::errorRequestHandler(
+    const Request& request, Response& response, int status_code,
+    const std::string& phrase) {
+  const Uri& uri = request.getRequestData()->getUri();
+  const std::string* error_page =
+      ConfigAdapter::searchErrorPage(uri.getHost(), uri.getPort(), status_code);
+
+  response.appendBody(
+      HttpUtils::generateErrorPage(error_page, status_code, phrase));
+  response.insertHeader("Content-Type", "text/html");
+  response.insertContentLengthIfNotSet();
+  if (status_code == 405) {
+    const Uri& uri = request.getRequestData()->getUri();
+    const std::vector<std::string> allow_methods =
+        ConfigAdapter::getAllowMethods(uri.getHost(), uri.getPort(),
+                                       uri.getPath());
+    response.insertHeader("Allow", Utils::joinStrings(allow_methods, " ,"));
+  }
+  response.setStatusLine(status_code, phrase);
+  return connection::SEND;
+}
+
 // (仮)
 connection::State RequestHandler::getMethodHandler(const Request& request,
                                                    Response& response) {

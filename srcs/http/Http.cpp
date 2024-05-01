@@ -9,7 +9,9 @@
 #include "ConnectionState.hpp"
 #include "FileUtils.hpp"
 #include "HttpUtils.hpp"
+#include "Request.hpp"
 #include "RequestHandler.hpp"
+#include "Response.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
@@ -27,7 +29,7 @@ connection::State Http::httpHandler(connection::State state) {
         }
         return connection::RECV;
       } catch (ServerException& e) {
-        return errorContentHandler(e.code(), e.what());
+        return callRequestHandler(e.code(), e.what());
       }
     case (connection::SEND):
       if (!keep_alive_flag_) return connection::CLOSED;
@@ -54,29 +56,16 @@ void Http::setCgiResponseMessage(const std::string& message) {
   cgi_response_message_ = message;
 }
 
-connection::State Http::errorContentHandler(int status_code,
-                                            const std::string& phrase) {
-  const Uri& uri = request_.getRequestData()->getUri();
-  const std::string* error_page =
-      ConfigAdapter::searchErrorPage(uri.getHost(), uri.getPort(), status_code);
-
-  response_.appendBody(
-      HttpUtils::generateErrorPage(error_page, status_code, phrase));
-  response_.insertHeader("Content-Type", "text/html");
-  response_.insertContentLengthIfNotSet();
-  if (status_code == 405) {
-    const Uri& uri = request_.getRequestData()->getUri();
-    const std::vector<std::string> allow_methods =
-        ConfigAdapter::getAllowMethods(uri.getHost(), uri.getPort(),
-                                       uri.getPath());
-    response_.insertHeader("Allow", Utils::joinStrings(allow_methods, " ,"));
-  }
-  this->keep_alive_flag_ = (request_.haveConnectionCloseHeader() == false &&
-                            HttpUtils::isMaintainConnection(status_code));
+connection::State Http::callRequestHandler(int status_code,
+                                           const std::string& phrase) {
+  connection::State next_state = RequestHandler::errorRequestHandler(
+      request_, response_, status_code, phrase);
+  this->keep_alive_flag_ =
+      ((request_.haveConnectionCloseHeader() == false) &&
+       HttpUtils::isMaintainConnection(this->response_.getStatusCode()));
   response_.insertCommonHeaders(this->keep_alive_flag_);
-  response_.setStatusLine(status_code, phrase);
   response_.getResponseRawData(raw_response_data_);
-  return connection::SEND;
+  return next_state;
 }
 
 connection::State Http::callRequestHandler(void) {

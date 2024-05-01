@@ -34,8 +34,8 @@ class Http {
   CgiRequest* cgi_request_;
   std::string cgi_response_message_;
 
-  connection::State errorContentHandler(int status_code,
-                                        const std::string& phrase);
+  connection::State callRequestHandler(int status_code,
+                                       const std::string& phrase);
   connection::State callRequestHandler(void);
 
   Http(const Http&);
