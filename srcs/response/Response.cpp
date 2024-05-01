@@ -56,3 +56,5 @@ void Response::insertCommonHeaders(bool keep_alive) {
   this->insertHeader("Date", HttpUtils::generateDateAsFormat(
                                  raw_time, "%a, %d %b %Y %H:%M:%S GMT"));
 }
+
+int Response::getStatusCode(void) const { return this->data_->getStatusCode(); }

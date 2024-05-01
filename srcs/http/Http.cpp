@@ -9,15 +9,13 @@
 #include "ConnectionState.hpp"
 #include "FileUtils.hpp"
 #include "HttpUtils.hpp"
+#include "RequestHandler.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 
-Http::Http() : state_(Http::RECV), keep_alive_flag_(true) {
-  method_handler_map_["GET"] = &Http::getMethodHandler;
-  method_handler_map_["POST"] = &Http::postMethodHandler;
-  method_handler_map_["DELETE"] = &Http::deleteMethodHandler;
-}
+Http::Http() : state_(Http::RECV), keep_alive_flag_(true) {}
+
 Http::~Http() {}
 
 connection::State Http::httpHandler() {
@@ -25,7 +23,7 @@ connection::State Http::httpHandler() {
     case (Http::RECV):
       try {
         if (request_.parse(this->client_data_) == true) {
-          return dispatchRequestHandler();
+          return callRequestHandler();
         }
         return connection::RECV;
       } catch (ServerException& e) {
@@ -57,30 +55,6 @@ void Http::setCgiResponseMessage(const std::string& message) {
   cgi_response_message_ = message;
 }
 
-connection::State Http::dispatchRequestHandler(void) {
-  const Uri& uri = request_.getRequestData()->getUri();
-
-  if (!ConfigAdapter::isAllowMethods(uri.getHost(), uri.getPort(),
-                                     uri.getPath(),
-                                     request_.getRequestData()->getMethod()))
-    throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
-                          "Method not allowed");
-
-  const std::string* redirect_uri = ConfigAdapter::searchRedirectUri(
-      uri.getHost(), uri.getPort(), uri.getPath());
-  if (redirect_uri != NULL) {
-    return redirectHandler(*redirect_uri);
-  }
-  // TODO CGI Handle
-  // else if (ConfigAdapter::isCgiPath(uri.getHost(), uri.getPort(),
-  //   		  uri.getPath())) {
-  //     return cgiHandler();
-  // }
-  else {
-    return staticContentHandler();
-  }
-}
-
 connection::State Http::errorContentHandler(int status_code,
                                             const std::string& phrase) {
   const Uri& uri = request_.getRequestData()->getUri();
@@ -107,87 +81,13 @@ connection::State Http::errorContentHandler(int status_code,
   return connection::SEND;
 }
 
-connection::State Http::redirectHandler(const std::string& redirect_uri) {
-  const Uri& uri = request_.getRequestData()->getUri();
-  const int redirect_status_code = ConfigAdapter::searchRedirectStatusCode(
-      uri.getHost(), uri.getPort(), uri.getPath());
-
-  if (!HttpUtils::isRedirectStatusCode(redirect_status_code))
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Return directive is invalid");
-  const std::string* error_page = ConfigAdapter::searchErrorPage(
-      uri.getHost(), uri.getPort(), redirect_status_code);
-  response_.appendBody(HttpUtils::generateErrorPage(
-      error_page, redirect_status_code, "Redirect"));
+connection::State Http::callRequestHandler(void) {
+  connection::State next_state = RequestHandler::dispatch(request_, response_);
   this->keep_alive_flag_ =
-      (request_.haveConnectionCloseHeader() == false &&
-       HttpUtils::isMaintainConnection(redirect_status_code));
+      ((request_.haveConnectionCloseHeader() == false) &&
+       HttpUtils::isMaintainConnection(this->response_.getStatusCode()));
   response_.insertCommonHeaders(this->keep_alive_flag_);
-  response_.insertContentLengthIfNotSet();
-  response_.insertHeader("Location", redirect_uri);
-  response_.setStatusLine(redirect_status_code, "Redirect");
   response_.getResponseRawData(raw_response_data_);
   this->state_ = Http::SEND;
-  return connection::SEND;
-}
-
-connection::State Http::staticContentHandler(void) {
-  const std::string& method = request_.getRequestData()->getMethod();
-
-  if (method_handler_map_.find(method) == method_handler_map_.end()) {
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Unknown method");
-  }
-  return (this->*method_handler_map_[method])();
-}
-
-// (仮)
-connection::State Http::getMethodHandler(void) {
-  const Uri& uri = request_.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
-
-  if (!FileUtils::isExistFile(uri.getPath()))
-    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND,
-                          "File not Found");
-  if (!FileUtils::hasFilePermission(uri.getPath(), R_OK))
-    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
-                          "Has not permission");
-  std::stringstream ss;
-  if (FileUtils::readAllDataFromFile(uri.getPath(), ss) == false)
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Internal Server Error");
-  response_.appendBody(ss.str());
-  response_.insertContentLengthIfNotSet();
-  response_.insertHeader("Content-Type",
-                         HttpUtils::convertPathToContentType(uri.getPath()));
-  this->keep_alive_flag_ = (request_.haveConnectionCloseHeader() == false);
-  response_.insertCommonHeaders(this->keep_alive_flag_);
-  response_.setStatusLine(200, "OK");
-  response_.getResponseRawData(raw_response_data_);
-  this->state_ = Http::SEND;
-  return connection::SEND;
-  (void)paths;
-}
-
-// (仮)
-connection::State Http::postMethodHandler(void) {
-  const Uri& uri = request_.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
-
-  this->state_ = Http::SEND;
-  return connection::SEND;
-  (void)paths;
-}
-
-// (仮)
-connection::State Http::deleteMethodHandler(void) {
-  const Uri& uri = request_.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
-
-  this->state_ = Http::SEND;
-  return connection::SEND;
-  (void)paths;
+  return next_state;
 }
