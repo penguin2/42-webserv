@@ -36,9 +36,6 @@ class Http {
   CgiRequest* cgi_request_;
   std::string cgi_response_message_;
 
-  bool haveConnectionCloseHeader(void) const;
-  void insertCommonHeaders(bool keep_alive);
-
   connection::State dispatchRequestHandler(void);
   // RequestHandler
   connection::State errorContentHandler(int status_code,

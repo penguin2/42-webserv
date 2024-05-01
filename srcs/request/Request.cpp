@@ -253,3 +253,15 @@ void Request::insertContentLength(void) {
   std::string content_length_header = oss.str();
   data_->insertHeader(content_length_header);
 }
+
+bool Request::haveConnectionCloseHeader(void) const {
+  const std::map<std::string, std::string>& headers = this->data_->getHeaders();
+  const std::map<std::string, std::string>::const_iterator connection_header =
+      headers.find("connection");
+  if (connection_header != headers.end()) {
+    std::string connection_value(connection_header->second);
+    Utils::toLowerString(connection_value);
+    if (connection_value == "close") return true;
+  }
+  return false;
+}

@@ -57,30 +57,6 @@ void Http::setCgiResponseMessage(const std::string& message) {
   cgi_response_message_ = message;
 }
 
-bool Http::haveConnectionCloseHeader(void) const {
-  const std::map<std::string, std::string>& headers =
-      request_.getRequestData()->getHeaders();
-  const std::map<std::string, std::string>::const_iterator connection_header =
-      headers.find("connection");
-  if (connection_header != headers.end()) {
-    std::string connection_value(connection_header->second);
-    Utils::toLowerString(connection_value);
-    if (connection_value == "close") return true;
-  }
-  return false;
-}
-
-void Http::insertCommonHeaders(bool keep_alive) {
-  this->keep_alive_flag_ = keep_alive;
-  response_.insertHeader("Connection", (keep_alive ? "Keep-Alive" : "Close"));
-  response_.insertHeader("Server", "Webserv");
-
-  std::time_t raw_time;
-  std::time(&raw_time);
-  response_.insertHeader("Date", HttpUtils::generateDateAsFormat(
-                                     raw_time, "%a, %d %b %Y %H:%M:%S GMT"));
-}
-
 connection::State Http::dispatchRequestHandler(void) {
   const Uri& uri = request_.getRequestData()->getUri();
 
@@ -122,8 +98,9 @@ connection::State Http::errorContentHandler(int status_code,
                                        uri.getPath());
     response_.insertHeader("Allow", Utils::joinStrings(allow_methods, " ,"));
   }
-  insertCommonHeaders(haveConnectionCloseHeader() == false &&
-                      HttpUtils::isMaintainConnection(status_code));
+  this->keep_alive_flag_ = (request_.haveConnectionCloseHeader() == false &&
+                            HttpUtils::isMaintainConnection(status_code));
+  response_.insertCommonHeaders(this->keep_alive_flag_);
   response_.setStatusLine(status_code, phrase);
   response_.getResponseRawData(raw_response_data_);
   this->state_ = Http::SEND;
@@ -142,8 +119,10 @@ connection::State Http::redirectHandler(const std::string& redirect_uri) {
       uri.getHost(), uri.getPort(), redirect_status_code);
   response_.appendBody(HttpUtils::generateErrorPage(
       error_page, redirect_status_code, "Redirect"));
-  insertCommonHeaders(haveConnectionCloseHeader() == false &&
-                      HttpUtils::isMaintainConnection(redirect_status_code));
+  this->keep_alive_flag_ =
+      (request_.haveConnectionCloseHeader() == false &&
+       HttpUtils::isMaintainConnection(redirect_status_code));
+  response_.insertCommonHeaders(this->keep_alive_flag_);
   response_.insertContentLengthIfNotSet();
   response_.insertHeader("Location", redirect_uri);
   response_.setStatusLine(redirect_status_code, "Redirect");
@@ -182,7 +161,8 @@ connection::State Http::getMethodHandler(void) {
   response_.insertContentLengthIfNotSet();
   response_.insertHeader("Content-Type",
                          HttpUtils::convertPathToContentType(uri.getPath()));
-  insertCommonHeaders(haveConnectionCloseHeader() == false);
+  this->keep_alive_flag_ = (request_.haveConnectionCloseHeader() == false);
+  response_.insertCommonHeaders(this->keep_alive_flag_);
   response_.setStatusLine(200, "OK");
   response_.getResponseRawData(raw_response_data_);
   this->state_ = Http::SEND;

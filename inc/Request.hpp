@@ -13,6 +13,7 @@ class Request {
 
   bool parse(std::string& buffer);
   const RequestData* getRequestData(void) const;
+  bool haveConnectionCloseHeader(void) const;
 
  private:
   typedef enum eRequestState {
