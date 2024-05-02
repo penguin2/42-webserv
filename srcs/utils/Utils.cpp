@@ -47,6 +47,12 @@ void Utils::toLowerString(std::string &str) {
   }
 }
 
+std::string Utils::toLower(const std::string &str) {
+  std::string cpy(str);
+  Utils::toLowerString(cpy);
+  return cpy;
+}
+
 // 符号なし 8 or 10 or 16進数対応
 bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
   static const std::string string16 = "0123456789abcdef";
@@ -115,4 +121,12 @@ std::string Utils::joinStrings(const std::vector<std::string> &strings,
     if (it != strings.end()) ss << delimiter;
   }
   return ss.str();
+}
+
+bool Utils::isSameValueCaseInsensitive(
+    const std::map<std::string, std::string> &mp, const std::string &key,
+    const std::string &value) {
+  std::map<std::string, std::string>::const_iterator it = mp.find(key);
+  if (it == mp.end()) return false;
+  return Utils::toLower(it->second) == Utils::toLower(value);
 }

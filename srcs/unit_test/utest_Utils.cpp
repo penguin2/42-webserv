@@ -114,6 +114,15 @@ TEST(Utils, TO_LOWER_STRING) {
   testToLowerString("", "");
 }
 
+TEST(Utils, TO_LOWER) {
+  EXPECT_EQ(Utils::toLower("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            "abcdefghijklmnopqrstuvwxyz");
+  EXPECT_EQ(Utils::toLower("1234567890"), "1234567890");
+  EXPECT_EQ(Utils::toLower("aBcDeFg"), "abcdefg");
+  EXPECT_EQ(Utils::toLower(" TEST "), " test ");
+  EXPECT_EQ(Utils::toLower(""), "");
+}
+
 TEST(Utils, STR_TO_SIZE_T_SUCCESS) {
   // string, base(8 or 10 or 16), expect_value(size_t), expect(bool)
   testStrToSize_T("0", 10, 0, true);
@@ -220,4 +229,26 @@ TEST(Utils, JOIN_STRINGS) {
   testJoinStrings({"WORD"}, "/", "WORD");
   testJoinStrings({}, "/", "");
   testJoinStrings({"a", "b", "c"}, " -> ", "a -> b -> c");
+}
+
+TEST(Utils, IS_SAME_VALUE_CASE_INSENSITIVE) {
+  std::map<std::string, std::string> test_mp;
+  test_mp["a"] = "fourty-two";
+  test_mp["A"] = "ft-42";
+  test_mp["b"] = "aPpLe";
+
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "a", "fourty-two"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "a", "FOURTY-TWO"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "a", "FouRty-tWo"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "A", "ft-42"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "A", "FT-42"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "b", "APPLE"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "b", "apple"));
+
+  EXPECT_FALSE(Utils::isSameValueCaseInsensitive(test_mp, "a", "fourtytwo"));
+  EXPECT_FALSE(
+      Utils::isSameValueCaseInsensitive(test_mp, "a", "fourty-two-fourty-two"));
+  EXPECT_FALSE(Utils::isSameValueCaseInsensitive(test_mp, "A", "ft_42"));
+  EXPECT_FALSE(Utils::isSameValueCaseInsensitive(test_mp, "b", "app"));
+  EXPECT_FALSE(Utils::isSameValueCaseInsensitive(test_mp, "B", "apple"));
 }
