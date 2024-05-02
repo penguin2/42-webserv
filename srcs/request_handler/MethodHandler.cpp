@@ -98,8 +98,20 @@ connection::State RequestHandler::MethodHandler::deleteMethodHandler(
   const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
       uri.getHost(), uri.getPort(), uri.getPath());
 
-  return connection::SEND;
-  (void)paths;
-  (void)request;
-  (void)response;
+  ServerException::ErrorCode return_status_code =
+      ServerException::SERVER_ERROR_FORBIDDEN;
+
+  for (std::vector<std::string>::const_iterator it = paths.begin();
+       it != paths.end(); ++it) {
+    if (!FileUtils::isExistFile(*it) ||
+        !FileUtils::hasFilePermission(*it, W_OK)) {
+      continue;
+    } else if (std::remove(it->c_str()) == 0) {
+      return_status_code = ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR;
+    } else {
+      response.setStatusLine(204, "No Content");
+      return connection::SEND;
+    }
+  }
+  throw ServerException(return_status_code, "DELETE Method Error");
 }
