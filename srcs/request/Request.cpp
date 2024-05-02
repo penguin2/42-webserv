@@ -255,13 +255,6 @@ void Request::insertContentLength(void) {
 }
 
 bool Request::haveConnectionCloseHeader(void) const {
-  const std::map<std::string, std::string>& headers = this->data_->getHeaders();
-  const std::map<std::string, std::string>::const_iterator connection_header =
-      headers.find("connection");
-  if (connection_header != headers.end()) {
-    std::string connection_value(connection_header->second);
-    Utils::toLowerString(connection_value);
-    if (connection_value == "close") return true;
-  }
-  return false;
+  return Utils::isSameValueCaseInsensitive(this->data_->getHeaders(),
+                                           "connection", "close");
 }
