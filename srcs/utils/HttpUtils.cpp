@@ -13,6 +13,7 @@
 
 #include "FileUtils.hpp"
 #include "ServerException.hpp"
+#include "Uri.hpp"
 #include "Utils.hpp"
 
 // デフォルトのエラーページHTMLをプログラムで生成
@@ -230,4 +231,38 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
     ss << ss_file_size.str();
   }
   return true;
+}
+
+std::string HttpUtils::generatePostSuccessJsonData(const std::string& file_path,
+                                                   const Uri& uri) {
+  std::stringstream ss;
+
+  ss << "{\r\n";
+  ss << "  \"URI\": " << buildAbsoluteUri(uri) << ",\r\n";
+  off_t file_size = FileUtils::getFileSize(file_path);
+  if (0 <= file_size) ss << "  \"FILE_SIZE\": " << file_size << ",\r\n";
+  std::time_t raw_time;
+  std::time(&raw_time);
+  ss << "  \"CREATED\": " << generateDateAsFormat(raw_time, "%Y-%m-%d %H:%M:%S")
+     << "\r\n";
+  ss << "}\r\n";
+  return ss.str();
+}
+
+std::string HttpUtils::buildAbsoluteUri(const Uri& uri) {
+  std::string absolute_uri;
+
+  absolute_uri.append(uri.getScheme());
+  absolute_uri.append("://");
+  if (uri.getUserInfo().empty() == false) {
+    absolute_uri.append(uri.getUserInfo());
+    absolute_uri.append("@");
+  }
+  absolute_uri.append(uri.getHost());
+  absolute_uri.append(uri.getPath());
+  if (uri.getQuery().empty() == false) {
+    absolute_uri.append("?");
+    absolute_uri.append(uri.getQuery());
+  }
+  return absolute_uri;
 }

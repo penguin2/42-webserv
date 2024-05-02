@@ -9,6 +9,7 @@
 #include <string>
 
 #include "FileUtils.hpp"
+#include "Uri.hpp"
 
 namespace HttpUtils {
 std::string generateErrorPage(int code, const std::string& phrase);
@@ -24,6 +25,9 @@ std::set<int> makeRedirectCodeSet(void);
 bool generateAutoindexPage(const std::string& path_component,
                            const std::string& absolute_dir_path,
                            std::stringstream& ss);
+std::string generatePostSuccessJsonData(const std::string& file_path,
+                                        const Uri& uri);
+std::string buildAbsoluteUri(const Uri& uri);
 
 namespace AutoindexUtils {
 bool generateFileRecord(const FileUtils::Entry& entry, const std::string& dir,
