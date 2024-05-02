@@ -12,6 +12,8 @@
 
 connection::State RequestHandler::dispatch(const Request& request,
                                            Response& response) {
+  static const std::map<std::string, MethodHandler::method_handler>
+      method_handler_map = MethodHandler::makeMethodHandlerMap();
   const Uri& uri = request.getRequestData()->getUri();
 
   if (!ConfigAdapter::isAllowMethods(uri.getHost(), uri.getPort(),
@@ -31,8 +33,6 @@ connection::State RequestHandler::dispatch(const Request& request,
   //     return cgiHandler();
   // }
   const std::string& method = request.getRequestData()->getMethod();
-  static const std::map<std::string, MethodHandler::method_handler>&
-      method_handler_map = MethodHandler::makeMethodHandlerMap();
   if (method_handler_map.find(method) != method_handler_map.end())
     return method_handler_map.find(method)->second(request, response);
   throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
