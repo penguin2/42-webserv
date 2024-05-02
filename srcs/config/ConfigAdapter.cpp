@@ -118,6 +118,14 @@ std::vector<std::string> ConfigAdapter::makeAbsolutePaths(
   (void)port;
 }
 
+bool ConfigAdapter::isAutoindexOn(const std::string &host, size_t port,
+                                  const std::string &path) {
+  return (rand() % 2 == 0);
+  (void)host;
+  (void)port;
+  (void)path;
+}
+
 size_t ConfigAdapter::getMaxBodySize(const std::string &host, size_t port,
                                      const std::string &path) {
   return INTERNAL::DEFAULT_MAX_BODY_SIZE;

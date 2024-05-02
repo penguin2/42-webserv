@@ -40,6 +40,10 @@ bool isCorrespondingMethod(const std::string& method);
 std::vector<std::string> makeAbsolutePaths(const std::string& host, size_t port,
                                            const std::string& path);
 
+// Autoindexディレクティブがonか判定
+bool isAutoindexOn(const std::string& host, size_t port,
+                   const std::string& path);
+
 // Uriの最大サイズ(一般的には2000bytes)
 size_t getMaxUriSize(void);
 // Headerの最大サイズ(1つのHeaderの最大サイズを想定)

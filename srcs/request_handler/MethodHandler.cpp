@@ -19,29 +19,46 @@ RequestHandler::MethodHandler::makeMethodHandlerMap(void) {
 }
 
 // (仮)
+
 connection::State RequestHandler::MethodHandler::getMethodHandler(
     const Request& request, Response& response) {
   const Uri& uri = request.getRequestData()->getUri();
   const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
       uri.getHost(), uri.getPort(), uri.getPath());
+  ServerException::ErrorCode return_status_code =
+      ServerException::SERVER_ERROR_NOT_FOUND;
 
-  if (!FileUtils::isExistFile(uri.getPath()))
-    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND,
-                          "File not Found");
-  if (!FileUtils::hasFilePermission(uri.getPath(), R_OK))
-    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
-                          "Has not permission");
-  std::stringstream ss;
-  if (FileUtils::readAllDataFromFile(uri.getPath(), ss) == false)
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Internal Server Error");
-  response.appendBody(ss.str());
-  response.insertContentLengthIfNotSet();
-  response.insertHeader("Content-Type",
-                        HttpUtils::convertPathToContentType(uri.getPath()));
-  response.setStatusLine(200, "OK");
-  return connection::SEND;
-  (void)paths;
+  for (std::vector<std::string>::const_iterator it = paths.begin();
+       it != paths.end(); ++it) {
+    if ((!FileUtils::isExistFile(*it) && !FileUtils::isExistDir(*it)) ||
+        !FileUtils::hasFilePermission(*it, R_OK) ||
+        (FileUtils::isExistDir(*it) &&
+         !ConfigAdapter::isAutoindexOn(uri.getHost(), uri.getPort(),
+                                       uri.getPath())))
+      continue;
+    std::stringstream ss;
+    if (FileUtils::isExistFile(*it) &&
+        FileUtils::readAllDataFromFile(*it, ss) == true) {
+      response.appendBody(ss.str());
+      response.insertContentLengthIfNotSet();
+      response.insertHeader("Content-Type",
+                            HttpUtils::convertPathToContentType(uri.getPath()));
+      response.setStatusLine(200, "OK");
+      return connection::SEND;
+    }
+    if (FileUtils::isExistDir(*it) &&
+        HttpUtils::generateAutoindexPage(uri.getPath(), *it, ss) == true) {
+      // response.appendBody(ss.str())
+      // response.insertContentLengthIfNotSet();
+      // response.insertHeader("Content-Type", "text/html");
+      //   response.setStatusLine(200, "OK");
+      // return connection::SEND;
+    }
+    if (it == paths.begin()) {
+      return_status_code = ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR;
+    }
+  }
+  throw ServerException(return_status_code, "GET Method Error");
 }
 
 // (仮)
