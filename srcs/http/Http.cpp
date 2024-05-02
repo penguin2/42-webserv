@@ -13,28 +13,27 @@ Http::Http() : keep_alive_flag_(true) {}
 
 Http::~Http() {}
 
-connection::State Http::httpHandler(connection::State state) {
-  switch (state) {
+connection::State Http::httpHandler(connection::State current_state) {
+  connection::State next_state;
+
+  switch (current_state) {
     case (connection::RECV):
-      try {
-        if (request_.parse(this->client_data_) == true) {
-          return callRequestHandler();
-        }
-        return connection::RECV;
-      } catch (ServerException& e) {
-        return callRequestHandler(e.code(), e.what());
-      }
+      next_state = httpHandlerRecv();
+      break;
     case (connection::SEND):
-      if (!keep_alive_flag_) return connection::CLOSED;
-      raw_response_data_.clear();
-      raw_response_data_.str("");
-      response_.resetResponseData();
-      if (this->client_data_.size()) return Http::httpHandler(connection::RECV);
-      return connection::RECV;
+      next_state = httpHandlerSend();
+      break;
+      // TODO case (connection::CGI):
+      // next_state = httpHandlerCGI();
+      // break;
     default:
+      next_state = connection::CLOSED;
       break;
   }
-  return connection::CLOSED;
+  if (next_state == connection::SEND) {
+    prepareToSendResponse();
+  }
+  return next_state;
 }
 
 void Http::appendClientData(const std::string& data) {
@@ -49,24 +48,31 @@ void Http::setCgiResponseMessage(const std::string& message) {
   cgi_response_message_ = message;
 }
 
-connection::State Http::callRequestHandler(int status_code,
-                                           const std::string& phrase) {
-  connection::State next_state = RequestHandler::errorRequestHandler(
-      request_, response_, status_code, phrase);
-  this->keep_alive_flag_ =
-      ((request_.haveConnectionCloseHeader() == false) &&
-       HttpUtils::isMaintainConnection(this->response_.getStatusCode()));
-  response_.insertCommonHeaders(this->keep_alive_flag_);
-  response_.getResponseRawData(raw_response_data_);
-  return next_state;
+connection::State Http::httpHandlerRecv(void) {
+  try {
+    if (request_.parse(this->client_data_) == true) {
+      return RequestHandler::dispatch(request_, response_);
+    }
+    return connection::RECV;
+  } catch (ServerException& e) {
+    return RequestHandler::errorRequestHandler(request_, response_, e.code(),
+                                               e.what());
+  }
 }
 
-connection::State Http::callRequestHandler(void) {
-  connection::State next_state = RequestHandler::dispatch(request_, response_);
+connection::State Http::httpHandlerSend(void) {
+  if (!keep_alive_flag_) return connection::CLOSED;
+  raw_response_data_.clear();
+  raw_response_data_.str("");
+  response_.resetResponseData();
+  if (this->client_data_.empty()) return connection::RECV;
+  return Http::httpHandlerRecv();
+}
+
+void Http::prepareToSendResponse(void) {
   this->keep_alive_flag_ =
       ((request_.haveConnectionCloseHeader() == false) &&
        HttpUtils::isMaintainConnection(this->response_.getStatusCode()));
   response_.insertCommonHeaders(this->keep_alive_flag_);
   response_.getResponseRawData(raw_response_data_);
-  return next_state;
 }

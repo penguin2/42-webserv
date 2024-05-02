@@ -34,9 +34,11 @@ class Http {
   CgiRequest* cgi_request_;
   std::string cgi_response_message_;
 
-  connection::State callRequestHandler(int status_code,
-                                       const std::string& phrase);
-  connection::State callRequestHandler(void);
+  connection::State httpHandlerRecv(void);
+  connection::State httpHandlerSend(void);
+  // TODO connection::State httpHandlerCgi(void);
+
+  void prepareToSendResponse(void);
 
   Http(const Http&);
   void operator=(const Http&);
