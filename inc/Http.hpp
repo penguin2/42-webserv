@@ -17,7 +17,7 @@ class Http {
   Http(void);
   ~Http(void);
 
-  connection::State httpHandler(void);
+  connection::State httpHandler(connection::State state);
   void appendClientData(const std::string& data);
   std::string getResponse(void) const;
 
@@ -25,8 +25,6 @@ class Http {
   void setCgiResponseMessage(const std::string& message);
 
  private:
-  typedef enum eHttpState { RECV, SEND } HttpState;
-  HttpState state_;
   std::string client_data_;
   std::stringstream raw_response_data_;
   bool keep_alive_flag_;
@@ -36,25 +34,11 @@ class Http {
   CgiRequest* cgi_request_;
   std::string cgi_response_message_;
 
-  bool haveConnectionCloseHeader(void) const;
-  void insertCommonHeaders(bool keep_alive);
+  connection::State httpHandlerRecv(void);
+  connection::State httpHandlerSend(void);
+  // TODO connection::State httpHandlerCgi(void);
 
-  connection::State dispatchRequestHandler(void);
-  // RequestHandler
-  connection::State errorContentHandler(int status_code,
-                                        const std::string& phrase);
-  connection::State redirectHandler(const std::string& redirect_uri);
-  connection::State staticContentHandler(void);
-  // TODO CGIを処理する機能
-  // connection::State cgiHandler(void);
-
-  // MethodHandler
-  typedef connection::State (Http::*MethodHandler)(void);
-  std::map<std::string, MethodHandler> method_handler_map_;
-
-  connection::State getMethodHandler(void);
-  connection::State postMethodHandler(void);
-  connection::State deleteMethodHandler(void);
+  void prepareToSendResponse(void);
 
   Http(const Http&);
   void operator=(const Http&);

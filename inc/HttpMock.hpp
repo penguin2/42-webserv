@@ -12,7 +12,7 @@ class HttpMock {
   HttpMock();
   ~HttpMock();
 
-  connection::State httpHandler();
+  connection::State httpHandler(connection::State state);
   void appendClientData(const std::string& data);
   std::string getResponse() const;
 
@@ -20,8 +20,6 @@ class HttpMock {
   void setCgiResponseMessage(const std::string& message);
 
  private:
-  typedef enum eHttpState { RECV, SEND, CGI } HttpState;
-  HttpState state_;
   std::string client_data_;
   std::stringstream raw_response_data_;
 

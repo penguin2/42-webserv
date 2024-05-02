@@ -1,42 +1,38 @@
 #include "HttpMock.hpp"
 
+#include "ConnectionState.hpp"
 #include "Utils.hpp"
 
 const std::string HttpMock::kCgiCheckString = "CGI\r\n";
 
-HttpMock::HttpMock() : state_(HttpMock::RECV), cgi_request_(NULL) {}
+HttpMock::HttpMock() : cgi_request_(NULL) {}
 
 HttpMock::~HttpMock() { clearCgiHandling(); }
 
-connection::State HttpMock::httpHandler() {
-  switch (state_) {
-    case HttpMock::RECV:
+connection::State HttpMock::httpHandler(connection::State state) {
+  switch (state) {
+    case connection::RECV:
       if (isCgi()) {
         std::string client_request = Utils::popFrontSubstr(
             client_data_, HttpMock::kCgiCheckString.size());
         cgi_request_ = CgiRequestMock::createCgiRequest(client_request);
         if (cgi_request_ == NULL) {
           raw_response_data_ << "ECHO/1.0 502 Bad Gateway\n";
-          state_ = HttpMock::SEND;
           return connection::SEND;
         }
-        state_ = HttpMock::CGI;
         return connection::CGI;
       } else if (checkResponse()) {
         makeResponse();
-        state_ = HttpMock::SEND;
         return connection::SEND;
       }
       return connection::RECV;
-    case HttpMock::SEND:
+    case connection::SEND:
       raw_response_data_.clear();
       raw_response_data_.str("");
-      state_ = HttpMock::RECV;
       return connection::RECV;
-    case HttpMock::CGI:
+    case connection::CGI:
       makeCgiResponse();
       clearCgiHandling();
-      state_ = HttpMock::SEND;
       return connection::SEND;
     default:
       break;
