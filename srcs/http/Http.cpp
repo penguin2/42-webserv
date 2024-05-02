@@ -2,19 +2,12 @@
 
 #include <unistd.h>
 
-#include <map>
 #include <string>
-#include <vector>
 
 #include "ConnectionState.hpp"
-#include "FileUtils.hpp"
 #include "HttpUtils.hpp"
-#include "Request.hpp"
 #include "RequestHandler.hpp"
-#include "Response.hpp"
 #include "ServerException.hpp"
-#include "Utils.hpp"
-#include "config/ConfigAdapter.hpp"
 
 Http::Http() : keep_alive_flag_(true) {}
 

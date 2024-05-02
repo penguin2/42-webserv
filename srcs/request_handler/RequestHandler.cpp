@@ -31,16 +31,12 @@ connection::State RequestHandler::dispatch(const Request& request,
   //     return cgiHandler();
   // }
   const std::string& method = request.getRequestData()->getMethod();
-  if (method == "GET")
-    return RequestHandler::MethodHandler::getMethodHandler(request, response);
-  else if (method == "POST")
-    return RequestHandler::MethodHandler::postMethodHandler(request, response);
-  else if (method == "DELETE")
-    return RequestHandler::MethodHandler::deleteMethodHandler(request,
-                                                              response);
-  else
-    return RequestHandler::MethodHandler::unknownMethodHandler(request,
-                                                               response);
+  static const std::map<std::string, MethodHandler::method_handler>&
+      method_handler_map = MethodHandler::makeMethodHandlerMap();
+  if (method_handler_map.find(method) != method_handler_map.end())
+    return method_handler_map.find(method)->second(request, response);
+  throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                        "Unknown Method");
 }
 
 connection::State RequestHandler::redirectHandler(const Request& request,

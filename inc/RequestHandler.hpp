@@ -14,12 +14,13 @@ connection::State redirectHandler(const Request& request, Response& response);
 // connection::State cgiHandler(Request& request, Response& response);
 
 namespace MethodHandler {
+typedef connection::State (*method_handler)(const Request&, Response&);
+std::map<std::string, method_handler> makeMethodHandlerMap(void);
+
 connection::State getMethodHandler(const Request& request, Response& response);
 connection::State postMethodHandler(const Request& request, Response& response);
 connection::State deleteMethodHandler(const Request& request,
                                       Response& response);
-connection::State unknownMethodHandler(const Request& request,
-                                       Response& response);
 }  // namespace MethodHandler
 }  // namespace RequestHandler
 

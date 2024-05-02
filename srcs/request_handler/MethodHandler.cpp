@@ -1,11 +1,22 @@
 #include <unistd.h>
 
+#include <utility>
+
 #include "Connection.hpp"
 #include "FileUtils.hpp"
 #include "HttpUtils.hpp"
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
 #include "config/ConfigAdapter.hpp"
+
+std::map<std::string, RequestHandler::MethodHandler::method_handler>
+RequestHandler::MethodHandler::makeMethodHandlerMap(void) {
+  std::map<std::string, method_handler> method_handler_map;
+  method_handler_map["GET"] = getMethodHandler;
+  method_handler_map["POST"] = postMethodHandler;
+  method_handler_map["DELETE"] = deleteMethodHandler;
+  return method_handler_map;
+}
 
 // (仮)
 connection::State RequestHandler::MethodHandler::getMethodHandler(
@@ -57,12 +68,4 @@ connection::State RequestHandler::MethodHandler::deleteMethodHandler(
   (void)paths;
   (void)request;
   (void)response;
-}
-
-connection::State RequestHandler::MethodHandler::unknownMethodHandler(
-    const Request& request, Response& response) {
-  (void)request;
-  (void)response;
-  throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                        "Unknown Method");
 }
