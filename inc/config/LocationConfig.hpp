@@ -16,7 +16,7 @@ class LocationConfig {
   std::string client_max_body_size;
   bool autoindex;
   std::vector<HttpMethod> allow_methods;
-  std::string return_status_code;
+  int return_status_code;
   std::string return_uri;
   std::vector<std::string> cgi_path;
   std::vector<std::string> cgi_ext;
@@ -45,8 +45,8 @@ class LocationConfig {
   const std::vector<HttpMethod>& getAllowMethods() const;
   void setAllowMethods(const std::vector<HttpMethod> new_methods);
 
-  const std::string& getReturnStatusCode() const;
-  void setReturnStatusCode(const std::string& newStatusCode);
+  int getReturnStatusCode() const;
+  void setReturnStatusCode(int newStatusCode);
 
   const std::string& getReturnUri() const;
   void setReturnUri(const std::string& newUri);

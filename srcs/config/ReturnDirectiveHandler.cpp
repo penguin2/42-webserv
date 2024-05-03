@@ -9,8 +9,14 @@ bool ReturnDirectiveHandler::isValid() const {
   return true;
 }
 
+template <typename T>
+bool parseValue(const std::string& str, T& value) {
+  std::istringstream ss(str);
+  return !(ss >> value).fail() && ss.eof();
+}
+
 void ReturnDirectiveHandler::setConfig(long unsigned int server_num,
-                                             std::string location_path) {
+                                       std::string location_path) {
   Config& config = Config::getInstance();
   ServerConfig& serverConfig = config.getServer(server_num);
   if (!serverConfig.hasLocationConfig(location_path)) {
@@ -18,11 +24,19 @@ void ReturnDirectiveHandler::setConfig(long unsigned int server_num,
     serverConfig.addLocationConfig(location_path, *newLocationConfig);
   }
 
-  LocationConfig& locationConfig = serverConfig.getLocationConfig(location_path);
+  LocationConfig& locationConfig =
+      serverConfig.getLocationConfig(location_path);
   std::cout << "setting : " << this->tokens[0] << std::endl;
   std::cout << "server num : " << server_num << std::endl;
   std::cout << "location path : " << location_path << std::endl;
 
-  locationConfig.setReturnStatusCode(tokens[1]);
+  int return_status_code;
+  if (!parseValue(tokens[1], return_status_code)) {
+    std::cout << "Failed to parse as int" << std::endl;
+    exit(1);
+  }
+
+  locationConfig.setReturnStatusCode(return_status_code);
+
   locationConfig.setReturnUri(tokens[2]);
 }

@@ -45,10 +45,10 @@ void LocationConfig::setAllowMethods(
   this->allow_methods = new_methods;
 }
 
-const std::string& LocationConfig::getReturnStatusCode() const {
+int LocationConfig::getReturnStatusCode() const {
   return return_status_code;
 }
-void LocationConfig::setReturnStatusCode(const std::string& newStatusCode) {
+void LocationConfig::setReturnStatusCode(int newStatusCode) {
   return_status_code = newStatusCode;
 }
 
