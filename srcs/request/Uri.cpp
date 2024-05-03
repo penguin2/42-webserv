@@ -1,5 +1,7 @@
 #include "Uri.hpp"
 
+#include <sstream>
+
 #include "ServerException.hpp"
 #include "UriUtils.hpp"
 #include "Utils.hpp"
@@ -152,4 +154,18 @@ void Uri::setFragment(const std::string& fragment) {
   // fragmentはURI上には使用可能文字等の定義があるが
   // サーバではfragmentは一律に無視をするため処理は特にしない
   this->fragment_ = fragment;
+}
+
+std::string Uri::buildAbsoluteUri(void) const {
+  std::stringstream ss;
+
+  ss << scheme_ << "://";
+  if (user_info_.empty() == false) {
+    ss << user_info_ << '@';
+  }
+  ss << host_ << ':' << port_ << path_;
+  if (query_.empty() == false) {
+    ss << "?" << query_;
+  }
+  return ss.str();
 }

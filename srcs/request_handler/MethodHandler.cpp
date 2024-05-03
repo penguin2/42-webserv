@@ -1,5 +1,6 @@
 #include <unistd.h>
 
+#include <cstdio>
 #include <utility>
 
 #include "Connection.hpp"
@@ -77,10 +78,12 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
         return_status_code =
             ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR;
     } else {
-      response.appendBody(HttpUtils::generatePostSuccessJsonData(*it, uri));
+      const std::string absolute_uri = uri.buildAbsoluteUri();
+      response.appendBody(
+          HttpUtils::generatePostSuccessJsonData(*it, absolute_uri));
       response.insertContentLengthIfNotSet();
       response.insertHeader("Content-Type", "application/json");
-      response.insertHeader("Location", HttpUtils::buildAbsoluteUri(uri));
+      response.insertHeader("Location", absolute_uri);
       response.setStatusLine(201, "Created");
       return connection::SEND;
     }

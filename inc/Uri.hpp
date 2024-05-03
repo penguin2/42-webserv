@@ -18,6 +18,7 @@ class Uri {
   const std::string& getPath(void) const;
   const std::string& getQuery(void) const;
   const std::string& getFragment(void) const;
+  std::string buildAbsoluteUri(void) const;
 
  private:
   std::string scheme_;

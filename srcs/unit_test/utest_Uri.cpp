@@ -45,6 +45,13 @@ void testOriginForm(std::string uri, std::string host_header_value,
   }
 }
 
+void testBuildAbsoluteUri(std::string uri, const char* expect_str) {
+  Uri URI_instance;
+
+  URI_instance.parse(uri);
+  EXPECT_STREQ(URI_instance.buildAbsoluteUri().c_str(), expect_str);
+}
+
 TEST(Uri, ABSOLUTE_FORM_SUCCESS) {
   // URI,scheme,userinfo,host,port,path,query,fragment,expect(bool)
   // expect(bool) URIの構文が正しい場合はtrue, 誤っている場合はfalse
@@ -286,4 +293,15 @@ TEST(Uri, ORIGIN_FORM_ERROR) {
   testOriginForm("/api", "api.example\\com", "", "", "", -1, "", "", "", false);
   testOriginForm("/documentation", "docs.example|com", "", "", "", -1, "", "",
                  "", false);
+}
+
+TEST(Uri, BUILD_ABSOLUTE_URI) {
+  testBuildAbsoluteUri("http://www.google.com:433/search?value=apple",
+                       "http://www.google.com:433/search?value=apple");
+  testBuildAbsoluteUri("http://localhost:4242/bin/ls?q=50#abc",
+                       "http://localhost:4242/bin/ls?q=50");
+  testBuildAbsoluteUri("http://name:pass@0.0.0.0/login",
+                       "http://name:pass@0.0.0.0:80/login");
+  testBuildAbsoluteUri("http://localhost", "http://localhost:80");
+  testBuildAbsoluteUri("http://localhost?q=50", "http://localhost:80?q=50");
 }

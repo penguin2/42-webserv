@@ -233,36 +233,20 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
   return true;
 }
 
-std::string HttpUtils::generatePostSuccessJsonData(const std::string& file_path,
-                                                   const Uri& uri) {
+std::string HttpUtils::generatePostSuccessJsonData(
+    const std::string& file_path, const std::string& absolute_uri) {
   std::stringstream ss;
-
-  ss << "{\r\n";
-  ss << "  \"URI\": " << buildAbsoluteUri(uri) << ",\r\n";
-  off_t file_size = FileUtils::getFileSize(file_path);
-  if (0 <= file_size) ss << "  \"FILE_SIZE\": " << file_size << ",\r\n";
+  const off_t file_size = FileUtils::getFileSize(file_path);
   std::time_t raw_time;
   std::time(&raw_time);
+
+  ss << "{\r\n";
+  ss << "  \"URI\": " << absolute_uri << ",\r\n";
+  if (0 <= file_size) {
+    ss << "  \"FILE_SIZE\": " << file_size << ",\r\n";
+  }
   ss << "  \"CREATED\": " << generateDateAsFormat(raw_time, "%Y-%m-%d %H:%M:%S")
      << "\r\n";
   ss << "}\r\n";
   return ss.str();
-}
-
-std::string HttpUtils::buildAbsoluteUri(const Uri& uri) {
-  std::string absolute_uri;
-
-  absolute_uri.append(uri.getScheme());
-  absolute_uri.append("://");
-  if (uri.getUserInfo().empty() == false) {
-    absolute_uri.append(uri.getUserInfo());
-    absolute_uri.append("@");
-  }
-  absolute_uri.append(uri.getHost());
-  absolute_uri.append(uri.getPath());
-  if (uri.getQuery().empty() == false) {
-    absolute_uri.append("?");
-    absolute_uri.append(uri.getQuery());
-  }
-  return absolute_uri;
 }
