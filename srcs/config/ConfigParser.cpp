@@ -15,6 +15,7 @@ ConfigParser::ConfigParser()
   this->handlers["autoindex"] = new AutoIndexDirectiveHandler();
   this->handlers["try_files"] = new TryFilesDirectiveHandler();
   this->handlers["return"] = new ReturnDirectiveHandler();
+  this->handlers["client_max_body_size"] = new ClientMaxBodySizeDirectiveHandler();
 }
 
 ConfigParser::~ConfigParser() {

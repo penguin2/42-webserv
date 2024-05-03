@@ -20,6 +20,7 @@
 #include "AutoIndexDirectiveHandler.hpp"
 #include "TryFilesDirectiveHandler.hpp"
 #include "ReturnDirectiveHandler.hpp"
+#include "ClientMaxBodySizeDirectiveHandler.hpp"
 #include "ConfigEnums.hpp"
 
 class ConfigParser {
