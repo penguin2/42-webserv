@@ -19,6 +19,7 @@
 #include "IndexDirectiveHandler.hpp"
 #include "AutoIndexDirectiveHandler.hpp"
 #include "TryFilesDirectiveHandler.hpp"
+#include "ReturnDirectiveHandler.hpp"
 #include "ConfigEnums.hpp"
 
 class ConfigParser {

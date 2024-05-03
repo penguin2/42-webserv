@@ -68,6 +68,8 @@ void LocationConfig::setCgiExt(const std::string& newExt) { cgi_ext = newExt; }
 void LocationConfig::print() {
   std::cout << "index: " << this->index << std::endl;
   std::cout << "autoindex: " << this->autoindex << std::endl;
+  std::cout << "return status_code: " << this->return_status_code << std::endl;
+  std::cout << "return uri: " << this->return_uri << std::endl;
   std::cout << "cgi_ext: " << this->cgi_ext << std::endl;
   std::cout << "cgi_path: " << this->cgi_path << std::endl;
   std::cout << "client_max_body_size: " << this->client_max_body_size

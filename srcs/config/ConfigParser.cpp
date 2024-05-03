@@ -14,6 +14,7 @@ ConfigParser::ConfigParser()
   this->handlers["index"] = new IndexDirectiveHandler();
   this->handlers["autoindex"] = new AutoIndexDirectiveHandler();
   this->handlers["try_files"] = new TryFilesDirectiveHandler();
+  this->handlers["return"] = new ReturnDirectiveHandler();
 }
 
 ConfigParser::~ConfigParser() {
