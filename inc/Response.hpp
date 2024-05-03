@@ -18,6 +18,8 @@ class Response {
   void appendBody(const std::string &str);
   void resetResponseData(void);
   void insertContentLengthIfNotSet(void);
+  void insertCommonHeaders(bool keep_alive);
+  int getStatusCode(void) const;
 
   // TODO CGI用インターフェースの作成
   // bool cgiParse(std::stringstream&);

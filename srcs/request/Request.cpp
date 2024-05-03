@@ -253,3 +253,8 @@ void Request::insertContentLength(void) {
   std::string content_length_header = oss.str();
   data_->insertHeader(content_length_header);
 }
+
+bool Request::haveConnectionCloseHeader(void) const {
+  return Utils::isSameValueCaseInsensitive(this->data_->getHeaders(),
+                                           "connection", "close");
+}

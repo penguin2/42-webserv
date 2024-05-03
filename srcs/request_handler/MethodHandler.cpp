@@ -18,8 +18,6 @@ RequestHandler::MethodHandler::makeMethodHandlerMap(void) {
   return method_handler_map;
 }
 
-// (仮)
-
 connection::State RequestHandler::MethodHandler::getMethodHandler(
     const Request& request, Response& response) {
   const Uri& uri = request.getRequestData()->getUri();
@@ -61,7 +59,6 @@ connection::State RequestHandler::MethodHandler::getMethodHandler(
   throw ServerException(return_status_code, "GET Method Error");
 }
 
-// (仮)
 connection::State RequestHandler::MethodHandler::postMethodHandler(
     const Request& request, Response& response) {
   const Uri& uri = request.getRequestData()->getUri();
@@ -91,13 +88,11 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
   throw ServerException(return_status_code, "POST Method Error");
 }
 
-// (仮)
 connection::State RequestHandler::MethodHandler::deleteMethodHandler(
     const Request& request, Response& response) {
   const Uri& uri = request.getRequestData()->getUri();
   const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
       uri.getHost(), uri.getPort(), uri.getPath());
-
   ServerException::ErrorCode return_status_code =
       ServerException::SERVER_ERROR_FORBIDDEN;
 
