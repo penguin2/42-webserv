@@ -47,11 +47,11 @@ connection::State RequestHandler::MethodHandler::getMethodHandler(
     }
     if (FileUtils::isExistDir(*it) &&
         HttpUtils::generateAutoindexPage(uri.getPath(), *it, ss) == true) {
-      // response.appendBody(ss.str())
-      // response.insertContentLengthIfNotSet();
-      // response.insertHeader("Content-Type", "text/html");
-      //   response.setStatusLine(200, "OK");
-      // return connection::SEND;
+      response.appendBody(ss.str());
+      response.insertContentLengthIfNotSet();
+      response.insertHeader("Content-Type", "text/html");
+      response.setStatusLine(200, "OK");
+      return connection::SEND;
     }
     if (it == paths.begin()) {
       return_status_code = ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR;
@@ -104,7 +104,7 @@ connection::State RequestHandler::MethodHandler::deleteMethodHandler(
     if (!FileUtils::isExistFile(*it) ||
         !FileUtils::hasFilePermission(*it, W_OK)) {
       continue;
-    } else if (std::remove(it->c_str()) == 0) {
+    } else if (std::remove(it->c_str()) != 0) {
       return_status_code = ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR;
     } else {
       response.setStatusLine(204, "No Content");
