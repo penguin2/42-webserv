@@ -11,11 +11,11 @@ void LocationConfig::setLocationRoot(const std::string& newRoot) {
 const std::string& LocationConfig::getIndex() const { return index; }
 void LocationConfig::setIndex(const std::string& newIndex) { index = newIndex; }
 
-const std::string& LocationConfig::getTryFilesPath() const {
+const std::vector<std::string>& LocationConfig::getTryFilesPath() const {
   return try_files_path;
 }
-void LocationConfig::setTryFilesPath(const std::string& newPath) {
-  try_files_path = newPath;
+void LocationConfig::addTryFilesPath(const std::string& newPath) {
+  try_files_path.push_back(newPath);
 }
 
 int LocationConfig::getTryFilesErrorCode() const {
@@ -45,9 +45,7 @@ void LocationConfig::setAllowMethods(
   this->allow_methods = new_methods;
 }
 
-int LocationConfig::getReturnStatusCode() const {
-  return return_status_code;
-}
+int LocationConfig::getReturnStatusCode() const { return return_status_code; }
 void LocationConfig::setReturnStatusCode(int newStatusCode) {
   return_status_code = newStatusCode;
 }
@@ -74,6 +72,12 @@ void LocationConfig::addCgiExt(const std::string& newExt) {
 void LocationConfig::print() {
   std::cout << "index: " << this->index << std::endl;
   std::cout << "autoindex: " << this->autoindex << std::endl;
+  for (size_t i = 0; i < this->try_files_path.size(); i++) {
+    std::cout << "try_files_path: " << this->try_files_path[i] << std::endl;
+  }
+  std::cout << "try_files_error_code: " << this->try_files_error_code
+            << std::endl;
+
   std::cout << "return status_code: " << this->return_status_code << std::endl;
   std::cout << "return uri: " << this->return_uri << std::endl;
 
