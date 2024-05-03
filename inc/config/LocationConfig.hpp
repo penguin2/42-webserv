@@ -18,8 +18,8 @@ class LocationConfig {
   std::vector<HttpMethod> allow_methods;
   std::string return_status_code;
   std::string return_uri;
-  std::string cgi_path;
-  std::string cgi_ext;
+  std::vector<std::string> cgi_path;
+  std::vector<std::string> cgi_ext;
 
  public:
   LocationConfig();
@@ -51,11 +51,11 @@ class LocationConfig {
   const std::string& getReturnUri() const;
   void setReturnUri(const std::string& newUri);
 
-  const std::string& getCgiPath() const;
-  void setCgiPath(const std::string& newPath);
+  const std::vector<std::string>& getCgiPath() const;
+  void addCgiPath(const std::string& newPath);
 
-  const std::string& getCgiExt() const;
-  void setCgiExt(const std::string& newExt);
+  const std::vector<std::string>& getCgiExt() const;
+  void addCgiExt(const std::string& newExt);
 
   void print();
 };

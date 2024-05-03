@@ -57,21 +57,32 @@ void LocationConfig::setReturnUri(const std::string& newUri) {
   return_uri = newUri;
 }
 
-const std::string& LocationConfig::getCgiPath() const { return cgi_path; }
-void LocationConfig::setCgiPath(const std::string& newPath) {
-  cgi_path = newPath;
+const std::vector<std::string>& LocationConfig::getCgiPath() const {
+  return cgi_path;
+}
+void LocationConfig::addCgiPath(const std::string& newPath) {
+  cgi_path.push_back(newPath);
 }
 
-const std::string& LocationConfig::getCgiExt() const { return cgi_ext; }
-void LocationConfig::setCgiExt(const std::string& newExt) { cgi_ext = newExt; }
+const std::vector<std::string>& LocationConfig::getCgiExt() const {
+  return cgi_ext;
+}
+void LocationConfig::addCgiExt(const std::string& newExt) {
+  cgi_ext.push_back(newExt);
+}
 
 void LocationConfig::print() {
   std::cout << "index: " << this->index << std::endl;
   std::cout << "autoindex: " << this->autoindex << std::endl;
   std::cout << "return status_code: " << this->return_status_code << std::endl;
   std::cout << "return uri: " << this->return_uri << std::endl;
-  std::cout << "cgi_ext: " << this->cgi_ext << std::endl;
-  std::cout << "cgi_path: " << this->cgi_path << std::endl;
+
+  for (size_t i = 0; i < this->cgi_path.size(); i++) {
+    std::cout << "cgi_path: " << this->cgi_path[i] << std::endl;
+  }
+  for (size_t i = 0; i < this->cgi_ext.size(); i++) {
+    std::cout << "cgi_ext: " << this->cgi_ext[i] << std::endl;
+  }
   std::cout << "client_max_body_size: " << this->client_max_body_size
             << std::endl;
   std::cout << "root: " << this->root << std::endl;
