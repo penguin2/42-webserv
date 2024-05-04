@@ -24,15 +24,16 @@ void ErrorPageDirectiveHandler::setConfig(long unsigned int server_num,
     serverConfig.addLocationConfig(location_path, *newLocationConfig);
   }
 
-  size_t i = 0;
+  size_t i = 1;
   int error_code;
   std::string error_page = tokens[tokens.size() - 2];
-  while (i < tokens.size()) {
+  while (i < tokens.size() - 2) {
     if (parseValue(tokens[i], error_code)) {
       std::cout << "Parsed as int: " << i << std::endl;
       serverConfig.addErrorPage(error_code, error_page);
     } else {
       std::cout << "Failed to parse as int" << std::endl;
+      exit(1);
     }
     i++;
   }
