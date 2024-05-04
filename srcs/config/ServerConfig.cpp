@@ -2,7 +2,13 @@
 
 ServerConfig::ServerConfig() {}
 
-ServerConfig::ServerConfig(const ServerConfig&) {}
+ServerConfig::ServerConfig(const ServerConfig& other) {
+  this->server_name = other.server_name;
+  this->listen_address = other.listen_address;
+  this->listen_port = other.listen_port;
+  this->error_pages = other.error_pages;
+  this->location_configs = other.location_configs;
+}
 
 ServerConfig& ServerConfig::operator=(const ServerConfig&) { return *this; }
 
