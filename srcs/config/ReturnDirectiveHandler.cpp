@@ -17,6 +17,10 @@ bool parseValue(const std::string& str, T& value) {
 
 void ReturnDirectiveHandler::setConfig(long unsigned int server_num,
                                        std::string location_path) {
+  LOG(DEBUG, "setting : ", this->tokens[0]);
+  LOG(DEBUG, "server num : ", server_num);
+  LOG(DEBUG, "location path : ", location_path);
+
   Config& config = Config::getInstance();
   ServerConfig& serverConfig = config.getServer(server_num);
   if (!serverConfig.hasLocationConfig(location_path)) {
@@ -26,9 +30,6 @@ void ReturnDirectiveHandler::setConfig(long unsigned int server_num,
 
   LocationConfig& locationConfig =
       serverConfig.getLocationConfig(location_path);
-  std::cout << "setting : " << this->tokens[0] << std::endl;
-  std::cout << "server num : " << server_num << std::endl;
-  std::cout << "location path : " << location_path << std::endl;
 
   int return_status_code;
   if (!parseValue(tokens[1], return_status_code)) {

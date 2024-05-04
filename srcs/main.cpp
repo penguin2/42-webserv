@@ -31,6 +31,10 @@ int main(int argc, char* argv[]) {
     std::cerr << "Usage: " << argv[0] << " <config_file.conf>" << std::endl;
     return 1;
   }
+
+  Logger& log = Logger::getInstance();
+  log.setDebugMode(true);
+
   std::string configFileName = argv[1];
 
   ConfigParser parser;

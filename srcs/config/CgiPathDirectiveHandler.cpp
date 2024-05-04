@@ -10,7 +10,11 @@ bool CgiPathDirectiveHandler::isValid() const {
 }
 
 void CgiPathDirectiveHandler::setConfig(long unsigned int server_num,
-                                             std::string location_path) {
+                                        std::string location_path) {
+  LOG(DEBUG, "setting : ", this->tokens[0]);
+  LOG(DEBUG, "server num : ", server_num);
+  LOG(DEBUG, "location path : ", location_path);
+
   Config& config = Config::getInstance();
   ServerConfig& serverConfig = config.getServer(server_num);
   if (!serverConfig.hasLocationConfig(location_path)) {
@@ -18,10 +22,8 @@ void CgiPathDirectiveHandler::setConfig(long unsigned int server_num,
     serverConfig.addLocationConfig(location_path, *newLocationConfig);
   }
 
-  LocationConfig& locationConfig = serverConfig.getLocationConfig(location_path);
-  std::cout << "setting : " << this->tokens[0] << std::endl;
-  std::cout << "server num : " << server_num << std::endl;
-  std::cout << "location path : " << location_path << std::endl;
+  LocationConfig& locationConfig =
+      serverConfig.getLocationConfig(location_path);
 
   for (size_t i = 1; i < this->tokens.size() - 1; i++) {
     locationConfig.addCgiPath(tokens[i]);

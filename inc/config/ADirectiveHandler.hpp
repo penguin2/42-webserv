@@ -9,6 +9,7 @@
 #include "ConfigEnums.hpp"
 #include "Config.hpp"
 #include "ServerConfig.hpp"
+#include "Logger.hpp"
 
 class ADirectiveHandler {
  protected:

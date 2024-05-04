@@ -143,21 +143,6 @@ void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
   }
   this->handlers[tokens[0]]->setConfig(this->server_count_,
                                        this->current_location_path_);
-
-  switch (current_context_) {
-    case ConfigEnums::HTTP:
-      std::cout << "Inside HTTP block: " << tokens[0] << std::endl;
-      break;
-    case ConfigEnums::SERVER:
-      std::cout << "Inside server block: " << tokens[0] << std::endl;
-      break;
-    case ConfigEnums::LOCATION:
-      std::cout << "Inside location block: " << tokens[0] << std::endl;
-      break;
-    default:
-      std::cerr << "Directive outside any block: " << tokens[0] << std::endl;
-      break;
-  }
 }
 
 void ConfigParser::tokenize(const std::string& line,

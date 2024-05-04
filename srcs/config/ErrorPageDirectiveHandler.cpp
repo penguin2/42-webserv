@@ -17,6 +17,10 @@ bool parseValue(const std::string& str, T& value) {
 
 void ErrorPageDirectiveHandler::setConfig(long unsigned int server_num,
                                           std::string location_path) {
+  LOG(DEBUG, "setting : ", this->tokens[0]);
+  LOG(DEBUG, "server num : ", server_num);
+  LOG(DEBUG, "location path : ", location_path);
+
   Config& config = Config::getInstance();
   ServerConfig& serverConfig = config.getServer(server_num);
   if (!serverConfig.hasLocationConfig(location_path)) {
@@ -29,7 +33,7 @@ void ErrorPageDirectiveHandler::setConfig(long unsigned int server_num,
   std::string error_page = tokens[tokens.size() - 2];
   while (i < tokens.size() - 2) {
     if (parseValue(tokens[i], error_code)) {
-      std::cout << "Parsed as int: " << i << std::endl;
+      LOG(DEBUG, "Parsed as int: ", i);
       serverConfig.addErrorPage(error_code, error_page);
     } else {
       std::cout << "Failed to parse as int" << std::endl;
@@ -37,10 +41,4 @@ void ErrorPageDirectiveHandler::setConfig(long unsigned int server_num,
     }
     i++;
   }
-
-  // LocationConfig& locationConfig =
-  // serverConfig.getLocationConfig(location_path);
-  std::cout << "setting : " << this->tokens[0] << std::endl;
-  std::cout << "server num : " << server_num << std::endl;
-  std::cout << "location path : " << location_path << std::endl;
 }
