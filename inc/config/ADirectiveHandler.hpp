@@ -29,6 +29,8 @@ class ADirectiveHandler {
   virtual void setLocationPath(std::string location_path);
   virtual void setConfig() = 0;
   virtual void log();
+  virtual ServerConfig& getServerConfig();
+  virtual LocationConfig& getLocationConfig();
 };
 
 #endif

@@ -21,13 +21,7 @@ void ListenDirectiveHandler::parseAddressAndPort(const std::string& input,
 
 void ListenDirectiveHandler::setConfig() {
   log();
-
-  Config& config = Config::getInstance();
-  ServerConfig& serverConfig = config.getServer(server_num_);
-  if (!serverConfig.hasLocationConfig(location_path_)) {
-    serverConfig.addLocationConfig(location_path_);
-  }
-
+  ServerConfig& serverConfig = getServerConfig();
   std::string address;
   int port;
 

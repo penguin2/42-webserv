@@ -11,12 +11,6 @@ bool ServerNameDirectiveHandler::isValid() const {
 
 void ServerNameDirectiveHandler::setConfig() {
   log();
-
-  Config& config = Config::getInstance();
-  ServerConfig& serverConfig = config.getServer(server_num_);
-  if (!serverConfig.hasLocationConfig(location_path_)) {
-    serverConfig.addLocationConfig(location_path_);
-  }
-
+  ServerConfig& serverConfig = getServerConfig();
   serverConfig.setServerName(this->tokens_[1]);
 }

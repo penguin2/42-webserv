@@ -11,12 +11,7 @@ bool ErrorPageDirectiveHandler::isValid() const {
 
 void ErrorPageDirectiveHandler::setConfig() {
   log();
-  Config& config = Config::getInstance();
-  ServerConfig& serverConfig = config.getServer(server_num_);
-  if (!serverConfig.hasLocationConfig(location_path_)) {
-    serverConfig.addLocationConfig(location_path_);
-  }
-
+  ServerConfig& serverConfig = getServerConfig();
   size_t i = 1;
   int error_code;
   std::string error_page = tokens_[tokens_.size() - 2];
