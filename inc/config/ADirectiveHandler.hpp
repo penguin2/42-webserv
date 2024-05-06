@@ -10,6 +10,7 @@
 #include "Config.hpp"
 #include "ServerConfig.hpp"
 #include "Logger.hpp"
+#include "Utils.hpp"
 
 class ADirectiveHandler {
  protected:

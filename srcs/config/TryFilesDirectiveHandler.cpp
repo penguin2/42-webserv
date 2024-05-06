@@ -34,7 +34,7 @@ void TryFilesDirectiveHandler::setConfig(long unsigned int server_num,
     if (tokens[i].empty()) {
       continue;
     }
-    if (tokens[i][0] == '=') {
+    if (Utils::isStartsWith(tokens[i], "=")) {
       int status_code;
       std::string value = tokens[i].substr(1);
       if (!parseValue(value, status_code)) {
