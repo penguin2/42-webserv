@@ -9,12 +9,6 @@ bool ErrorPageDirectiveHandler::isValid() const {
   return true;
 }
 
-template <typename T>
-bool parseValue(const std::string& str, T& value) {
-  std::istringstream ss(str);
-  return !(ss >> value).fail() && ss.eof();
-}
-
 void ErrorPageDirectiveHandler::setConfig(long unsigned int server_num,
                                           std::string location_path) {
   LOG(DEBUG, "setting : ", this->tokens[0]);
@@ -31,7 +25,7 @@ void ErrorPageDirectiveHandler::setConfig(long unsigned int server_num,
   int error_code;
   std::string error_page = tokens[tokens.size() - 2];
   while (i < tokens.size() - 2) {
-    if (parseValue(tokens[i], error_code)) {
+    if (Utils::parseValue(tokens[i], error_code)) {
       LOG(DEBUG, "Parsed as int: ", i);
       serverConfig.addErrorPage(error_code, error_page);
     } else {

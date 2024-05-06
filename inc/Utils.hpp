@@ -2,6 +2,7 @@
 #define WEBSERV_UTILS_H_
 
 #include <string>
+#include <sstream>
 
 class Utils {
  public:
@@ -15,6 +16,11 @@ class Utils {
   static bool isStartsWith(const std::string& str, const std::string& prefix);
   static std::string popFrontSubstr(std::string& str, std::size_t n);
   static std::string getExtension(const std::string& file);
+  template <typename T>
+  static bool parseValue(const std::string& str, T& value) {
+    std::istringstream ss(str);
+    return !(ss >> value).fail() && ss.eof();
+  }
 
  private:
   Utils(void);

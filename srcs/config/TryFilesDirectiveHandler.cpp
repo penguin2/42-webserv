@@ -9,12 +9,6 @@ bool TryFilesDirectiveHandler::isValid() const {
   return true;
 }
 
-template <typename T>
-bool parseValue(const std::string& str, T& value) {
-  std::istringstream ss(str);
-  return !(ss >> value).fail() && ss.eof();
-}
-
 void TryFilesDirectiveHandler::setConfig(long unsigned int server_num,
                                          std::string location_path) {
   LOG(DEBUG, "setting : ", this->tokens[0]);
@@ -37,7 +31,7 @@ void TryFilesDirectiveHandler::setConfig(long unsigned int server_num,
     if (Utils::isStartsWith(tokens[i], "=")) {
       int status_code;
       std::string value = tokens[i].substr(1);
-      if (!parseValue(value, status_code)) {
+      if (!Utils::parseValue(value, status_code)) {
         std::cout << "Failed to parse as int" << std::endl;
         exit(1);
       }
