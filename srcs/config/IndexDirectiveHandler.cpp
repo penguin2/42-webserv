@@ -9,16 +9,15 @@ bool IndexDirectiveHandler::isValid() const {
   return true;
 }
 
-void IndexDirectiveHandler::setConfig(long unsigned int server_num,
-                                             std::string location_path) {
+void IndexDirectiveHandler::setConfig() {
   log();
   Config& config = Config::getInstance();
-  ServerConfig& serverConfig = config.getServer(server_num);
-  if (!serverConfig.hasLocationConfig(location_path)) {
-    serverConfig.addLocationConfig(location_path);
+  ServerConfig& serverConfig = config.getServer(server_num_);
+  if (!serverConfig.hasLocationConfig(location_path_)) {
+    serverConfig.addLocationConfig(location_path_);
   }
 
-  LocationConfig& locationConfig = serverConfig.getLocationConfig(location_path);
+  LocationConfig& locationConfig = serverConfig.getLocationConfig(location_path_);
 
   locationConfig.setIndex(tokens_[1]);
 }

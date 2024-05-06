@@ -141,8 +141,10 @@ void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
   if (!this->handlers[tokens[0]]->isValid()) {
     handleError("syntax error : " + tokens[0] + " is invalid");
   }
-  this->handlers[tokens[0]]->setConfig(this->server_count_,
-                                       this->current_location_path_);
+
+  this->handlers[tokens[0]]->setServerNum(this->server_count_);
+  this->handlers[tokens[0]]->setLocationPath(this->current_location_path_);
+  this->handlers[tokens[0]]->setConfig();
 }
 
 void ConfigParser::tokenize(const std::string& line,

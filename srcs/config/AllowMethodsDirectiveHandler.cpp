@@ -9,16 +9,15 @@ bool AllowMethodsDirectiveHandler::isValid() const {
   return true;
 }
 
-void AllowMethodsDirectiveHandler::setConfig(long unsigned int server_num,
-                                             std::string location_path) {
+void AllowMethodsDirectiveHandler::setConfig() {
   log();
   Config& config = Config::getInstance();
-  ServerConfig& serverConfig = config.getServer(server_num);
-  if (!serverConfig.hasLocationConfig(location_path)) {
-    serverConfig.addLocationConfig(location_path);
+  ServerConfig& serverConfig = config.getServer(server_num_);
+  if (!serverConfig.hasLocationConfig(location_path_)) {
+    serverConfig.addLocationConfig(location_path_);
   }
 
-  LocationConfig& locationConfig = serverConfig.getLocationConfig(location_path);
+  LocationConfig& locationConfig = serverConfig.getLocationConfig(location_path_);
 
   std::vector<HttpMethod> allow_methods_vector;
 

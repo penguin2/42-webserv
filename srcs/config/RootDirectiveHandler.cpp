@@ -9,18 +9,17 @@ bool RootDirectiveHandler::isValid() const {
   return true;
 }
 
-void RootDirectiveHandler::setConfig(long unsigned int server_num,
-                                     std::string location_path) {
+void RootDirectiveHandler::setConfig() {
   log();
 
   Config& config = Config::getInstance();
-  ServerConfig& serverConfig = config.getServer(server_num);
-  if (!serverConfig.hasLocationConfig(location_path)) {
-    serverConfig.addLocationConfig(location_path);
+  ServerConfig& serverConfig = config.getServer(server_num_);
+  if (!serverConfig.hasLocationConfig(location_path_)) {
+    serverConfig.addLocationConfig(location_path_);
   }
 
   LocationConfig& locationConfig =
-      serverConfig.getLocationConfig(location_path);
+      serverConfig.getLocationConfig(location_path_);
 
   locationConfig.setLocationRoot(tokens_[1]);
 }

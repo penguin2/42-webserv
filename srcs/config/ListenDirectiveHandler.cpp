@@ -19,14 +19,13 @@ void ListenDirectiveHandler::parseAddressAndPort(const std::string& input,
   ss >> port;
 }
 
-void ListenDirectiveHandler::setConfig(long unsigned int server_num,
-                                       std::string location_path) {
+void ListenDirectiveHandler::setConfig() {
   log();
 
   Config& config = Config::getInstance();
-  ServerConfig& serverConfig = config.getServer(server_num);
-  if (!serverConfig.hasLocationConfig(location_path)) {
-    serverConfig.addLocationConfig(location_path);
+  ServerConfig& serverConfig = config.getServer(server_num_);
+  if (!serverConfig.hasLocationConfig(location_path_)) {
+    serverConfig.addLocationConfig(location_path_);
   }
 
   std::string address;

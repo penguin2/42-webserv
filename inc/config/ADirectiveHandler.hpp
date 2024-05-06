@@ -27,8 +27,7 @@ class ADirectiveHandler {
   virtual void setToken(const std::vector<std::string>& tokens);
   virtual void setServerNum(long unsigned int server_num);
   virtual void setLocationPath(std::string location_path);
-  virtual void setConfig(long unsigned int server_num,
-                         std::string location_path) = 0;
+  virtual void setConfig() = 0;
   virtual void log();
 };
 
