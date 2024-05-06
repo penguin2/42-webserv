@@ -28,9 +28,8 @@ void ServerConfig::addErrorPage(int error_code, const std::string& error_page) {
   this->error_pages[error_code] = error_page;
 }
 
-void ServerConfig::addLocationConfig(const std::string& location_path,
-                                     const LocationConfig& location_config) {
-  this->location_configs[location_path] = location_config;
+void ServerConfig::addLocationConfig(const std::string& location_path) {
+  this->location_configs[location_path] = LocationConfig();
 }
 
 const std::string& ServerConfig::getServerName() const { return server_name; }

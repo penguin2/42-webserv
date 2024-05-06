@@ -30,8 +30,7 @@ class ServerConfig {
 
   void addErrorPage(int error_code, const std::string& error_page);
 
-  void addLocationConfig(const std::string& location_path,
-                         const LocationConfig& location_config);
+  void addLocationConfig(const std::string& location_path);
 
   const std::string& getServerName() const;
 

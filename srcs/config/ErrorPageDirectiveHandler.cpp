@@ -24,8 +24,7 @@ void ErrorPageDirectiveHandler::setConfig(long unsigned int server_num,
   Config& config = Config::getInstance();
   ServerConfig& serverConfig = config.getServer(server_num);
   if (!serverConfig.hasLocationConfig(location_path)) {
-    LocationConfig* newLocationConfig = new LocationConfig();
-    serverConfig.addLocationConfig(location_path, *newLocationConfig);
+    serverConfig.addLocationConfig(location_path);
   }
 
   size_t i = 1;
