@@ -5,15 +5,13 @@ RootDirectiveHandler::RootDirectiveHandler() {
 }
 
 bool RootDirectiveHandler::isValid() const {
-  (void)tokens;
+  (void)tokens_;
   return true;
 }
 
 void RootDirectiveHandler::setConfig(long unsigned int server_num,
                                      std::string location_path) {
-  LOG(DEBUG, "setting : ", this->tokens[0]);
-  LOG(DEBUG, "server num : ", server_num);
-  LOG(DEBUG, "location path : ", location_path);
+  log();
 
   Config& config = Config::getInstance();
   ServerConfig& serverConfig = config.getServer(server_num);
@@ -24,5 +22,5 @@ void RootDirectiveHandler::setConfig(long unsigned int server_num,
   LocationConfig& locationConfig =
       serverConfig.getLocationConfig(location_path);
 
-  locationConfig.setLocationRoot(tokens[1]);
+  locationConfig.setLocationRoot(tokens_[1]);
 }

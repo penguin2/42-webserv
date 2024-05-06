@@ -5,16 +5,13 @@ ErrorPageDirectiveHandler::ErrorPageDirectiveHandler() {
 }
 
 bool ErrorPageDirectiveHandler::isValid() const {
-  (void)tokens;
+  (void)tokens_;
   return true;
 }
 
 void ErrorPageDirectiveHandler::setConfig(long unsigned int server_num,
                                           std::string location_path) {
-  LOG(DEBUG, "setting : ", this->tokens[0]);
-  LOG(DEBUG, "server num : ", server_num);
-  LOG(DEBUG, "location path : ", location_path);
-
+  log();
   Config& config = Config::getInstance();
   ServerConfig& serverConfig = config.getServer(server_num);
   if (!serverConfig.hasLocationConfig(location_path)) {
@@ -23,9 +20,9 @@ void ErrorPageDirectiveHandler::setConfig(long unsigned int server_num,
 
   size_t i = 1;
   int error_code;
-  std::string error_page = tokens[tokens.size() - 2];
-  while (i < tokens.size() - 2) {
-    if (Utils::parseValue(tokens[i], error_code)) {
+  std::string error_page = tokens_[tokens_.size() - 2];
+  while (i < tokens_.size() - 2) {
+    if (Utils::parseValue(tokens_[i], error_code)) {
       LOG(DEBUG, "Parsed as int: ", i);
       serverConfig.addErrorPage(error_code, error_page);
     } else {

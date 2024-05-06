@@ -5,7 +5,7 @@ ListenDirectiveHandler::ListenDirectiveHandler() {
 }
 
 bool ListenDirectiveHandler::isValid() const {
-  if (tokens.size() < 3) {
+  if (tokens_.size() < 3) {
     return false;
   }
   return true;
@@ -21,9 +21,7 @@ void ListenDirectiveHandler::parseAddressAndPort(const std::string& input,
 
 void ListenDirectiveHandler::setConfig(long unsigned int server_num,
                                        std::string location_path) {
-  LOG(DEBUG, "setting : ", this->tokens[0]);
-  LOG(DEBUG, "server num : ", server_num);
-  LOG(DEBUG, "location path : ", location_path);
+  log();
 
   Config& config = Config::getInstance();
   ServerConfig& serverConfig = config.getServer(server_num);
@@ -34,7 +32,7 @@ void ListenDirectiveHandler::setConfig(long unsigned int server_num,
   std::string address;
   int port;
 
-  parseAddressAndPort(tokens[1], address, port);
+  parseAddressAndPort(tokens_[1], address, port);
 
   serverConfig.setListenAddress(address);
   serverConfig.setListenPort(port);
