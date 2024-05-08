@@ -80,7 +80,8 @@ TEST(Uri, ABSOLUTE_FORM_SUCCESS) {
   testAbsoluteForm("http://localhost/space%20.html", "http", "", "localhost",
                    80, "/space .html", "", "", true);
   testAbsoluteForm("http://localhost/index.html?%E9%8D%B5=%E5%80%A4", "http",
-                   "", "localhost", 80, "/index.html", "鍵=値", "", true);
+                   "", "localhost", 80, "/index.html", "%E9%8D%B5=%E5%80%A4",
+                   "", true);
   testAbsoluteForm("http://localhost?v=key", "http", "", "localhost", 80, "",
                    "v=key", "", true);
   testAbsoluteForm("http://localhost#f=N", "http", "", "localhost", 80, "", "",
@@ -125,13 +126,13 @@ TEST(Uri, ABSOLUTE_FORM_SUCCESS) {
                    "/Path With Encoded Characters", "", "", true);
   testAbsoluteForm(
       "http://example.com/path?query=Value%20With%20Encoded%20Spaces", "http",
-      "", "example.com", 80, "/path", "query=Value With Encoded Spaces", "",
-      true);
+      "", "example.com", 80, "/path", "query=Value%20With%20Encoded%20Spaces",
+      "", true);
   testAbsoluteForm(
       "http://example.com/"
       "path?query=value%20with%20encoded%20spaces&param1=ABC",
       "http", "", "example.com", 80, "/path",
-      "query=value with encoded spaces&param1=ABC", "", true);
+      "query=value%20with%20encoded%20spaces&param1=ABC", "", true);
   testAbsoluteForm("http://user123:PassW0rD@example.com", "http",
                    "user123:PassW0rD", "example.com", 80, "", "", "", true);
   testAbsoluteForm("http://example.com/#Fragment", "http", "", "example.com",
