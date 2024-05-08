@@ -30,20 +30,20 @@ void RequestData::insertHeader(std::string &line) {
   // 先頭が空白文字の場合は行全体を無視する
   if (std::isspace(line[0])) return;
 
-  if (pos_colon == std::string::npos) {
-    key = line;
-  } else {
-    key = line.substr(0, pos_colon);
-    value = line.substr(pos_colon + 1);
-    // valueの前後の空白は除去される
-    Utils::strTrim(value, " ");
-    // keyが無い(": value"のような場合)
-    if (key.size() == 0) return;
-    // keyとコロンの間に空白文字がある場合
-    if (std::isspace(key[key.size() - 1]))
-      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                            "Header in space between key and colon");
-  }
+  // ':'が無い or keyが無い(": value"のような場合)
+  if (pos_colon == std::string::npos || Utils::isStartsWith(line, ":"))
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Bad header");
+
+  key = line.substr(0, pos_colon);
+  value = line.substr(pos_colon + 1);
+
+  // valueの前後の空白は除去される
+  Utils::strTrim(value, " ");
+  // keyとコロンの間に空白文字がある場合
+  if (std::isspace(key[key.size() - 1]))
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Header in space between key and colon");
 
   // Headerのkeyは大文字小文字を区別しないため、内部は全て小文字で処理
   Utils::toLowerString(key);
