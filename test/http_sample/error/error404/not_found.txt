@@ -1,4 +1,0 @@
-GET /not_exist.html HTTP/1.1
-Host: localhost
-Explanation: not_exist.html file is not exist.
-
