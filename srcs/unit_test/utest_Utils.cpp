@@ -17,6 +17,11 @@ void testToLowerString(std::string str, const char* expect) {
   EXPECT_STREQ(str.c_str(), expect);
 }
 
+void testToUpperString(std::string str, const char* expect) {
+  Utils::toUpperString(str);
+  EXPECT_STREQ(str.c_str(), expect);
+}
+
 void testStrToSize_T(std::string str, int base, size_t expect_value,
                      bool expect) {
   size_t num;
@@ -121,6 +126,24 @@ TEST(Utils, TO_LOWER) {
   EXPECT_EQ(Utils::toLower("aBcDeFg"), "abcdefg");
   EXPECT_EQ(Utils::toLower(" TEST "), " test ");
   EXPECT_EQ(Utils::toLower(""), "");
+}
+
+TEST(Utils, TO_UPPER_STRING) {
+  // string, expect(string)
+  testToUpperString("abcdefghijklmnopqrstuvwxyz", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  testToUpperString("1234567890", "1234567890");
+  testToUpperString("aBcDeFg", "ABCDEFG");
+  testToUpperString(" test ", " TEST ");
+  testToUpperString("", "");
+}
+
+TEST(Utils, TO_UPPER) {
+  EXPECT_EQ(Utils::toUpper("abcdefghijklmnopqrstuvwxyz"),
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  EXPECT_EQ(Utils::toUpper("1234567890"), "1234567890");
+  EXPECT_EQ(Utils::toUpper("aBcDeFg"), "ABCDEFG");
+  EXPECT_EQ(Utils::toUpper(" test "), " TEST ");
+  EXPECT_EQ(Utils::toUpper(""), "");
 }
 
 TEST(Utils, STR_TO_SIZE_T_SUCCESS) {

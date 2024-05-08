@@ -53,6 +53,18 @@ std::string Utils::toLower(const std::string &str) {
   return cpy;
 }
 
+void Utils::toUpperString(std::string &str) {
+  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+    if (std::islower(*it)) *it = std::toupper(*it);
+  }
+}
+
+std::string Utils::toUpper(const std::string &str) {
+  std::string cpy(str);
+  Utils::toUpperString(cpy);
+  return cpy;
+}
+
 // 符号なし 8 or 10 or 16進数対応
 bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
   static const std::string string16 = "0123456789abcdef";
