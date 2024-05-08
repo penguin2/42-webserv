@@ -8,7 +8,8 @@ class SysUtils {
  public:
   static int addNonblockingFlag(int fd);
   static int addCloseOnExecFlag(int fd);
-  static int makeListenSocket(const std::string& port, int backlog);
+  static int makeListenSocket(const char* hostname, const char* servname,
+                              int backlog);
   static char* convertToCstring(const std::string& str);
   static void deleteCstring(char* cstr);
   static char* const* convertToEnvp(

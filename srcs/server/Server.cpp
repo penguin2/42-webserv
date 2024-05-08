@@ -137,7 +137,7 @@ int Server::closeSockets(const std::vector<ASocket*>& closing_sockets) {
 #include "ListenSocket.hpp"
 int Server::testInitListenSockets(std::map<int, ASocket*>& sockets) {
   const int listen_socket_fd =
-      SysUtils::makeListenSocket("4242", Server::kDefaultListenBacklog);
+      SysUtils::makeListenSocket(NULL, "4242", Server::kDefaultListenBacklog);
   if (listen_socket_fd < 0) return -1;
 
   ListenSocket* new_listen_socket = new ListenSocket(listen_socket_fd);
