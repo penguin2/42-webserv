@@ -241,12 +241,10 @@ void Request::determineParseBody(std::string& buffer) {
     return parseBody(buffer);
   } else {
     // Transfer-EncodingとContent-Length両方が存在しない場合はパース終了
-    insertContentLength();
     this->state_ = END;
   }
 }
 
-// ボディを持たない場合は"Content-Length: 0"を挿入
 void Request::insertContentLength(void) {
   std::ostringstream oss;
   oss << "Content-Length: " << data_->getBody().size();
