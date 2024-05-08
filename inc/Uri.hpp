@@ -37,7 +37,7 @@ class Uri {
   void setAndCheckAndDecodeHost(const std::string& host);
   void setAndCheckPort(const std::string& port);
   void setAndCheckAndDecodePath(const std::string& path);
-  void setAndCheckAndDecodeQuery(const std::string& query);
+  void setAndCheckQuery(const std::string& query);
   void setFragment(const std::string& fragment);
 
   Uri(const Uri&);

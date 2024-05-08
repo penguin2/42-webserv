@@ -71,7 +71,7 @@ void Uri::parsePathQueryFragment(const std::string& path_query_fragment) {
   const std::string path_query = path_query_fragment.substr(0, fragment_idx);
   const size_t query_idx = path_query.find('?');
   if (query_idx != std::string::npos)
-    setAndCheckAndDecodeQuery(path_query.substr(query_idx + 1));
+    setAndCheckQuery(path_query.substr(query_idx + 1));
   setAndCheckAndDecodePath(path_query.substr(0, query_idx));
 }
 
@@ -138,11 +138,12 @@ void Uri::setAndCheckAndDecodePath(const std::string& path) {
                           "Bad Path");
 }
 
-void Uri::setAndCheckAndDecodeQuery(const std::string& query) {
+void Uri::setAndCheckQuery(const std::string& query) {
   this->query_ = query;
+  std::string cpy_query(query);
   // (使用不可文字を含む or デコードに失敗)
   if (!Utils::isContainsOnly(this->query_, UriUtils::isQueryCharset) ||
-      UriUtils::decodeUrlEncoding(this->query_) == false)
+      UriUtils::decodeUrlEncoding(cpy_query) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Query");
 }
