@@ -101,18 +101,16 @@ void Uri::setAndCheckAndDecodeUserInfo(const std::string& user_info) {
 }
 
 void Uri::setAndCheckAndDecodeHost(const std::string& host) {
-  this->host_ = host;
+  // Hostは大文字小文字を区別しない
+  this->host_ = Utils::toLower(host);
   // Hostコンポーネントが空
   if (this->host_.size() == 0)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Empty Host");
-  // TODO 使用不可文字を含む or デコードに失敗
   if (!Utils::isContainsOnly(this->host_, UriUtils::isRegName) ||
       UriUtils::decodeUrlEncoding(this->host_) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Host");
-  // Hostは大文字小文字を区別しない
-  Utils::toLowerString(this->host_);
 }
 
 void Uri::setAndCheckPort(const std::string& port) {

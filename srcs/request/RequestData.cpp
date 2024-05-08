@@ -35,7 +35,8 @@ void RequestData::insertHeader(std::string &line) {
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad header");
 
-  key = line.substr(0, pos_colon);
+  // Headerのkeyは大文字小文字を区別しないため、内部は全て小文字で処理
+  key = Utils::toLower(line.substr(0, pos_colon));
   value = line.substr(pos_colon + 1);
 
   // valueの前後の空白は除去される
@@ -44,9 +45,6 @@ void RequestData::insertHeader(std::string &line) {
   if (std::isspace(key[key.size() - 1]))
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Header in space between key and colon");
-
-  // Headerのkeyは大文字小文字を区別しないため、内部は全て小文字で処理
-  Utils::toLowerString(key);
 
   if (key == "host") {
     // hostヘッダが重複する場合
