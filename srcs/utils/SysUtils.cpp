@@ -32,7 +32,7 @@ int SysUtils::makeListenSocket(const std::string& port, int backlog) {
 
   std::memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_socktype = SOCK_STREAM;
-  hints.ai_family = AF_UNSPEC;
+  hints.ai_family = AF_INET;
   hints.ai_flags = AI_PASSIVE;
   const int status = getaddrinfo(NULL, port.c_str(), &hints, &listp);
   if (status != 0) {
