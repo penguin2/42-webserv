@@ -7,3 +7,6 @@ test/gtest
 
 # lsp: clangd
 compile_flags.txt
+
+# temporary logs
+log_webserv.txt
