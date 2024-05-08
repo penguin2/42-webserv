@@ -84,10 +84,9 @@ const std::string& Uri::getQuery(void) const { return query_; }
 const std::string& Uri::getFragment(void) const { return fragment_; }
 
 void Uri::setAndCheckScheme(const std::string& scheme) {
-  this->scheme_ = scheme;
   // Schemeは大文字小文字を区別しない
-  Utils::toLowerString(this->scheme_);
-  if (scheme != "http")
+  this->scheme_ = Utils::toLower(scheme);
+  if (this->scheme_ != "http")
     throw ServerException(ServerException::SERVER_ERROR_MISDIRECTED_REQUEST,
                           "Scheme != http");
 }
