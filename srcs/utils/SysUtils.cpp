@@ -56,15 +56,21 @@ int SysUtils::makeListenSocket(const std::string& port, int backlog) {
     }
   }
   freeaddrinfo(listp);
-  if (p == NULL || SysUtils::addNonblockingFlag(socket_fd) < 0 ||
-      SysUtils::addCloseOnExecFlag(socket_fd) < 0)
+
+  if (p == NULL) return -1;
+
+  if (SysUtils::addNonblockingFlag(socket_fd) < 0 ||
+      SysUtils::addCloseOnExecFlag(socket_fd) < 0) {
+    close(socket_fd);
     return -1;
+  }
 
   if (listen(socket_fd, backlog) < 0) {
     LOG(WARN, "listen: ", std::strerror(errno));
     close(socket_fd);
     return -1;
   }
+
   return socket_fd;
 }
 
