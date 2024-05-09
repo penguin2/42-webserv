@@ -130,3 +130,9 @@ bool Utils::isSameValueCaseInsensitive(
   if (it == mp.end()) return false;
   return Utils::toLower(it->second) == Utils::toLower(value);
 }
+
+std::string Utils::uintToString(unsigned int val) {
+  std::stringstream ss;
+  ss << std::dec << val;
+  return ss.str();
+}
