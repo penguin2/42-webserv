@@ -34,10 +34,8 @@ ServerConfig& Config::getServer(long unsigned int server_index) {
 const std::vector<ServerConfig>& Config::getServers() const { return servers; }
 
 void Config::print() {
-  size_t i = 0;
-  while (i < this->servers.size()) {
-    std::cout << "********** server **********" << std::endl;
-    servers[i].print();
-    i++;
-  }
+    for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it) {
+        std::cout << "********** server **********" << std::endl;
+        it->print();
+    }
 }
