@@ -4,7 +4,7 @@ AutoIndexDirectiveHandler::AutoIndexDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
 }
 
-bool AutoIndexDirectiveHandler::isValid() const {
+bool AutoIndexDirectiveHandler::isDirectiveValid() const {
   (void)tokens_;
   return true;
 }

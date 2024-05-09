@@ -4,7 +4,7 @@ RootDirectiveHandler::RootDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
 }
 
-bool RootDirectiveHandler::isValid() const {
+bool RootDirectiveHandler::isDirectiveValid() const {
   (void)tokens_;
   return true;
 }

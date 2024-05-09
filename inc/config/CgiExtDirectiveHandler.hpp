@@ -6,7 +6,7 @@
 class CgiExtDirectiveHandler : public ADirectiveHandler {
  public:
   CgiExtDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
 };
 

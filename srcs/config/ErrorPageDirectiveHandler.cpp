@@ -4,7 +4,7 @@ ErrorPageDirectiveHandler::ErrorPageDirectiveHandler() {
   this->directive_context_ = ConfigEnums::SERVER;
 }
 
-bool ErrorPageDirectiveHandler::isValid() const {
+bool ErrorPageDirectiveHandler::isDirectiveValid() const {
   (void)tokens_;
   return true;
 }

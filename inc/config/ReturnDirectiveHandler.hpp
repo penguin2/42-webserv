@@ -6,7 +6,7 @@
 class ReturnDirectiveHandler : public ADirectiveHandler {
  public:
   ReturnDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
 };
 

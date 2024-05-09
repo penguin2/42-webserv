@@ -4,7 +4,7 @@ ListenDirectiveHandler::ListenDirectiveHandler() {
   this->directive_context_ = ConfigEnums::SERVER;
 }
 
-bool ListenDirectiveHandler::isValid() const {
+bool ListenDirectiveHandler::isDirectiveValid() const {
   if (tokens_.size() < 3) {
     return false;
   }

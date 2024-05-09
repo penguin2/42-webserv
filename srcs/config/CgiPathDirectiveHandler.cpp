@@ -4,7 +4,7 @@ CgiPathDirectiveHandler::CgiPathDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
 }
 
-bool CgiPathDirectiveHandler::isValid() const {
+bool CgiPathDirectiveHandler::isDirectiveValid() const {
   (void)tokens_;
   return true;
 }

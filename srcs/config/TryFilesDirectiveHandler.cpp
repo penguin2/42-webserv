@@ -4,7 +4,7 @@ TryFilesDirectiveHandler::TryFilesDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
 }
 
-bool TryFilesDirectiveHandler::isValid() const {
+bool TryFilesDirectiveHandler::isDirectiveValid() const {
   (void)tokens_;
   return true;
 }

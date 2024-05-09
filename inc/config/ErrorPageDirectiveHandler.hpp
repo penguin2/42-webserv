@@ -6,7 +6,7 @@
 class ErrorPageDirectiveHandler : public ADirectiveHandler {
  public:
   ErrorPageDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
 };
 

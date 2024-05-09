@@ -4,7 +4,7 @@ ServerNameDirectiveHandler::ServerNameDirectiveHandler() {
   this->directive_context_ = ConfigEnums::SERVER;
 }
 
-bool ServerNameDirectiveHandler::isValid() const {
+bool ServerNameDirectiveHandler::isDirectiveValid() const {
   (void)tokens_;
   return true;
 }

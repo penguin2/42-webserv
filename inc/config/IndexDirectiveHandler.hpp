@@ -6,7 +6,7 @@
 class IndexDirectiveHandler : public ADirectiveHandler {
  public:
   IndexDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
 };
 

@@ -6,7 +6,7 @@
 class CgiPathDirectiveHandler : public ADirectiveHandler {
  public:
   CgiPathDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
 };
 

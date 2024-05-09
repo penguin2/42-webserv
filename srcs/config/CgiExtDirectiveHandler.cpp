@@ -4,7 +4,7 @@ CgiExtDirectiveHandler::CgiExtDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
 }
 
-bool CgiExtDirectiveHandler::isValid() const {
+bool CgiExtDirectiveHandler::isDirectiveValid() const {
   (void)tokens_;
   return true;
 }

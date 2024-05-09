@@ -6,7 +6,7 @@
 class AllowMethodsDirectiveHandler : public ADirectiveHandler {
  public:
   AllowMethodsDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
 };
 

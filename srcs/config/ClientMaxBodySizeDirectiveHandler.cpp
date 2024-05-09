@@ -4,7 +4,7 @@ ClientMaxBodySizeDirectiveHandler::ClientMaxBodySizeDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
 }
 
-bool ClientMaxBodySizeDirectiveHandler::isValid() const {
+bool ClientMaxBodySizeDirectiveHandler::isDirectiveValid() const {
   (void)tokens_;
   return true;
 }

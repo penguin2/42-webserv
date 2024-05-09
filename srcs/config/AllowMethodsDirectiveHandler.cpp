@@ -4,7 +4,7 @@ AllowMethodsDirectiveHandler::AllowMethodsDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
 }
 
-bool AllowMethodsDirectiveHandler::isValid() const {
+bool AllowMethodsDirectiveHandler::isDirectiveValid() const {
   (void)tokens_;
   return true;
 }

@@ -6,7 +6,7 @@
 class TryFilesDirectiveHandler : public ADirectiveHandler {
  public:
   TryFilesDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
 };
 

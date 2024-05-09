@@ -6,7 +6,7 @@
 class ListenDirectiveHandler : public ADirectiveHandler {
  public:
   ListenDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
   void parseAddressAndPort(const std::string& input, std::string& address,
                            int& port);

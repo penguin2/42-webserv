@@ -138,7 +138,7 @@ void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
   }
 
   this->handlers[tokens[0]]->setToken(tokens);
-  if (!this->handlers[tokens[0]]->isValid()) {
+  if (!this->handlers[tokens[0]]->isDirectiveValid()) {
     handleError("syntax error : " + tokens[0] + " is invalid");
   }
 

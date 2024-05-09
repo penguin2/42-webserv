@@ -6,7 +6,7 @@
 class RootDirectiveHandler : public ADirectiveHandler {
  public:
   RootDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
 };
 

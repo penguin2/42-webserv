@@ -6,7 +6,7 @@
 class AutoIndexDirectiveHandler : public ADirectiveHandler {
  public:
   AutoIndexDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
 };
 

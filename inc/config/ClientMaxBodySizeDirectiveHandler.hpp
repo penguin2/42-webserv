@@ -6,7 +6,7 @@
 class ClientMaxBodySizeDirectiveHandler : public ADirectiveHandler {
  public:
   ClientMaxBodySizeDirectiveHandler();
-  virtual bool isValid() const;
+  virtual bool isDirectiveValid() const;
   virtual void setConfig();
 };
 
