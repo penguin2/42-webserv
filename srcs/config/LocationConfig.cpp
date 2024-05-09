@@ -4,7 +4,7 @@ LocationConfig::LocationConfig() {}
 
 const std::string& LocationConfig::getRoot() const { return root; }
 
-void LocationConfig::setLocationRoot(const std::string& newRoot) {
+void LocationConfig::setRoot(const std::string& newRoot) {
   root = newRoot;
 }
 

@@ -25,7 +25,7 @@ class LocationConfig {
   LocationConfig();
 
   const std::string& getRoot() const;
-  void setLocationRoot(const std::string& newRoot);
+  void setRoot(const std::string& newRoot);
 
   const std::string& getIndex() const;
   void setIndex(const std::string& newIndex);
