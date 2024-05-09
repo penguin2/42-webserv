@@ -25,6 +25,20 @@ void testStrToSize_T(std::string str, int base, size_t expect_value,
   if (ret == true) EXPECT_EQ(num, expect_value) << str << " -> " << num;
 }
 
+void testSplit(std::string str, char separator,
+               std::vector<std::string> expect_vector) {
+  std::vector<std::string> vec = Utils::split(str, separator);
+  ASSERT_EQ(vec.size(), expect_vector.size());
+  for (size_t i = vec.size(); i < vec.size(); ++i) {
+    ASSERT_STREQ(vec[i].c_str(), expect_vector[i].c_str());
+  }
+}
+
+void testJoinStrings(std::vector<std::string> vec, std::string delim,
+                     const char* expect_str) {
+  EXPECT_STREQ(Utils::joinStrings(vec, delim).c_str(), expect_str);
+}
+
 TEST(Utils, STR_TRIM) {
   // target_string, charset, expect(string)
   testStrTrim("TEST1 ", " ", "TEST1");
@@ -98,6 +112,15 @@ TEST(Utils, TO_LOWER_STRING) {
   testToLowerString("aBcDeFg", "abcdefg");
   testToLowerString(" TEST ", " test ");
   testToLowerString("", "");
+}
+
+TEST(Utils, TO_LOWER) {
+  EXPECT_EQ(Utils::toLower("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+            "abcdefghijklmnopqrstuvwxyz");
+  EXPECT_EQ(Utils::toLower("1234567890"), "1234567890");
+  EXPECT_EQ(Utils::toLower("aBcDeFg"), "abcdefg");
+  EXPECT_EQ(Utils::toLower(" TEST "), " test ");
+  EXPECT_EQ(Utils::toLower(""), "");
 }
 
 TEST(Utils, STR_TO_SIZE_T_SUCCESS) {
@@ -184,4 +207,48 @@ TEST(Utils, GET_EXTENSION) {
   EXPECT_STREQ(Utils::getExtension("/0.0.0.0/a.py?f=a.zip").c_str(), "zip");
   EXPECT_STREQ(Utils::getExtension("......").c_str(), "");
   EXPECT_STREQ(Utils::getExtension("../").c_str(), "");
+}
+
+TEST(Utils, SPLIT) {
+  testSplit("/a/b/c/", '/', {"a", "b", "c"});
+  testSplit("///a/b/c///", '/', {"a", "b", "c"});
+  testSplit("/api/form/./../../admin", '/',
+            {"api", "form", ".", "..", "..", "admin"});
+  testSplit("a/b/c/", '/', {"a", "b", "c"});
+  testSplit("a/b/c", '/', {"a", "b", "c"});
+  testSplit("a/b/c", '=', {"abc"});
+  testSplit("", '=', {});
+  testSplit("", '\0', {});
+}
+
+TEST(Utils, JOIN_STRINGS) {
+  testJoinStrings({"GET", "POST", "DELETE"}, ", ", "GET, POST, DELETE");
+  testJoinStrings({"GET", "POST", "DELETE"}, "", "GETPOSTDELETE");
+  testJoinStrings({"PATH", "TO", "FILE"}, "/", "PATH/TO/FILE");
+  testJoinStrings({"ONE", "TWO"}, "&&", "ONE&&TWO");
+  testJoinStrings({"WORD"}, "/", "WORD");
+  testJoinStrings({}, "/", "");
+  testJoinStrings({"a", "b", "c"}, " -> ", "a -> b -> c");
+}
+
+TEST(Utils, IS_SAME_VALUE_CASE_INSENSITIVE) {
+  std::map<std::string, std::string> test_mp;
+  test_mp["a"] = "fourty-two";
+  test_mp["A"] = "ft-42";
+  test_mp["b"] = "aPpLe";
+
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "a", "fourty-two"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "a", "FOURTY-TWO"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "a", "FouRty-tWo"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "A", "ft-42"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "A", "FT-42"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "b", "APPLE"));
+  EXPECT_TRUE(Utils::isSameValueCaseInsensitive(test_mp, "b", "apple"));
+
+  EXPECT_FALSE(Utils::isSameValueCaseInsensitive(test_mp, "a", "fourtytwo"));
+  EXPECT_FALSE(
+      Utils::isSameValueCaseInsensitive(test_mp, "a", "fourty-two-fourty-two"));
+  EXPECT_FALSE(Utils::isSameValueCaseInsensitive(test_mp, "A", "ft_42"));
+  EXPECT_FALSE(Utils::isSameValueCaseInsensitive(test_mp, "b", "app"));
+  EXPECT_FALSE(Utils::isSameValueCaseInsensitive(test_mp, "B", "apple"));
 }

@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 
+#include "ServerException.hpp"
 #include "Utils.hpp"
 
 bool UriUtils::decodeUrlEncoding(std::string &str) {
@@ -75,4 +76,32 @@ int UriUtils::isPathCharset(int c) {
 
 int UriUtils::isQueryCharset(int c) {
   return (isRegName(c) || c == ':' || c == '@' || c == '/' || c == '?');
+}
+
+std::string UriUtils::removeDotSegments(const std::string &path) {
+  const bool is_finish_slash = (!path.empty() && path[path.size() - 1] == '/');
+  std::vector<std::string> input_buffer = Utils::split(path, '/');
+  std::vector<std::string> output_buffer;
+
+  for (std::vector<std::string>::const_iterator it = input_buffer.begin();
+       it != input_buffer.end(); ++it) {
+    if (*it == ".") continue;
+    if (*it == "..") {
+      if (output_buffer.empty()) {
+        throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                              "Detected access to parent directory");
+      }
+      output_buffer.pop_back();
+    } else {
+      output_buffer.push_back(*it);
+    }
+  }
+  std::string removed_path;
+  for (std::vector<std::string>::const_iterator it = output_buffer.begin();
+       it != output_buffer.end(); ++it) {
+    removed_path.append("/");
+    removed_path.append(*it);
+  }
+  if (is_finish_slash) removed_path.append("/");
+  return removed_path;
 }

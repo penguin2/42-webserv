@@ -1,5 +1,8 @@
 #include "Response.hpp"
 
+#include <ctime>
+
+#include "HttpUtils.hpp"
 #include "ResponseData.hpp"
 
 Response::Response(void) { this->data_ = new ResponseData; }
@@ -43,3 +46,15 @@ void Response::insertContentLengthIfNotSet(void) {
   ss << body_size;
   data_->insertHeader("content-length", ss.str());
 }
+
+void Response::insertCommonHeaders(bool keep_alive) {
+  this->insertHeader("Connection", (keep_alive ? "Keep-Alive" : "Close"));
+  this->insertHeader("Server", "Webserv");
+
+  std::time_t raw_time;
+  std::time(&raw_time);
+  this->insertHeader("Date", HttpUtils::generateDateAsFormat(
+                                 raw_time, "%a, %d %b %Y %H:%M:%S GMT"));
+}
+
+int Response::getStatusCode(void) const { return this->data_->getStatusCode(); }

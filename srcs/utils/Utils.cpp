@@ -47,6 +47,12 @@ void Utils::toLowerString(std::string &str) {
   }
 }
 
+std::string Utils::toLower(const std::string &str) {
+  std::string cpy(str);
+  Utils::toLowerString(cpy);
+  return cpy;
+}
+
 // 符号なし 8 or 10 or 16進数対応
 bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
   static const std::string string16 = "0123456789abcdef";
@@ -90,4 +96,37 @@ std::string Utils::getExtension(const std::string &file) {
       file.find('/', pos_last_of_period) != std::string::npos)
     return "";
   return file.substr(pos_last_of_period + 1);
+}
+
+std::vector<std::string> Utils::split(const std::string &str, char separator) {
+  std::vector<std::string> strings;
+  std::string buf;
+  std::stringstream ss(str);
+
+  while (std::getline(ss, buf, separator)) {
+    if (!buf.empty()) {
+      strings.push_back(buf);
+    }
+  }
+  return strings;
+}
+
+std::string Utils::joinStrings(const std::vector<std::string> &strings,
+                               std::string delimiter) {
+  std::stringstream ss;
+  for (std::vector<std::string>::const_iterator it = strings.begin();
+       it != strings.end();) {
+    ss << *it;
+    ++it;
+    if (it != strings.end()) ss << delimiter;
+  }
+  return ss.str();
+}
+
+bool Utils::isSameValueCaseInsensitive(
+    const std::map<std::string, std::string> &mp, const std::string &key,
+    const std::string &value) {
+  std::map<std::string, std::string>::const_iterator it = mp.find(key);
+  if (it == mp.end()) return false;
+  return Utils::toLower(it->second) == Utils::toLower(value);
 }

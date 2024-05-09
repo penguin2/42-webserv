@@ -1,2 +1,9 @@
 obj/
 webserv
+
+# googletest
+test/googletest*
+test/gtest
+
+# lsp: clangd
+compile_flags.txt

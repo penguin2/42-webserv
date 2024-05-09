@@ -1,5 +1,8 @@
 #include "HttpUtils.hpp"
 
+#include <dirent.h>
+#include <sys/stat.h>
+
 #include <algorithm>
 #include <ctime>
 #include <fstream>
@@ -7,27 +10,10 @@
 #include <map>
 #include <set>
 #include <sstream>
-#include <utility>
 
+#include "FileUtils.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
-
-// ファイルからデータを読み取り文字列に変換
-// file or dir の確認や権限確認はこの関数外で行う想定
-std::string HttpUtils::readAllDataFromFile(const std::string& file) {
-  std::ifstream ifs;
-  std::stringstream ss;
-
-  ifs.open(file.c_str(), std::ios::binary);
-  if (ifs.fail())
-    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
-  ss << ifs.rdbuf();
-  ifs.close();
-  if (ifs.eof() == false && ifs.fail())
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Internal Server Error");
-  return ss.str();
-}
 
 // デフォルトのエラーページHTMLをプログラムで生成
 std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
@@ -80,32 +66,19 @@ std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
 // ファイルがなかったり読み取りエラーとなった場合はプログラムで生成
 std::string HttpUtils::generateErrorPage(const std::string* file, int code,
                                          const std::string& phrase) {
-  if (file == NULL) return HttpUtils::generateErrorPage(code, phrase);
-  try {
-    return HttpUtils::readAllDataFromFile(*file);
-  } catch (ServerException& e) {
+  std::stringstream ss;
+  if (file == NULL ||
+      FileUtils::readAllDataFromFile(file->c_str(), ss) == false)
     return HttpUtils::generateErrorPage(code, phrase);
-  }
+  return ss.str();
 }
 
-std::string HttpUtils::generateDateValue(void) {
-  // "Fri, 12 Apr 2024 01:12:16 GMT":29文字
-  // %a(Fri) :3文字 曜日省略形
-  // %d(12)  :2文字 Day
-  // %b(Apr) :3文字 月名省略形
-  // %Y(2024):4文字 Year
-  // %H(01)  :2文字 Hour
-  // %M(12)  :2文字 Min
-  // %S(16)  :2文字 Sec
-  const int buffer_size = 32;
+std::string HttpUtils::generateDateAsFormat(std::time_t t,
+                                            const std::string& fmt) {
+  const int buffer_size = 256;
   char buf[buffer_size];
-  std::time_t raw_time;
 
-  std::tm* timeinfo;
-  std::time(&raw_time);
-  timeinfo = std::gmtime(&raw_time);
-
-  std::strftime(buf, buffer_size, "%a, %d %b %Y %H:%M:%S GMT", timeinfo);
+  std::strftime(buf, buffer_size, fmt.c_str(), std::gmtime(&t));
   return std::string(buf);
 }
 
@@ -173,4 +146,88 @@ std::set<int> HttpUtils::makeRedirectCodeSet(void) {
   redirect_status_codes.insert(307);
   redirect_status_codes.insert(308);
   return redirect_status_codes;
+}
+
+bool HttpUtils::generateAutoindexPage(const std::string& path_component,
+                                      const std::string& absolute_dir_path,
+                                      std::stringstream& ss) {
+  std::vector<FileUtils::Entry> dir_data =
+      FileUtils::Entry::readDirData(absolute_dir_path);
+  if (dir_data.size() == 0) return false;
+  std::sort(dir_data.begin(), dir_data.end());
+
+  ss << "<html>\r\n"
+     << "<head>\r\n"
+     << "<title>Index of " << path_component << "</title>\r\n"
+     << "</head>\r\n"
+     << "<body>\r\n"
+     << "<h1>Index of " << path_component << "</h1>\r\n"
+     << "<hr>\r\n"
+     << "<pre>\r\n"
+     << "<a href=\"../\">../</a>\r\n";
+  for (std::vector<FileUtils::Entry>::const_iterator it = dir_data.begin();
+       it != dir_data.end(); ++it) {
+    if (it->startWithDot() == true ||
+        it->getFileType() == FileUtils::Entry::UNKNOWN)
+      continue;
+    if (AutoindexUtils::generateFileRecord(*it, absolute_dir_path, ss) == false)
+      return false;
+    ss << "\r\n";
+  }
+  ss << "<pre>\r\n"
+     << "<hr>\r\n"
+     << "</body>\r\n"
+     << "</html>\r\n";
+  return true;
+}
+
+bool HttpUtils::AutoindexUtils::generateFileRecord(
+    const FileUtils::Entry& entry, const std::string& dir,
+    std::stringstream& ss) {
+  const std::string absolute_path(dir + "/" + entry.getFileName());
+
+  std::string file_name(entry.getFileName());
+  const bool is_dir_type = (entry.getFileType() == FileUtils::Entry::DIRECTORY);
+  if (is_dir_type) file_name.push_back('/');
+  AutoindexUtils::generateFileLink(file_name, ss);
+  if (AutoindexUtils::generateFileDetail(absolute_path, is_dir_type, ss) ==
+      false)
+    return false;
+  return true;
+}
+
+void HttpUtils::AutoindexUtils::generateFileLink(const std::string& file_name,
+                                                 std::stringstream& ss) {
+  static const int MAX_FILE_NAME_SIZE = 50;
+
+  ss << "<a href=\"" << file_name << "\">";
+  if (file_name.size() <= MAX_FILE_NAME_SIZE)
+    ss << file_name;
+  else
+    ss << file_name.substr(0, MAX_FILE_NAME_SIZE - 3) << "..>";
+  ss << "</a> ";
+  if (file_name.size() <= MAX_FILE_NAME_SIZE) {
+    ss << std::string(MAX_FILE_NAME_SIZE - file_name.size(), ' ');
+  }
+}
+
+bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
+                                                   bool is_dir,
+                                                   std::stringstream& ss) {
+  static const int MAX_FILE_DETAIL_SIZE = 20;
+  struct stat st;
+
+  if (stat(file_path.c_str(), &st) < 0) return false;
+  ss << generateDateAsFormat(st.st_mtime, "%d-%b-%Y %H:%M");
+  if (is_dir) {
+    ss << std::string(MAX_FILE_DETAIL_SIZE - 1, ' ') << '-';
+  } else {
+    off_t file_size = FileUtils::getFileSize(file_path);
+    if (file_size < 0) return false;
+    std::stringstream ss_file_size;
+    ss_file_size << file_size;
+    ss << std::string(MAX_FILE_DETAIL_SIZE - ss_file_size.str().size(), ' ');
+    ss << ss_file_size.str();
+  }
+  return true;
 }
