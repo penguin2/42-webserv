@@ -179,9 +179,7 @@ void Request::parseChunkedSize(std::string& buffer) {
 
   // body_size_ or 合計のbodyのサイズが正常な数値であるが大き過ぎる場合
   const Uri& uri = data_->getUri();
-  if (ConfigAdapter::getMaxBodySize(uri.getHost(), uri.getPort(),
-                                    uri.getPath()) <
-      (body_size_ + data_->getBody().size()))
+  if (ConfigAdapter::getMaxBodySize() < (body_size_ + data_->getBody().size()))
     throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                           "Body size too large");
 
@@ -232,8 +230,7 @@ void Request::determineParseBody(std::string& buffer) {
 
     // body_size_が正常な数値であるが大き過ぎる場合
     const Uri& uri = data_->getUri();
-    if (ConfigAdapter::getMaxBodySize(uri.getHost(), uri.getPort(),
-                                      uri.getPath()) < body_size_)
+    if (ConfigAdapter::getMaxBodySize() < body_size_)
       throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                             "Body size too large");
 
