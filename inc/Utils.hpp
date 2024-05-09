@@ -32,6 +32,7 @@ class Utils {
   static bool isSameValueCaseInsensitive(
       const std::map<std::string, std::string>& mp, const std::string& key,
       const std::string& value);
+  static std::string uintToString(unsigned int val);
 
  private:
   Utils(void);

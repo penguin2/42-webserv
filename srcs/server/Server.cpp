@@ -9,6 +9,7 @@
 
 #include "Connection.hpp"
 #include "Logger.hpp"
+#include "SocketAddress.hpp"
 #include "SysUtils.hpp"
 
 Server::Server(const char* config_file) {
@@ -30,15 +31,32 @@ Server::~Server() {
 }
 
 int Server::acceptListenSocket(int listen_socket_fd) {
-  const int connected_socket_fd = accept(listen_socket_fd, NULL, NULL);
+  struct sockaddr peer_sockaddr;
+  socklen_t peer_sockaddr_len = sizeof(struct sockaddr);
+  struct sockaddr local_sockaddr;
+  socklen_t local_sockaddr_len = sizeof(struct sockaddr);
+
+  const int connected_socket_fd =
+      accept(listen_socket_fd, &peer_sockaddr, &peer_sockaddr_len);
   if (connected_socket_fd < 0) return -1;
-  if (SysUtils::addNonblockingFlag(connected_socket_fd) < 0 ||
-      SysUtils::addCloseOnExecFlag(connected_socket_fd) < 0 ||
-      addConnection(connected_socket_fd) < 0) {
+  if (getsockname(connected_socket_fd, &local_sockaddr, &local_sockaddr_len) <
+      0) {
     close(connected_socket_fd);
     return -1;
   }
-  LOG(INFO, "connected: fd: ", connected_socket_fd);
+
+  const SocketAddress local_address = SocketAddress::createFromSockaddrIn(
+      reinterpret_cast<struct sockaddr_in*>(&local_sockaddr),
+      local_sockaddr_len);
+  const SocketAddress peer_address = SocketAddress::createFromSockaddrIn(
+      reinterpret_cast<struct sockaddr_in*>(&peer_sockaddr), peer_sockaddr_len);
+
+  if (SysUtils::addNonblockingFlag(connected_socket_fd) < 0 ||
+      SysUtils::addCloseOnExecFlag(connected_socket_fd) < 0 ||
+      addConnection(connected_socket_fd, local_address, peer_address) < 0) {
+    close(connected_socket_fd);
+    return -1;
+  }
   return 0;
 }
 
@@ -74,14 +92,16 @@ int Server::loop() {
   return 0;
 }
 
-int Server::addConnection(int connected_socket_fd) {
+int Server::addConnection(int connected_socket_fd,
+                          const SocketAddress& local_address,
+                          const SocketAddress& peer_address) {
   if (sockets_.find(connected_socket_fd) != sockets_.end()) {
-    LOG(WARN, "addConnection: ", connected_socket_fd);
+    LOG(WARN, "addConnection: duplicated fd: ", connected_socket_fd);
     return -1;
   }
 
-  Connection* new_connection =
-      new Connection(connected_socket_fd, event_manager_);
+  Connection* new_connection = new Connection(
+      connected_socket_fd, local_address, peer_address, event_manager_);
 
   if (event_manager_->insert(connected_socket_fd, new_connection,
                              EventType::READ) < 0) {
@@ -97,6 +117,7 @@ int Server::addConnection(int connected_socket_fd) {
 
   sockets_[connected_socket_fd] = new_connection;
 
+  LOG(INFO, "connection created: ", *new_connection);
   return 0;
 }
 
@@ -119,9 +140,10 @@ int Server::closeSocket(ASocket* socket) {
   timeout_manager_->erase(socket);
   sockets_.erase(closing_socket_fd);
   close(closing_socket_fd);
+
+  LOG(INFO, "closed: ", *socket);
   delete socket;
 
-  LOG(INFO, "closed: fd: ", closing_socket_fd);
   return 0;
 }
 
@@ -140,7 +162,9 @@ int Server::testInitListenSockets(std::map<int, ASocket*>& sockets) {
       SysUtils::makeListenSocket(NULL, "4242", Server::kDefaultListenBacklog);
   if (listen_socket_fd < 0) return -1;
 
-  ListenSocket* new_listen_socket = new ListenSocket(listen_socket_fd);
+  ListenSocket* new_listen_socket =
+      new ListenSocket(listen_socket_fd, SocketAddress("0.0.0.0", "4242"));
   sockets[listen_socket_fd] = new_listen_socket;
+  LOG(INFO, "listen-socket created: ", *new_listen_socket);
   return 0;
 }

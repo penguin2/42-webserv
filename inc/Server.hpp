@@ -31,7 +31,8 @@ class Server {
   Server(const Server&);
   Server& operator=(const Server&);
 
-  int addConnection(int connected_socket_fd);
+  int addConnection(int connected_socket_fd, const SocketAddress& local_address,
+                    const SocketAddress& peer_address);
 
   int executeEventSockets(const std::vector<ASocket*>& event_sockets,
                           std::vector<ASocket*>& closing_sockets);

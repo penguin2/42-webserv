@@ -1,12 +1,14 @@
 #ifndef WEBSERV_CONNECTION_H
 #define WEBSERV_CONNECTION_H
 
+#include <ostream>
 #include <string>
 
 #include "ASocket.hpp"
 #include "Cgi.hpp"
 #include "ConnectionState.hpp"
 #include "EventManager.hpp"
+#include "SocketAddress.hpp"
 
 #ifdef MOCK
 #include "HttpMock.hpp"
@@ -16,14 +18,18 @@
 
 class Connection : public ASocket {
  public:
-  Connection(int socket_fd, EventManager* event_manager);
+  Connection(int socket_fd, const SocketAddress& local_address,
+             const SocketAddress& peer_address, EventManager* event_manager);
   ~Connection();
 
   int handler(Server* server);
 
+  SocketAddress getPeerAddress() const;
+
   static void initTransitHandlers();
 
  private:
+  SocketAddress peer_address_;
   connection::State state_;
   Http http_;
   EventManager* event_manager_;
@@ -61,5 +67,7 @@ class Connection : public ASocket {
   static int sendToRecv(Connection* conn);
   static int cgiToSend(Connection* conn);
 };
+
+std::ostream& operator<<(std::ostream& os, const Connection& connection);
 
 #endif
