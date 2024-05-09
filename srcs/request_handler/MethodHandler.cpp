@@ -22,8 +22,6 @@ RequestHandler::MethodHandler::makeMethodHandlerMap(void) {
 connection::State RequestHandler::MethodHandler::getMethodHandler(
     const Request& request, Response& response) {
   const Uri& uri = request.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
 
   if (!FileUtils::isExistFile(uri.getPath()))
     throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND,
@@ -41,18 +39,14 @@ connection::State RequestHandler::MethodHandler::getMethodHandler(
                         HttpUtils::convertPathToContentType(uri.getPath()));
   response.setStatusLine(200, "OK");
   return connection::SEND;
-  (void)paths;
 }
 
 // (仮)
 connection::State RequestHandler::MethodHandler::postMethodHandler(
     const Request& request, Response& response) {
   const Uri& uri = request.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
 
   return connection::SEND;
-  (void)paths;
   (void)request;
   (void)response;
 }
@@ -61,11 +55,8 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
 connection::State RequestHandler::MethodHandler::deleteMethodHandler(
     const Request& request, Response& response) {
   const Uri& uri = request.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
 
   return connection::SEND;
-  (void)paths;
   (void)request;
   (void)response;
 }
