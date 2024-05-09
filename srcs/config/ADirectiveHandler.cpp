@@ -4,6 +4,10 @@ ADirectiveHandler::ADirectiveHandler() {}
 
 ADirectiveHandler::~ADirectiveHandler() {}
 
+bool ADirectiveHandler::isSyntaxValid() const {
+  return this->tokens_.size() >= 2 && this->tokens_.back() == ";";
+}
+
 bool ADirectiveHandler::isMatchContext(ConfigEnums::Context context) {
   return directive_context_ == context;
 }
@@ -41,6 +45,7 @@ LocationConfig& ADirectiveHandler::getLocationConfig() {
   if (!serverConfig.hasLocationConfig(location_path_)) {
     serverConfig.addLocationConfig(location_path_);
   }
-  LocationConfig& locationConfig = serverConfig.getLocationConfig(location_path_);
+  LocationConfig& locationConfig =
+      serverConfig.getLocationConfig(location_path_);
   return locationConfig;
 }

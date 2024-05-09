@@ -15,7 +15,8 @@ ConfigParser::ConfigParser()
   this->handlers["autoindex"] = new AutoIndexDirectiveHandler();
   this->handlers["try_files"] = new TryFilesDirectiveHandler();
   this->handlers["return"] = new ReturnDirectiveHandler();
-  this->handlers["client_max_body_size"] = new ClientMaxBodySizeDirectiveHandler();
+  this->handlers["client_max_body_size"] =
+      new ClientMaxBodySizeDirectiveHandler();
   this->handlers["cgi_path"] = new CgiPathDirectiveHandler();
   this->handlers["cgi_ext"] = new CgiExtDirectiveHandler();
 }
@@ -138,6 +139,9 @@ void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
   }
 
   this->handlers[tokens[0]]->setToken(tokens);
+  if (!this->handlers[tokens[0]]->isSyntaxValid()) {
+    handleError("syntax error : " + tokens[0] + " is invalid");
+  }
   if (!this->handlers[tokens[0]]->isDirectiveValid()) {
     handleError("syntax error : " + tokens[0] + " is invalid");
   }
