@@ -45,7 +45,5 @@ LocationConfig& ADirectiveHandler::getLocationConfig() {
   if (!serverConfig.hasLocationConfig(location_path_)) {
     serverConfig.addLocationConfig(location_path_);
   }
-  LocationConfig& locationConfig =
-      serverConfig.getLocationConfig(location_path_);
-  return locationConfig;
+  return serverConfig.getLocationConfig(location_path_);
 }
