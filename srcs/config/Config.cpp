@@ -19,14 +19,23 @@ void Config::addServer(const ServerConfig& server) {
   servers.push_back(server);
 }
 
-ServerConfig& Config::getServer(long unsigned int server_num) {
-  while (server_num >= servers.size()) {
+ServerConfig& Config::getServer(long unsigned int server_index) {
+  while (server_index > servers.size()) {
     // 新しいサーバーコンフィグを作成して追加
     addServer(ServerConfig());
   }
-  return servers[server_num];
+  if (server_index < 1) {
+    std::cerr << "server count is invalid" << std::endl;
+    exit(1);
+  }
+  return servers[server_index - 1];
 }
 
-const std::vector<ServerConfig>& Config::getServers() const {
-  return servers;
+const std::vector<ServerConfig>& Config::getServers() const { return servers; }
+
+void Config::print() {
+    for (std::vector<ServerConfig>::iterator it = servers.begin(); it != servers.end(); ++it) {
+        std::cout << "********** server **********" << std::endl;
+        it->print();
+    }
 }

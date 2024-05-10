@@ -13,6 +13,7 @@ class ServerConfig {
  private:
   std::string server_name;
   std::string listen_address;
+  size_t listen_port;
   std::map<int, std::string> error_pages;
   std::map<std::string, LocationConfig> location_configs;
 
@@ -25,10 +26,11 @@ class ServerConfig {
 
   void setListenAddress(const std::string& listen_address);
 
+  void setListenPort(const size_t listen_port);
+
   void addErrorPage(int error_code, const std::string& error_page);
 
-  void addLocationConfig(const std::string& location_path,
-                         const LocationConfig& location_config);
+  void addLocationConfig(const std::string& location_path);
 
   const std::string& getServerName() const;
 
@@ -36,37 +38,34 @@ class ServerConfig {
 
   const std::string& getErrorPage(int error_code) const;
 
-  const LocationConfig& getLocationConfig(const std::string& location_path);
+  LocationConfig& getLocationConfig(const std::string& location_path);
 
   const std::map<std::string, LocationConfig>& getLocationConfigs() const;
 
   bool hasLocationConfig(const std::string& location_path) const;
+
+  void print();
 };
 
 // for debug
-//  std::ostream& operator<<(std::ostream& os, const ServerConfig& serverConfig)
-//  {
-//      os << "Server Name: " << serverConfig.getServerName() << std::endl;
-//      os << "Listen Address: " << serverConfig.getListenAddress() <<
-//      std::endl;
+// std::ostream& operator<<(std::ostream& os, const ServerConfig& serverConfig) {
+//   os << "Server Name: " << serverConfig.getServerName() << std::endl;
+//   os << "Listen Address: " << serverConfig.getListenAddress() << std::endl;
+//   os << "Error Pages:" << std::endl;
+//   for (std::map<int, std::string>::iterator it = this->error_pages.begin();
+//        it != this->error_pages.end(); ++it) {
+//     os << "error_code: " << it->first << ", error_page: " << it->second
+//        << std::endl;
+//   }
 
-//     os << "Error Pages:" << std::endl;
-//     // const std::map<int, std::string>& errorPages =
-//     serverConfig.getErrorPages();
-//     // for (std::map<int, std::string>::const_iterator it =
-//     errorPages.begin(); it != errorPages.end(); ++it) {
-//     //     os << "  " << it->first << ": " << it->second << std::endl;
-//     // }
-
-//     os << "Location Configurations:" << std::endl;
-//     const std::map<std::string, LocationConfig>& locationConfigs =
-//     serverConfig.getLocationConfigs(); for (std::map<std::string,
-//     LocationConfig>::const_iterator it = locationConfigs.begin(); it !=
-//     locationConfigs.end(); ++it) {
-//         os << "  Location Path: " << it->first << std::endl;
-//         // os << "  Location Config: " << it->second << std::endl;
-//     }
-//     return os;
+//   for (std::map<std::string, LocationConfig>::iterator it =
+//            this->location_configs.begin();
+//        it != this->location_configs.end(); ++it) {
+//     os << "      ********** location **********" << std::endl;
+//     os << "  path: " << it->first << std::endl;
+//     it->second.print();
+//   }
+//   return os;
 // }
 
 #endif

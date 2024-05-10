@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <sstream>
 #include <vector>
 
 class Utils {
@@ -18,6 +19,13 @@ class Utils {
   static bool isStartsWith(const std::string& str, const std::string& prefix);
   static std::string popFrontSubstr(std::string& str, std::size_t n);
   static std::string getExtension(const std::string& file);
+
+  template <typename T>
+  static bool parseValue(const std::string& str, T& value) {
+    std::istringstream ss(str);
+    return !(ss >> value).fail() && ss.eof();
+  }
+
   static std::vector<std::string> split(const std::string& str, char separator);
   static std::string joinStrings(const std::vector<std::string>& strings,
                                  std::string delimiter);
