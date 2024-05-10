@@ -25,8 +25,8 @@ ConfigAdapter::makeServerConfigGroups() {
   return server_config_groups;
 }
 
-std::map<int, ASocket *> ConfigAdapter::makeInitialListenSockets() {
-  std::map<int, ASocket *> initial_listen_sockets;
+std::map<int, ListenSocket *> ConfigAdapter::makeInitialListenSockets() {
+  std::map<int, ListenSocket *> initial_listen_sockets;
   const std::map<SocketAddress, std::vector<const ServerConfig *> >
       &server_config_groups = ConfigAdapter::makeServerConfigGroups();
 
