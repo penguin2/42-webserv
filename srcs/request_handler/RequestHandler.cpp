@@ -15,7 +15,7 @@ connection::State RequestHandler::dispatch(const Request& request,
                                            Response& response) {
   static const std::map<std::string, MethodHandler::method_handler>
       method_handler_map = MethodHandler::makeMethodHandlerMap();
-  const Uri& uri = request.getRequestData()->getUri();
+  // const Uri& uri = request.getRequestData()->getUri();
 
   // TODO LocationConfig
   // if (!ConfigAdapter::isAllowMethods(
@@ -44,7 +44,8 @@ connection::State RequestHandler::dispatch(const Request& request,
 
 connection::State RequestHandler::redirectHandler(const Request& request,
                                                   Response& response) {
-  const Uri& uri = request.getRequestData()->getUri();
+  (void)request;
+  // const Uri& uri = request.getRequestData()->getUri();
   // TODO locationConfig
   // const std::string* redirect_uri = ConfigAdapter::searchRedirectUri(
   //    uri.getHost(), uri.getPort(), uri.getPath());
@@ -72,7 +73,8 @@ connection::State RequestHandler::redirectHandler(const Request& request,
 connection::State RequestHandler::errorRequestHandler(
     const Request& request, Response& response, int status_code,
     const std::string& phrase) {
-  const Uri& uri = request.getRequestData()->getUri();
+  (void)request;
+  // const Uri& uri = request.getRequestData()->getUri();
   // TODO ServerConfig
   // if (request.getServerConfig() != NULL) {
   //   const std::string* error_page =
@@ -87,7 +89,7 @@ connection::State RequestHandler::errorRequestHandler(
   response.insertHeader("Content-Type", "text/html");
   response.insertContentLengthIfNotSet();
   if (status_code == 405) {
-    const Uri& uri = request.getRequestData()->getUri();
+    // const Uri& uri = request.getRequestData()->getUri();
     // TODO LocationConfig
     // const std::vector<std::string> allow_methods =
     //     ConfigAdapter::getAllowMethods(LocationConfig);

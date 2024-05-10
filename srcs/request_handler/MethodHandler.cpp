@@ -44,8 +44,6 @@ connection::State RequestHandler::MethodHandler::getMethodHandler(
 // (仮)
 connection::State RequestHandler::MethodHandler::postMethodHandler(
     const Request& request, Response& response) {
-  const Uri& uri = request.getRequestData()->getUri();
-
   return connection::SEND;
   (void)request;
   (void)response;
@@ -54,8 +52,6 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
 // (仮)
 connection::State RequestHandler::MethodHandler::deleteMethodHandler(
     const Request& request, Response& response) {
-  const Uri& uri = request.getRequestData()->getUri();
-
   return connection::SEND;
   (void)request;
   (void)response;

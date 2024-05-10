@@ -178,7 +178,6 @@ void Request::parseChunkedSize(std::string& buffer) {
                           "Bad chunk size");
 
   // body_size_ or 合計のbodyのサイズが正常な数値であるが大き過ぎる場合
-  const Uri& uri = data_->getUri();
   if (ConfigAdapter::getMaxBodySize() < (body_size_ + data_->getBody().size()))
     throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                           "Body size too large");
@@ -229,7 +228,6 @@ void Request::determineParseBody(std::string& buffer) {
                             "Bad Content-Length");
 
     // body_size_が正常な数値であるが大き過ぎる場合
-    const Uri& uri = data_->getUri();
     if (ConfigAdapter::getMaxBodySize() < body_size_)
       throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                             "Body size too large");
