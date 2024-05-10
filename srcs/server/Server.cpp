@@ -7,7 +7,6 @@
 #include <cstring>
 #include <vector>
 
-#include "Connection.hpp"
 #include "Logger.hpp"
 #include "SocketAddress.hpp"
 #include "SysUtils.hpp"
@@ -17,7 +16,7 @@
 Server::Server(const char* config_file) {
   ConfigParser().parseConfig(config_file);
 
-  sockets_ = ConfigAdapter::makeInitialListenSockets();
+  setSockets(ConfigAdapter::makeInitialListenSockets());
   event_manager_ = new EventManager(sockets_);
   timeout_manager_ = new TimeoutManager();
 }
@@ -69,6 +68,7 @@ int Server::updateTimeout(ASocket* socket) {
 
 int Server::start() {
   LOG(INFO, "server: ", "start()");
+  LOG(INFO, "server: initial sockets: ", sockets_);
 
   Connection::initTransitHandlers();
 
@@ -93,6 +93,18 @@ int Server::loop() {
     closeSockets(closing_sockets);
   }
   return 0;
+}
+
+void Server::setSockets(const std::map<int, ListenSocket*>& listen_sockets) {
+  for (std::map<int, ListenSocket*>::const_iterator it = listen_sockets.begin();
+       it != listen_sockets.end(); ++it) {
+    const int listen_socket_fd = it->first;
+    ASocket* listen_socket = static_cast<ASocket*>(it->second);
+
+    if (sockets_.find(listen_socket_fd) != sockets_.end())
+      delete sockets_[listen_socket_fd];
+    sockets_[listen_socket_fd] = listen_socket;
+  }
 }
 
 int Server::addConnection(int connected_socket_fd,
@@ -156,4 +168,20 @@ int Server::closeSockets(const std::vector<ASocket*>& closing_sockets) {
     closeSocket(*it);
   }
   return 0;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const std::map<int, ASocket*>& sockets) {
+  std::size_t socket_count = 1;
+  for (std::map<int, ASocket*>::const_iterator it = sockets.begin();
+       it != sockets.end(); ++it) {
+    os << "\n  [" << socket_count++ << "] ";
+
+    ListenSocket* listen_socket = dynamic_cast<ListenSocket*>(it->second);
+    if (listen_socket != NULL) os << *listen_socket;
+
+    Connection* connection = dynamic_cast<Connection*>(it->second);
+    if (connection != NULL) os << *connection;
+  }
+  return os;
 }

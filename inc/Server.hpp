@@ -2,11 +2,14 @@
 #define WEBSERV_SERVER_H
 
 #include <map>
+#include <ostream>
 #include <string>
 #include <vector>
 
 #include "ASocket.hpp"
+#include "Connection.hpp"
 #include "EventManager.hpp"
+#include "ListenSocket.hpp"
 #include "TimeoutManager.hpp"
 
 class Server {
@@ -29,6 +32,8 @@ class Server {
   Server(const Server&);
   Server& operator=(const Server&);
 
+  void setSockets(const std::map<int, ListenSocket*>& listen_sockets);
+
   int addConnection(int connected_socket_fd, const SocketAddress& local_address,
                     const SocketAddress& peer_address);
 
@@ -37,5 +42,8 @@ class Server {
   int closeSocket(ASocket* socket);
   int closeSockets(const std::vector<ASocket*>& closing_sockets);
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const std::map<int, ASocket*>& sockets);
 
 #endif
