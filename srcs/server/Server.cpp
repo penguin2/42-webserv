@@ -12,9 +12,11 @@
 #include "SocketAddress.hpp"
 #include "SysUtils.hpp"
 #include "config/ConfigAdapter.hpp"
+#include "config/ConfigParser.hpp"
 
 Server::Server(const char* config_file) {
-  (void)config_file;
+  ConfigParser().parseConfig(config_file);
+
   sockets_ = ConfigAdapter::makeInitialListenSockets();
   event_manager_ = new EventManager(sockets_);
   timeout_manager_ = new TimeoutManager();
