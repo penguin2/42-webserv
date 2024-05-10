@@ -10,20 +10,13 @@ std::map<SocketAddress, std::vector<const ServerConfig *> >
 ConfigAdapter::makeServerConfigGroups() {
   std::map<SocketAddress, std::vector<const ServerConfig *> >
       server_config_groups;
-  // TODO: replace MOCK, check ServerConfig copy operator
-  std::vector<ServerConfig> server_configs;
-  ServerConfig server_config;
-  server_config.setListenAddress("127.0.0.1");
-  server_configs.push_back(server_config);
-  // const std::vector<ServerConfig> &server_configs =
-  //     Config::getInstance().getServers();
+  const std::vector<ServerConfig> &server_configs =
+      Config::getInstance().getServers();
 
   for (std::vector<ServerConfig>::const_iterator it = server_configs.begin();
        it != server_configs.end(); ++it) {
     const std::string &ip_addr = it->getListenAddress();
-    // TODO: replace MOCK
-    const std::string &port = "4242";
-    // const std::string &port = it->getPort(); (with 'to_string' ?!)
+    const std::string &port = it->getListenPort();
     const SocketAddress socket_address = SocketAddress(ip_addr, port);
 
     server_config_groups[socket_address].push_back(&(*it));
@@ -44,7 +37,6 @@ std::map<int, ASocket *> ConfigAdapter::makeInitialListenSockets() {
     const SocketAddress &socket_address = it->first;
     const std::vector<const ServerConfig *> &server_configs = it->second;
 
-    // TODO: check some cases like ip_addr == "" or port == ""
     const int listen_socket_fd = SysUtils::makeListenSocket(
         socket_address.getIpAddr().c_str(), socket_address.getPort().c_str(),
         SysUtils::kDefaultListenBacklog);
