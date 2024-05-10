@@ -1,6 +1,64 @@
-#include "./config/ConfigAdapter.hpp"
+#include "config/ConfigAdapter.hpp"
 
 #include <cstdlib>
+
+#include "ListenSocket.hpp"
+#include "SysUtils.hpp"
+#include "config/Config.hpp"
+
+std::map<SocketAddress, std::vector<const ServerConfig *> >
+ConfigAdapter::makeServerConfigGroups() {
+  std::map<SocketAddress, std::vector<const ServerConfig *> >
+      server_config_groups;
+  // TODO: replace MOCK, check ServerConfig copy operator
+  std::vector<ServerConfig> server_configs;
+  ServerConfig server_config;
+  server_config.setListenAddress("127.0.0.1");
+  server_configs.push_back(server_config);
+  // const std::vector<ServerConfig> &server_configs =
+  //     Config::getInstance().getServers();
+
+  for (std::vector<ServerConfig>::const_iterator it = server_configs.begin();
+       it != server_configs.end(); ++it) {
+    const std::string &ip_addr = it->getListenAddress();
+    // TODO: replace MOCK
+    const std::string &port = "4242";
+    // const std::string &port = it->getPort(); (with 'to_string' ?!)
+    const SocketAddress socket_address = SocketAddress(ip_addr, port);
+
+    server_config_groups[socket_address].push_back(&(*it));
+  }
+
+  return server_config_groups;
+}
+
+std::map<int, ASocket *> ConfigAdapter::makeInitialListenSockets() {
+  std::map<int, ASocket *> initial_listen_sockets;
+  const std::map<SocketAddress, std::vector<const ServerConfig *> >
+      &server_config_groups = ConfigAdapter::makeServerConfigGroups();
+
+  for (std::map<SocketAddress,
+                std::vector<const ServerConfig *> >::const_iterator it =
+           server_config_groups.begin();
+       it != server_config_groups.end(); ++it) {
+    const SocketAddress &socket_address = it->first;
+    const std::vector<const ServerConfig *> &server_configs = it->second;
+
+    // TODO: check some cases like ip_addr == "" or port == ""
+    const int listen_socket_fd = SysUtils::makeListenSocket(
+        socket_address.getIpAddr().c_str(), socket_address.getPort().c_str(),
+        SysUtils::kDefaultListenBacklog);
+    if (listen_socket_fd < 0) continue;
+
+    ListenSocket *new_listen_socket =
+        new ListenSocket(listen_socket_fd, socket_address);
+    new_listen_socket->setServerConfigs(server_configs);
+
+    initial_listen_sockets[listen_socket_fd] = new_listen_socket;
+  }
+
+  return initial_listen_sockets;
+}
 
 const std::string *ConfigAdapter::searchRedirectUri(const std::string &host,
                                                     size_t port,

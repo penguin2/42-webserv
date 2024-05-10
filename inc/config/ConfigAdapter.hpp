@@ -1,10 +1,20 @@
 #ifndef WEBSERV_CONFIGADAPTER_H_
 #define WEBSERV_CONFIGADAPTER_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
+#include "ASocket.hpp"
+#include "SocketAddress.hpp"
+#include "config/ServerConfig.hpp"
+
 namespace ConfigAdapter {
+
+std::map<SocketAddress, std::vector<const ServerConfig*> >
+makeServerConfigGroups();
+
+std::map<int, ASocket*> makeInitialListenSockets();
 
 // (リダイレクト対象のRequest) ? redirect_URI : NULL
 const std::string* searchRedirectUri(const std::string& host, size_t port,
