@@ -1,39 +1,57 @@
 #include "config/ConfigAdapter.hpp"
 
+#include <algorithm>
+
 #include "config/Config.hpp"
 #include "config/LocationConfig.hpp"
 #include "config/ServerConfig.hpp"
 
 const ServerConfig &ConfigAdapter::searchServerConfig(const std::string &host,
-                                                      size_t port) {
-  return Config::getInstance().getServer(0);
-  (void)host;
-  (void)port;
+                                                      const std::string &port) {
+  const std::vector<ServerConfig> &server_confs =
+      Config::getInstance().getServers();
+
+  for (std::vector<ServerConfig>::const_iterator it = server_confs.begin();
+       it != server_confs.end(); ++it) {
+    if (it->getServerName() == host && it->getListenAddress() == port)
+      return *it;
+  }
+  return *server_confs.begin();
 }
 
 const LocationConfig *ConfigAdapter::searchLocationConfig(
     const ServerConfig &server_conf, const std::string &path) {
+  const std::map<std::string, LocationConfig> &location_confs =
+      server_conf.getLocationConfigs();
+
+  for (std::map<std::string, LocationConfig>::const_iterator it =
+           location_confs.begin();
+       it != location_confs.end(); ++it) {
+    if (path == it->first) return &it->second;
+  }
   return NULL;
-  (void)server_conf;
-  (void)path;
 }
 
 std::string ConfigAdapter::makeAbsolutePath(const LocationConfig &location_conf,
                                             const std::string &path) {
-  return "/var/www/html/" + path;
-  (void)location_conf;
+  static const std::string DEFAULT_ROOT = "/var/www/html";
+  const std::string &root = location_conf.getRoot();
+
+  if (root.empty()) return DEFAULT_ROOT + path;
+  return root + path;
 }
 
 const std::string *ConfigAdapter::searchRedirectUri(
     const LocationConfig &location_conf) {
-  return NULL;
-  (void)location_conf;
+  const std::string &uri = location_conf.getReturnUri();
+
+  if (uri.empty()) return NULL;
+  return &uri;
 }
 
 int ConfigAdapter::searchRedirectStatusCode(
     const LocationConfig &location_conf) {
-  return 301;
-  (void)location_conf;
+  return location_conf.getReturnStatusCode();
 }
 
 bool isCgiPath(const LocationConfig &location_conf, const std::string &path) {
@@ -44,43 +62,49 @@ bool isCgiPath(const LocationConfig &location_conf, const std::string &path) {
 
 const std::string *ConfigAdapter::searchErrorPage(
     const ServerConfig &server_conf, int code) {
-  return NULL;
-  (void)server_conf;
-  (void)code;
+  const std::string &error_page = server_conf.getErrorPage(code);
+
+  if (error_page.empty()) return NULL;
+  return &error_page;
 }
 
 bool ConfigAdapter::isAllowMethods(const LocationConfig &location_conf,
                                    const std::string &method) {
-  return true;
-  (void)location_conf;
-  (void)method;
+  const std::vector<HttpMethod> &allow_methods =
+      location_conf.getAllowMethods();
+  HttpMethod http_method;
+
+  if (method == "GET") http_method = GET;
+  if (method == "POST") http_method = POST;
+  if (method == "DELETE") http_method = DELETE;
+  return (std::find(allow_methods.begin(), allow_methods.end(), http_method) !=
+          allow_methods.end());
 }
 
 std::vector<std::string> ConfigAdapter::getAllowMethods(
     const LocationConfig &location_conf) {
   std::vector<std::string> methods;
 
-  methods.push_back("GET");
-  methods.push_back("DELETE");
-  methods.push_back("POST");
+  if (isAllowMethods(location_conf, "GET")) methods.push_back("GET");
+  if (isAllowMethods(location_conf, "DELETE")) methods.push_back("DELETE");
+  if (isAllowMethods(location_conf, "POST")) methods.push_back("POST");
   return methods;
-  (void)location_conf;
 }
 
 const std::string *ConfigAdapter::searchHostName(
     const ServerConfig &server_conf) {
-  return NULL;
-  (void)server_conf;
+  const std::string &host_name = server_conf.getServerName();
+
+  if (host_name.empty()) return NULL;
+  return &host_name;
 }
 
 bool ConfigAdapter::isAutoindex(const LocationConfig &location_conf) {
-  return false;
-  (void)location_conf;
+  return location_conf.getAutoindex();
 }
 
 std::string ConfigAdapter::searchIndex(const LocationConfig &location_conf) {
-  return "/var/www/html/index.html";
-  (void)location_conf;
+  return location_conf.getIndex();
 }
 
 size_t ConfigAdapter::getClientMaxBodySize(

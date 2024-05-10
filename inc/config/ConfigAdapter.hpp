@@ -8,7 +8,8 @@
 #include "ServerConfig.hpp"
 namespace ConfigAdapter {
 // 該当するServerConfigが無い場合はServerConfigs[0]を使用する
-const ServerConfig& searchServerConfig(const std::string& host, size_t port);
+const ServerConfig& searchServerConfig(const std::string& host,
+                                       const std::string& port);
 
 // 該当するLocationConfigが無い場合、NULLを返す
 const LocationConfig* searchLocationConfig(const ServerConfig& server_conf,
