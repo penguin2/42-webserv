@@ -6,9 +6,8 @@
 class TryFilesDirectiveHandler : public ADirectiveHandler {
  public:
   TryFilesDirectiveHandler();
-  virtual bool isValid() const;
-  virtual void setConfig(long unsigned int server_num,
-                         std::string location_path);
+  virtual bool isDirectiveValid() const;
+  virtual void setConfig();
 };
 
 #endif

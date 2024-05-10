@@ -3,6 +3,8 @@
 
 #include <memory>
 #include <vector>
+#include <iostream>
+#include <cstdlib>
 
 #include "ServerConfig.hpp"
 
@@ -24,6 +26,8 @@ class Config {
   ServerConfig& getServer(long unsigned int server_num);
 
   const std::vector<ServerConfig>& getServers() const;
+
+  void print();
 };
 
 #endif

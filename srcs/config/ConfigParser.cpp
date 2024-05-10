@@ -14,6 +14,11 @@ ConfigParser::ConfigParser()
   this->handlers["index"] = new IndexDirectiveHandler();
   this->handlers["autoindex"] = new AutoIndexDirectiveHandler();
   this->handlers["try_files"] = new TryFilesDirectiveHandler();
+  this->handlers["return"] = new ReturnDirectiveHandler();
+  this->handlers["client_max_body_size"] =
+      new ClientMaxBodySizeDirectiveHandler();
+  this->handlers["cgi_path"] = new CgiPathDirectiveHandler();
+  this->handlers["cgi_ext"] = new CgiExtDirectiveHandler();
 }
 
 ConfigParser::~ConfigParser() {
@@ -134,26 +139,16 @@ void ConfigParser::handleDirective(const std::vector<std::string>& tokens) {
   }
 
   this->handlers[tokens[0]]->setToken(tokens);
-  if (!this->handlers[tokens[0]]->isValid()) {
+  if (!this->handlers[tokens[0]]->isSyntaxValid()) {
     handleError("syntax error : " + tokens[0] + " is invalid");
   }
-  this->handlers[tokens[0]]->setConfig(this->server_count_,
-                                       this->current_location_path_);
-
-  switch (current_context_) {
-    case ConfigEnums::HTTP:
-      std::cout << "Inside HTTP block: " << tokens[0] << std::endl;
-      break;
-    case ConfigEnums::SERVER:
-      std::cout << "Inside server block: " << tokens[0] << std::endl;
-      break;
-    case ConfigEnums::LOCATION:
-      std::cout << "Inside location block: " << tokens[0] << std::endl;
-      break;
-    default:
-      std::cerr << "Directive outside any block: " << tokens[0] << std::endl;
-      break;
+  if (!this->handlers[tokens[0]]->isDirectiveValid()) {
+    handleError("syntax error : " + tokens[0] + " is invalid");
   }
+
+  this->handlers[tokens[0]]->setServerNum(this->server_count_);
+  this->handlers[tokens[0]]->setLocationPath(this->current_location_path_);
+  this->handlers[tokens[0]]->setConfig();
 }
 
 void ConfigParser::tokenize(const std::string& line,

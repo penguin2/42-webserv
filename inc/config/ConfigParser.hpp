@@ -19,6 +19,10 @@
 #include "IndexDirectiveHandler.hpp"
 #include "AutoIndexDirectiveHandler.hpp"
 #include "TryFilesDirectiveHandler.hpp"
+#include "ReturnDirectiveHandler.hpp"
+#include "ClientMaxBodySizeDirectiveHandler.hpp"
+#include "CgiPathDirectiveHandler.hpp"
+#include "CgiExtDirectiveHandler.hpp"
 #include "ConfigEnums.hpp"
 
 class ConfigParser {
