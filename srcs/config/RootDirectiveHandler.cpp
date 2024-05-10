@@ -12,5 +12,5 @@ bool RootDirectiveHandler::isDirectiveValid() const {
 void RootDirectiveHandler::setConfig() {
   log();
   LocationConfig& locationConfig = getLocationConfig();
-  locationConfig.setLocationRoot(tokens_[1]);
+  locationConfig.setRoot(tokens_[1]);
 }

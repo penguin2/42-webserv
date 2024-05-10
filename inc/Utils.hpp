@@ -19,20 +19,19 @@ class Utils {
   static bool isStartsWith(const std::string& str, const std::string& prefix);
   static std::string popFrontSubstr(std::string& str, std::size_t n);
   static std::string getExtension(const std::string& file);
-<<<<<<< HEAD
+
   template <typename T>
   static bool parseValue(const std::string& str, T& value) {
     std::istringstream ss(str);
     return !(ss >> value).fail() && ss.eof();
   }
-=======
+
   static std::vector<std::string> split(const std::string& str, char separator);
   static std::string joinStrings(const std::vector<std::string>& strings,
                                  std::string delimiter);
   static bool isSameValueCaseInsensitive(
       const std::map<std::string, std::string>& mp, const std::string& key,
       const std::string& value);
->>>>>>> main
 
  private:
   Utils(void);
