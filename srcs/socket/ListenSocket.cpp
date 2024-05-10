@@ -14,6 +14,14 @@ int ListenSocket::handler(Server* server) {
   return 0;
 }
 
+void ListenSocket::setServerConfigs(
+    const std::vector<const ServerConfig*>& server_configs) {
+  server_configs_ = server_configs;
+}
+
+std::vector<const ServerConfig*> ListenSocket::getServerConfigs() const {
+  return server_configs_;
+}
 std::ostream& operator<<(std::ostream& os, const ListenSocket& listen_socket) {
   return os << "fd: " << listen_socket.getSocketFd() << " (listening) "
             << listen_socket.getLocalAddress();

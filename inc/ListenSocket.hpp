@@ -4,6 +4,7 @@
 #include <ostream>
 
 #include "ASocket.hpp"
+#include "config/ServerConfig.hpp"
 
 class ListenSocket : public ASocket {
  public:
@@ -12,7 +13,12 @@ class ListenSocket : public ASocket {
 
   int handler(Server* server);
 
+  void setServerConfigs(const std::vector<const ServerConfig*>& server_configs);
+  std::vector<const ServerConfig*> getServerConfigs() const;
+
  private:
+  std::vector<const ServerConfig*> server_configs_;
+
   ListenSocket();
   ListenSocket(const ListenSocket&);
   ListenSocket& operator=(const ListenSocket&);

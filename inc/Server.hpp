@@ -25,8 +25,6 @@ class Server {
   EventManager* event_manager_;
   std::map<int, ASocket*> sockets_;
 
-  static const int kDefaultListenBacklog = 511;
-
   Server();
   Server(const Server&);
   Server& operator=(const Server&);
@@ -38,9 +36,6 @@ class Server {
                           std::vector<ASocket*>& closing_sockets);
   int closeSocket(ASocket* socket);
   int closeSockets(const std::vector<ASocket*>& closing_sockets);
-
-  // TODO: delete test initializing listen_sockets_
-  static int testInitListenSockets(std::map<int, ASocket*>& sockets);
 };
 
 #endif

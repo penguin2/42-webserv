@@ -6,6 +6,8 @@
 
 class SysUtils {
  public:
+  static const int kDefaultListenBacklog = 511;
+
   static int addNonblockingFlag(int fd);
   static int addCloseOnExecFlag(int fd);
   static int makeListenSocket(const char* hostname, const char* servname,

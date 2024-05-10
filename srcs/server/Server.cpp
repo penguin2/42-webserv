@@ -11,10 +11,11 @@
 #include "Logger.hpp"
 #include "SocketAddress.hpp"
 #include "SysUtils.hpp"
+#include "config/ConfigAdapter.hpp"
 
 Server::Server(const char* config_file) {
   (void)config_file;
-  testInitListenSockets(sockets_);
+  sockets_ = ConfigAdapter::makeInitialListenSockets();
   event_manager_ = new EventManager(sockets_);
   timeout_manager_ = new TimeoutManager();
 }
@@ -152,19 +153,5 @@ int Server::closeSockets(const std::vector<ASocket*>& closing_sockets) {
        it != closing_sockets.end(); ++it) {
     closeSocket(*it);
   }
-  return 0;
-}
-
-// TODO: delete test initializing listen_sockets_
-#include "ListenSocket.hpp"
-int Server::testInitListenSockets(std::map<int, ASocket*>& sockets) {
-  const int listen_socket_fd =
-      SysUtils::makeListenSocket(NULL, "4242", Server::kDefaultListenBacklog);
-  if (listen_socket_fd < 0) return -1;
-
-  ListenSocket* new_listen_socket =
-      new ListenSocket(listen_socket_fd, SocketAddress("0.0.0.0", "4242"));
-  sockets[listen_socket_fd] = new_listen_socket;
-  LOG(INFO, "listen-socket created: ", *new_listen_socket);
   return 0;
 }
