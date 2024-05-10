@@ -9,7 +9,7 @@ class ListenDirectiveHandler : public ADirectiveHandler {
   virtual bool isDirectiveValid() const;
   virtual void setConfig();
   void parseAddressAndPort(const std::string& input, std::string& address,
-                           int& port);
+                           std::string& port);
 };
 
 #endif

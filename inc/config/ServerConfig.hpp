@@ -13,7 +13,7 @@ class ServerConfig {
  private:
   std::string server_name;
   std::string listen_address;
-  size_t listen_port;
+  std::string listen_port;
   std::map<int, std::string> error_pages;
   std::map<std::string, LocationConfig> location_configs;
 
@@ -26,7 +26,7 @@ class ServerConfig {
 
   void setListenAddress(const std::string& listen_address);
 
-  void setListenPort(const size_t listen_port);
+  void setListenPort(const std::string& listen_port);
 
   void addErrorPage(int error_code, const std::string& error_page);
 
@@ -35,6 +35,8 @@ class ServerConfig {
   const std::string& getServerName() const;
 
   const std::string& getListenAddress() const;
+
+  const std::string& getListenPort() const;
 
   const std::string& getErrorPage(int error_code) const;
 
@@ -48,7 +50,8 @@ class ServerConfig {
 };
 
 // for debug
-// std::ostream& operator<<(std::ostream& os, const ServerConfig& serverConfig) {
+// std::ostream& operator<<(std::ostream& os, const ServerConfig& serverConfig)
+// {
 //   os << "Server Name: " << serverConfig.getServerName() << std::endl;
 //   os << "Listen Address: " << serverConfig.getListenAddress() << std::endl;
 //   os << "Error Pages:" << std::endl;
