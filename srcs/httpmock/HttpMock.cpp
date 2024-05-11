@@ -5,7 +5,12 @@
 
 const std::string HttpMock::kCgiCheckString = "CGI\r\n";
 
-HttpMock::HttpMock() : cgi_request_(NULL) {}
+HttpMock::HttpMock(SocketAddress peer_address,
+                   const std::vector<const ServerConfig*>& server_configs)
+    : cgi_request_(NULL) {
+  (void)peer_address;
+  (void)server_configs;
+}
 
 HttpMock::~HttpMock() { clearCgiHandling(); }
 
