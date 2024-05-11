@@ -58,10 +58,16 @@ int SysUtils::makeListenSocket(const char* hostname, const char* servname,
   }
   freeaddrinfo(listp);
 
-  if (p == NULL) return -1;
+  if (p == NULL) {
+    LOG(WARN, "makeListenSocket failed on: ",
+        std::string(hostname) + ":" + std::string(servname));
+    return -1;
+  }
 
   if (SysUtils::addNonblockingFlag(socket_fd) < 0 ||
       SysUtils::addCloseOnExecFlag(socket_fd) < 0) {
+    LOG(WARN,
+        "makeListenSocket failed on: ", "add nonblocking/closeonexec flags");
     close(socket_fd);
     return -1;
   }
