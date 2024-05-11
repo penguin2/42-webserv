@@ -7,6 +7,8 @@
 #include "ConnectionState.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
+#include "SocketAddress.hpp"
+#include "config/ServerConfig.hpp"
 
 // TODO: CgiRequestMock -> CgiRequest
 // #include "CgiRequest.hpp"
@@ -14,7 +16,8 @@
 
 class Http {
  public:
-  Http(void);
+  Http(SocketAddress peer_address,
+       const std::vector<const ServerConfig*>& server_configs);
   ~Http(void);
 
   connection::State httpHandler(connection::State state);
@@ -25,6 +28,9 @@ class Http {
   void setCgiResponseMessage(const std::string& message);
 
  private:
+  SocketAddress peer_address_;
+  std::vector<const ServerConfig*> server_configs_;
+
   std::string client_data_;
   std::stringstream raw_response_data_;
   bool keep_alive_flag_;
@@ -40,6 +46,7 @@ class Http {
 
   void prepareToSendResponse(void);
 
+  Http(void);
   Http(const Http&);
   void operator=(const Http&);
 };
