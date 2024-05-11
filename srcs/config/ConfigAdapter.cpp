@@ -39,7 +39,7 @@ std::map<int, ListenSocket *> ConfigAdapter::makeInitialListenSockets() {
 
     const int listen_socket_fd = SysUtils::makeListenSocket(
         socket_address.getIpAddr().c_str(), socket_address.getPort().c_str(),
-        SysUtils::kDefaultListenBacklog);
+        ConfigAdapter::INTERNAL::DEFAULT_LISTEN_BACKLOG);
     if (listen_socket_fd < 0) continue;
 
     ListenSocket *new_listen_socket =

@@ -66,6 +66,7 @@ size_t getMaxMethodSize(void);
 size_t getMaxNumberOfCrlfBeforeMethod(void);
 
 namespace INTERNAL {
+const int DEFAULT_LISTEN_BACKLOG = 511;
 const size_t DEFAULT_MAX_URI_SIZE = 2000;
 const size_t DEFAULT_MAX_HEADER_SIZE = 200;
 const size_t DEFAULT_MAX_NUMBER_OF_HEADERS = 100;
