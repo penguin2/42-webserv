@@ -53,15 +53,26 @@ std::string Utils::toLower(const std::string &str) {
   return cpy;
 }
 
+void Utils::toUpperString(std::string &str) {
+  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
+    if (std::islower(*it)) *it = std::toupper(*it);
+  }
+}
+
+std::string Utils::toUpper(const std::string &str) {
+  std::string cpy(str);
+  Utils::toUpperString(cpy);
+  return cpy;
+}
+
 // 符号なし 8 or 10 or 16進数対応
 bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
   static const std::string string16 = "0123456789abcdef";
-  std::string copy_str(str);
-  Utils::toLowerString(copy_str);
+  std::string lower_str = Utils::toLower(str);
 
-  if (!Utils::isContainsOnly(copy_str, string16.substr(0, base))) return false;
+  if (!Utils::isContainsOnly(lower_str, string16.substr(0, base))) return false;
   if (base != 8 && base != 10 && base != 16) return false;
-  std::stringstream ss(copy_str);
+  std::stringstream ss(lower_str);
   switch (base) {
     case 8:
       ss >> std::oct >> num;

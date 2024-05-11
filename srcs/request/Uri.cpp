@@ -71,7 +71,7 @@ void Uri::parsePathQueryFragment(const std::string& path_query_fragment) {
   const std::string path_query = path_query_fragment.substr(0, fragment_idx);
   const size_t query_idx = path_query.find('?');
   if (query_idx != std::string::npos)
-    setAndCheckAndDecodeQuery(path_query.substr(query_idx + 1));
+    setAndCheckQuery(path_query.substr(query_idx + 1));
   setAndCheckAndDecodePath(path_query.substr(0, query_idx));
 }
 
@@ -84,10 +84,9 @@ const std::string& Uri::getQuery(void) const { return query_; }
 const std::string& Uri::getFragment(void) const { return fragment_; }
 
 void Uri::setAndCheckScheme(const std::string& scheme) {
-  this->scheme_ = scheme;
   // Schemeは大文字小文字を区別しない
-  Utils::toLowerString(this->scheme_);
-  if (scheme != "http")
+  this->scheme_ = Utils::toLower(scheme);
+  if (this->scheme_ != "http")
     throw ServerException(ServerException::SERVER_ERROR_MISDIRECTED_REQUEST,
                           "Scheme != http");
 }
@@ -102,18 +101,16 @@ void Uri::setAndCheckAndDecodeUserInfo(const std::string& user_info) {
 }
 
 void Uri::setAndCheckAndDecodeHost(const std::string& host) {
-  this->host_ = host;
+  // Hostは大文字小文字を区別しない
+  this->host_ = Utils::toLower(host);
   // Hostコンポーネントが空
   if (this->host_.size() == 0)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Empty Host");
-  // TODO 使用不可文字を含む or デコードに失敗
   if (!Utils::isContainsOnly(this->host_, UriUtils::isRegName) ||
       UriUtils::decodeUrlEncoding(this->host_) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Host");
-  // Hostは大文字小文字を区別しない
-  Utils::toLowerString(this->host_);
 }
 
 void Uri::setAndCheckPort(const std::string& port) {
@@ -139,11 +136,12 @@ void Uri::setAndCheckAndDecodePath(const std::string& path) {
                           "Bad Path");
 }
 
-void Uri::setAndCheckAndDecodeQuery(const std::string& query) {
+void Uri::setAndCheckQuery(const std::string& query) {
   this->query_ = query;
+  std::string cpy_query(query);
   // (使用不可文字を含む or デコードに失敗)
   if (!Utils::isContainsOnly(this->query_, UriUtils::isQueryCharset) ||
-      UriUtils::decodeUrlEncoding(this->query_) == false)
+      UriUtils::decodeUrlEncoding(cpy_query) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Query");
 }
