@@ -26,15 +26,16 @@ int SysUtils::addCloseOnExecFlag(int fd) {
   return 0;
 }
 
-int SysUtils::makeListenSocket(const std::string& port, int backlog) {
+int SysUtils::makeListenSocket(const char* host, const char* service,
+                               int backlog) {
   int socket_fd;
   struct addrinfo hints, *listp, *p;
 
   std::memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_socktype = SOCK_STREAM;
-  hints.ai_family = AF_UNSPEC;
+  hints.ai_family = AF_INET;
   hints.ai_flags = AI_PASSIVE;
-  const int status = getaddrinfo(NULL, port.c_str(), &hints, &listp);
+  const int status = getaddrinfo(host, service, &hints, &listp);
   if (status != 0) {
     LOG(WARN, "getaddrinfo: ", gai_strerror(status));
     return -1;
@@ -56,15 +57,27 @@ int SysUtils::makeListenSocket(const std::string& port, int backlog) {
     }
   }
   freeaddrinfo(listp);
-  if (p == NULL || SysUtils::addNonblockingFlag(socket_fd) < 0 ||
-      SysUtils::addCloseOnExecFlag(socket_fd) < 0)
+
+  if (p == NULL) {
+    LOG(WARN, "makeListenSocket failed on: ",
+        std::string(host) + ":" + std::string(service));
     return -1;
+  }
+
+  if (SysUtils::addNonblockingFlag(socket_fd) < 0 ||
+      SysUtils::addCloseOnExecFlag(socket_fd) < 0) {
+    LOG(WARN,
+        "makeListenSocket failed on: ", "add nonblocking/closeonexec flags");
+    close(socket_fd);
+    return -1;
+  }
 
   if (listen(socket_fd, backlog) < 0) {
     LOG(WARN, "listen: ", std::strerror(errno));
     close(socket_fd);
     return -1;
   }
+
   return socket_fd;
 }
 

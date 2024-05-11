@@ -16,7 +16,7 @@ std::vector<ASocket*> TimeoutManager::findTimeouts() const {
        it != timeout_logger_.end(); ++it) {
     if (it->first >= current_time) break;
     timeout_sockets.push_back(it->second);
-    LOG(INFO, "timeout: fd: ", it->second->getSocketFd());
+    LOG(INFO, "timeout: ", *(it->second));
   }
 
   return timeout_sockets;

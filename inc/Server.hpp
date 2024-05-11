@@ -2,11 +2,14 @@
 #define WEBSERV_SERVER_H
 
 #include <map>
+#include <ostream>
 #include <string>
 #include <vector>
 
 #include "ASocket.hpp"
+#include "Connection.hpp"
 #include "EventManager.hpp"
+#include "ListenSocket.hpp"
 #include "TimeoutManager.hpp"
 
 class Server {
@@ -25,21 +28,22 @@ class Server {
   EventManager* event_manager_;
   std::map<int, ASocket*> sockets_;
 
-  static const int kDefaultListenBacklog = 511;
-
   Server();
   Server(const Server&);
   Server& operator=(const Server&);
 
-  int addConnection(int connected_socket_fd);
+  void setSockets(const std::map<int, ListenSocket*>& listen_sockets);
+
+  int addConnection(int connected_socket_fd, const SocketAddress& local_address,
+                    const SocketAddress& peer_address);
 
   int executeEventSockets(const std::vector<ASocket*>& event_sockets,
                           std::vector<ASocket*>& closing_sockets);
   int closeSocket(ASocket* socket);
   int closeSockets(const std::vector<ASocket*>& closing_sockets);
-
-  // TODO: delete test initializing listen_sockets_
-  static int testInitListenSockets(std::map<int, ASocket*>& sockets);
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const std::map<int, ASocket*>& sockets);
 
 #endif

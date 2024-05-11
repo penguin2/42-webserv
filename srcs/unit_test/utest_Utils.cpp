@@ -275,3 +275,13 @@ TEST(Utils, IS_SAME_VALUE_CASE_INSENSITIVE) {
   EXPECT_FALSE(Utils::isSameValueCaseInsensitive(test_mp, "b", "app"));
   EXPECT_FALSE(Utils::isSameValueCaseInsensitive(test_mp, "B", "apple"));
 }
+
+TEST(Utils, UINT_TO_STRING) {
+  EXPECT_EQ(Utils::uintToString(0U), "0");
+  EXPECT_EQ(Utils::uintToString(1U), "1");
+  EXPECT_EQ(Utils::uintToString(10U), "10");
+  EXPECT_EQ(Utils::uintToString(0x7fU), "127");
+  EXPECT_EQ(Utils::uintToString(0xffU), "255");
+  EXPECT_EQ(Utils::uintToString(12345U), "12345");
+  EXPECT_EQ(Utils::uintToString(65535U), "65535");
+}

@@ -10,8 +10,11 @@
 
 char Connection::recv_buffer_[Connection::kRecvBufferSize];
 
-Connection::Connection(int socket_fd, EventManager* event_manager)
-    : ASocket(socket_fd),
+Connection::Connection(int socket_fd, const SocketAddress& local_address,
+                       const SocketAddress& peer_address,
+                       EventManager* event_manager)
+    : ASocket(socket_fd, local_address),
+      peer_address_(peer_address),
       state_(connection::RECV),
       event_manager_(event_manager),
       cgi_(NULL) {}
@@ -38,6 +41,8 @@ int Connection::handler(Server* server) {
   server->updateTimeout(this);
   return status;
 }
+
+SocketAddress Connection::getPeerAddress() const { return peer_address_; }
 
 int Connection::handlerRecv() {
   const int recv_size = recv(socket_fd_, Connection::recv_buffer_,
@@ -166,4 +171,9 @@ int Connection::sendToRecv(Connection* conn) {
 int Connection::cgiToSend(Connection* conn) {
   conn->clearCgi();
   return conn->event_manager_->insert(conn->socket_fd_, conn, EventType::WRITE);
+}
+
+std::ostream& operator<<(std::ostream& os, const Connection& connection) {
+  return os << "fd: " << connection.getSocketFd() << " (local) " << connection.getLocalAddress() << " -> (peer) "
+            << connection.getPeerAddress();
 }

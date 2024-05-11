@@ -13,7 +13,7 @@ bool ListenDirectiveHandler::isDirectiveValid() const {
 
 void ListenDirectiveHandler::parseAddressAndPort(const std::string& input,
                                                  std::string& address,
-                                                 int& port) {
+                                                 std::string& port) {
   std::stringstream ss(input);
   std::getline(ss, address, ':');
   ss >> port;
@@ -23,7 +23,7 @@ void ListenDirectiveHandler::setConfig() {
   log();
   ServerConfig& serverConfig = getServerConfig();
   std::string address;
-  int port;
+  std::string port;
 
   parseAddressAndPort(tokens_[1], address, port);
 

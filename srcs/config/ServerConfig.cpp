@@ -20,7 +20,7 @@ void ServerConfig::setListenAddress(const std::string& listen_address) {
   this->listen_address = listen_address;
 }
 
-void ServerConfig::setListenPort(const size_t listen_port) {
+void ServerConfig::setListenPort(const std::string& listen_port) {
   this->listen_port = listen_port;
 }
 
@@ -37,6 +37,8 @@ const std::string& ServerConfig::getServerName() const { return server_name; }
 const std::string& ServerConfig::getListenAddress() const {
   return listen_address;
 }
+
+const std::string& ServerConfig::getListenPort() const { return listen_port; }
 
 const std::string& ServerConfig::getErrorPage(int error_code) const {
   std::map<int, std::string>::const_iterator it = error_pages.find(error_code);

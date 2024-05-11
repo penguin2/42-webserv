@@ -1,10 +1,20 @@
 #ifndef WEBSERV_CONFIGADAPTER_H_
 #define WEBSERV_CONFIGADAPTER_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
+#include "ListenSocket.hpp"
+#include "SocketAddress.hpp"
+#include "config/ServerConfig.hpp"
+
 namespace ConfigAdapter {
+
+std::map<SocketAddress, std::vector<const ServerConfig*> >
+makeServerConfigGroups();
+
+std::map<int, ListenSocket*> makeInitialListenSockets();
 
 // (リダイレクト対象のRequest) ? redirect_URI : NULL
 const std::string* searchRedirectUri(const std::string& host, size_t port,
@@ -56,6 +66,7 @@ size_t getMaxMethodSize(void);
 size_t getMaxNumberOfCrlfBeforeMethod(void);
 
 namespace INTERNAL {
+const int DEFAULT_LISTEN_BACKLOG = 511;
 const size_t DEFAULT_MAX_URI_SIZE = 2000;
 const size_t DEFAULT_MAX_HEADER_SIZE = 200;
 const size_t DEFAULT_MAX_NUMBER_OF_HEADERS = 100;
