@@ -26,7 +26,7 @@ int SysUtils::addCloseOnExecFlag(int fd) {
   return 0;
 }
 
-int SysUtils::makeListenSocket(const char* hostname, const char* servname,
+int SysUtils::makeListenSocket(const char* host, const char* service,
                                int backlog) {
   int socket_fd;
   struct addrinfo hints, *listp, *p;
@@ -35,7 +35,7 @@ int SysUtils::makeListenSocket(const char* hostname, const char* servname,
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_family = AF_INET;
   hints.ai_flags = AI_PASSIVE;
-  const int status = getaddrinfo(hostname, servname, &hints, &listp);
+  const int status = getaddrinfo(host, service, &hints, &listp);
   if (status != 0) {
     LOG(WARN, "getaddrinfo: ", gai_strerror(status));
     return -1;
@@ -60,7 +60,7 @@ int SysUtils::makeListenSocket(const char* hostname, const char* servname,
 
   if (p == NULL) {
     LOG(WARN, "makeListenSocket failed on: ",
-        std::string(hostname) + ":" + std::string(servname));
+        std::string(host) + ":" + std::string(service));
     return -1;
   }
 
