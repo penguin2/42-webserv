@@ -46,7 +46,7 @@ template <typename T>
 static void testIsValid(const std::string& line, bool expected) {
   T directive_handler;
   directive_handler.setToken(tempTokenize(line));
-  EXPECT_EQ(directive_handler.isValid(), expected);
+  EXPECT_EQ(directive_handler.isDirectiveValid(), expected);
 }
 
 TEST(Directive, AllowMethodsDirectiveHandler) {
