@@ -147,12 +147,3 @@ std::string Utils::uintToString(unsigned int val) {
   ss << std::dec << val;
   return ss.str();
 }
-
-bool Utils::isPrefixComponents(
-    const std::vector<std::string>& prefix_components,
-    const std::vector<std::string>& components) {
-  if (prefix_components.size() > components.size()) return false;
-  for (std::size_t i = 0; i < prefix_components.size(); ++i)
-    if (prefix_components[i] != components[i]) return false;
-  return true;
-}

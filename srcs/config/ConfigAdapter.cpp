@@ -69,24 +69,9 @@ const ServerConfig* ConfigAdapter::searchServerConfig(
 const LocationConfig* ConfigAdapter::searchLocationConfig(
     const std::string& path,
     const std::map<std::string, LocationConfig>& location_configs) {
-  const LocationConfig* current_matched = NULL;
-  std::size_t current_matched_size = 0;
-  const std::vector<std::string>& path_components = Utils::split(path, '/');
-
-  for (std::map<std::string, LocationConfig>::const_iterator it =
-           location_configs.begin();
-       it != location_configs.end(); ++it) {
-    const std::vector<std::string>& location_path_components =
-        Utils::split(it->first, '/');
-    const LocationConfig* location_config = &(it->second);
-
-    if ((current_matched == NULL ||
-         location_path_components.size() > current_matched_size) &&
-        Utils::isPrefixComponents(location_path_components, path_components))
-      current_matched = location_config;
-  }
-
-  return current_matched;
+  (void)path;
+  (void)location_configs;
+  return NULL;
 }
 
 const std::string* ConfigAdapter::searchRedirectUri(const std::string& host,

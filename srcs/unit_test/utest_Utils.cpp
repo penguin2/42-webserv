@@ -285,37 +285,3 @@ TEST(Utils, UINT_TO_STRING) {
   EXPECT_EQ(Utils::uintToString(12345U), "12345");
   EXPECT_EQ(Utils::uintToString(65535U), "65535");
 }
-
-TEST(Utils, IS_PREFIX_COMPONENTS) {
-  std::vector<std::string> path_components;
-  std::vector<std::string> bin;
-  std::vector<std::string> www = {"var", "www"};
-  std::vector<std::string> html = {"var", "www", "html"};
-  std::vector<std::string> directory_webserv = {"42", "webserv"};
-
-  path_components = std::vector<std::string>{};
-  EXPECT_TRUE(Utils::isPrefixComponents(bin, path_components));
-  EXPECT_FALSE(Utils::isPrefixComponents(www, path_components));
-  EXPECT_FALSE(Utils::isPrefixComponents(html, path_components));
-  EXPECT_FALSE(Utils::isPrefixComponents(directory_webserv, path_components));
-
-  path_components = std::vector<std::string>{"var", "www", "index.php"};
-  EXPECT_TRUE(Utils::isPrefixComponents(bin, path_components));
-  EXPECT_TRUE(Utils::isPrefixComponents(www, path_components));
-  EXPECT_FALSE(Utils::isPrefixComponents(html, path_components));
-  EXPECT_FALSE(Utils::isPrefixComponents(directory_webserv, path_components));
-
-  path_components =
-      std::vector<std::string>{"var", "www", "html", "index.html"};
-  EXPECT_TRUE(Utils::isPrefixComponents(bin, path_components));
-  EXPECT_TRUE(Utils::isPrefixComponents(www, path_components));
-  EXPECT_TRUE(Utils::isPrefixComponents(html, path_components));
-  EXPECT_FALSE(Utils::isPrefixComponents(directory_webserv, path_components));
-
-  path_components = std::vector<std::string>{"42", "webserv", "srcs",
-                                             "unit_test", "utest_Utils.cpp"};
-  EXPECT_TRUE(Utils::isPrefixComponents(bin, path_components));
-  EXPECT_FALSE(Utils::isPrefixComponents(www, path_components));
-  EXPECT_FALSE(Utils::isPrefixComponents(html, path_components));
-  EXPECT_TRUE(Utils::isPrefixComponents(directory_webserv, path_components));
-}
