@@ -24,7 +24,6 @@ bool AllowMethodsDirectiveHandler::isDirectiveValid() const {
       }
     }
   }
-
   return true;
 }
 
