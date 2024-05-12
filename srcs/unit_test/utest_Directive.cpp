@@ -46,27 +46,35 @@ template <typename T>
 static void testIsValid(const std::string& line, bool expected) {
   T directive_handler;
   directive_handler.setToken(tempTokenize(line));
-  EXPECT_EQ(directive_handler.isDirectiveValid(), expected);
+  if (directive_handler.isSyntaxValid()) {
+    EXPECT_EQ(directive_handler.isDirectiveValid(), expected) << "testing... " << line;
+  }
 }
 
 TEST(Directive, AllowMethodsDirectiveHandler) {
   typedef AllowMethodsDirectiveHandler DirectiveHandler;
 
   //true
-  testIsValid<DirectiveHandler>("", true);
-  testIsValid<DirectiveHandler>("hello world", true);
-  testIsValid<DirectiveHandler>("allow_methods get", true);
-  testIsValid<DirectiveHandler>("allow_methods GET", true);
-  testIsValid<DirectiveHandler>("allow_methods post", true);
-  testIsValid<DirectiveHandler>("allow_methods POST", true);
-  testIsValid<DirectiveHandler>("allow_methods delete", true);
-  testIsValid<DirectiveHandler>("allow_methods DELETE", true);
+  testIsValid<DirectiveHandler>("allow_methods GET;", true);
+  testIsValid<DirectiveHandler>("allow_methods POST;", true);
+  testIsValid<DirectiveHandler>("allow_methods DELETE;", true);
+  testIsValid<DirectiveHandler>("allow_methods DELETE GET;", true);
 
   //false
-  testIsValid<DirectiveHandler>("allow_methods head", true);
-  testIsValid<DirectiveHandler>("allow_methods HEAD", true);
-  testIsValid<DirectiveHandler>("allow_methods GET POST DELETE", true);
-  testIsValid<DirectiveHandler>("allow_methods get POST DELETE", true);
+  testIsValid<DirectiveHandler>("", false);
+  testIsValid<DirectiveHandler>("allow_methods get;", false);
+  testIsValid<DirectiveHandler>("allow_methods post;", false);
+  testIsValid<DirectiveHandler>("allow_methods delete;", false);
+  testIsValid<DirectiveHandler>("hello world;", false);
+  testIsValid<DirectiveHandler>("allow_methods GET POST DELETE;", true);
+
+  testIsValid<DirectiveHandler>("allow_methods head;", false);
+  testIsValid<DirectiveHandler>("allow_methods HEAD;", false);
+  testIsValid<DirectiveHandler>("allow_methods get POST DELETE;", false);
+  
+  testIsValid<DirectiveHandler>("allow_methods GET GET POST DELETE;", false);
+
+  testIsValid<DirectiveHandler>("allow_methods GET; POST DELETE;", false);
 }
 
 TEST(Directive, AutoIndexDirectiveHandler) {
