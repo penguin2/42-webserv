@@ -15,7 +15,7 @@ class LocationConfig {
   int try_files_error_code;
   std::string client_max_body_size;
   bool autoindex;
-  std::vector<HttpMethod> allow_methods;
+  std::vector<std::string> allow_methods;
   int return_status_code;
   std::string return_uri;
   std::vector<std::string> cgi_path;
@@ -42,8 +42,8 @@ class LocationConfig {
   bool getAutoindex() const;
   void setAutoindex(bool newAutoindex);
 
-  const std::vector<HttpMethod>& getAllowMethods() const;
-  void setAllowMethods(const std::vector<HttpMethod> new_methods);
+  const std::vector<std::string>& getAllowMethods() const;
+  void setAllowMethods(const std::vector<std::string> new_methods);
 
   int getReturnStatusCode() const;
   void setReturnStatusCode(int newStatusCode);
