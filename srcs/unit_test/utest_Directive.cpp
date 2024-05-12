@@ -59,6 +59,7 @@ TEST(Directive, AllowMethodsDirectiveHandler) {
   testIsValid<DirectiveHandler>("allow_methods POST;", true);
   testIsValid<DirectiveHandler>("allow_methods DELETE;", true);
   testIsValid<DirectiveHandler>("allow_methods DELETE GET;", true);
+  testIsValid<DirectiveHandler>("allow_methods GET POST DELETE;", true);
 
   //false
   testIsValid<DirectiveHandler>("", false);
@@ -66,7 +67,6 @@ TEST(Directive, AllowMethodsDirectiveHandler) {
   testIsValid<DirectiveHandler>("allow_methods post;", false);
   testIsValid<DirectiveHandler>("allow_methods delete;", false);
   testIsValid<DirectiveHandler>("hello world;", false);
-  testIsValid<DirectiveHandler>("allow_methods GET POST DELETE;", true);
 
   testIsValid<DirectiveHandler>("allow_methods head;", false);
   testIsValid<DirectiveHandler>("allow_methods HEAD;", false);
