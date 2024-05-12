@@ -77,7 +77,12 @@ const LocationConfig* ConfigAdapter::searchLocationConfig(
        it != location_configs.rend(); ++it) {
     const std::string& location_path = it->first;
     const LocationConfig* location_config = &(it->second);
+#if defined(__MACH__)
+    if (Utils::isStartsWithCaseInsensitive(path, location_path))
+      return location_config;
+#elif defined(__linux__)
     if (Utils::isStartsWith(path, location_path)) return location_config;
+#endif
   }
   return NULL;
 }
