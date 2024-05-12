@@ -66,11 +66,19 @@ const ServerConfig* ConfigAdapter::searchServerConfig(
   return default_server_config;
 }
 
+// taking advantage of 'sorted keys' for std::map<std::string, T>,
+// checking keys in reverse order assures
+// that the first prefix found is the longest prefix matching
 const LocationConfig* ConfigAdapter::searchLocationConfig(
     const std::string& path,
     const std::map<std::string, LocationConfig>& location_configs) {
-  (void)path;
-  (void)location_configs;
+  for (std::map<std::string, LocationConfig>::const_reverse_iterator it =
+           location_configs.rbegin();
+       it != location_configs.rend(); ++it) {
+    const std::string& location_path = it->first;
+    const LocationConfig* location_config = &(it->second);
+    if (Utils::isStartsWith(path, location_path)) return location_config;
+  }
   return NULL;
 }
 
