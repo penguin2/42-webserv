@@ -16,6 +16,14 @@ makeServerConfigGroups();
 
 std::map<int, ListenSocket*> makeInitialListenSockets();
 
+const ServerConfig* searchServerConfig(
+    const std::string& host,
+    const std::vector<const ServerConfig*>& server_configs);
+
+const LocationConfig* searchLocationConfig(
+    const std::string& path,
+    const std::map<std::string, LocationConfig>& location_configs);
+
 // (リダイレクト対象のRequest) ? redirect_URI : NULL
 const std::string* searchRedirectUri(const std::string& host, size_t port,
                                      const std::string& path);

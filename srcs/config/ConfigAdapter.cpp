@@ -4,19 +4,20 @@
 
 #include "ListenSocket.hpp"
 #include "SysUtils.hpp"
+#include "Utils.hpp"
 #include "config/Config.hpp"
 
-std::map<SocketAddress, std::vector<const ServerConfig *> >
+std::map<SocketAddress, std::vector<const ServerConfig*> >
 ConfigAdapter::makeServerConfigGroups() {
-  std::map<SocketAddress, std::vector<const ServerConfig *> >
+  std::map<SocketAddress, std::vector<const ServerConfig*> >
       server_config_groups;
-  const std::vector<ServerConfig> &server_configs =
+  const std::vector<ServerConfig>& server_configs =
       Config::getInstance().getServers();
 
   for (std::vector<ServerConfig>::const_iterator it = server_configs.begin();
        it != server_configs.end(); ++it) {
-    const std::string &ip_addr = it->getListenAddress();
-    const std::string &port = it->getListenPort();
+    const std::string& ip_addr = it->getListenAddress();
+    const std::string& port = it->getListenPort();
     const SocketAddress socket_address = SocketAddress(ip_addr, port);
 
     server_config_groups[socket_address].push_back(&(*it));
@@ -25,24 +26,24 @@ ConfigAdapter::makeServerConfigGroups() {
   return server_config_groups;
 }
 
-std::map<int, ListenSocket *> ConfigAdapter::makeInitialListenSockets() {
-  std::map<int, ListenSocket *> initial_listen_sockets;
-  const std::map<SocketAddress, std::vector<const ServerConfig *> >
-      &server_config_groups = ConfigAdapter::makeServerConfigGroups();
+std::map<int, ListenSocket*> ConfigAdapter::makeInitialListenSockets() {
+  std::map<int, ListenSocket*> initial_listen_sockets;
+  const std::map<SocketAddress, std::vector<const ServerConfig*> >&
+      server_config_groups = ConfigAdapter::makeServerConfigGroups();
 
   for (std::map<SocketAddress,
-                std::vector<const ServerConfig *> >::const_iterator it =
+                std::vector<const ServerConfig*> >::const_iterator it =
            server_config_groups.begin();
        it != server_config_groups.end(); ++it) {
-    const SocketAddress &socket_address = it->first;
-    const std::vector<const ServerConfig *> &server_configs = it->second;
+    const SocketAddress& socket_address = it->first;
+    const std::vector<const ServerConfig*>& server_configs = it->second;
 
     const int listen_socket_fd = SysUtils::makeListenSocket(
         socket_address.getIpAddr().c_str(), socket_address.getPort().c_str(),
         ConfigAdapter::INTERNAL::DEFAULT_LISTEN_BACKLOG);
     if (listen_socket_fd < 0) continue;
 
-    ListenSocket *new_listen_socket =
+    ListenSocket* new_listen_socket =
         new ListenSocket(listen_socket_fd, socket_address);
     new_listen_socket->setServerConfigs(server_configs);
 
@@ -52,9 +53,45 @@ std::map<int, ListenSocket *> ConfigAdapter::makeInitialListenSockets() {
   return initial_listen_sockets;
 }
 
-const std::string *ConfigAdapter::searchRedirectUri(const std::string &host,
+const ServerConfig* ConfigAdapter::searchServerConfig(
+    const std::string& host,
+    const std::vector<const ServerConfig*>& server_configs) {
+  const ServerConfig* default_server_config = *server_configs.begin();
+
+  for (std::vector<const ServerConfig*>::const_iterator it =
+           server_configs.begin();
+       it != server_configs.end(); ++it)
+    if (host == (*it)->getServerName()) return *it;
+
+  return default_server_config;
+}
+
+const LocationConfig* ConfigAdapter::searchLocationConfig(
+    const std::string& path,
+    const std::map<std::string, LocationConfig>& location_configs) {
+  const LocationConfig* current_matched = NULL;
+  std::size_t current_matched_size = 0;
+  const std::vector<std::string>& path_components = Utils::split(path, '/');
+
+  for (std::map<std::string, LocationConfig>::const_iterator it =
+           location_configs.begin();
+       it != location_configs.end(); ++it) {
+    const std::vector<std::string>& location_path_components =
+        Utils::split(it->first, '/');
+    const LocationConfig* location_config = &(it->second);
+
+    if ((current_matched == NULL ||
+         location_path_components.size() > current_matched_size) &&
+        Utils::isPrefixComponents(location_path_components, path_components))
+      current_matched = location_config;
+  }
+
+  return current_matched;
+}
+
+const std::string* ConfigAdapter::searchRedirectUri(const std::string& host,
                                                     size_t port,
-                                                    const std::string &path) {
+                                                    const std::string& path) {
   static const std::string mock_redirect_uri(
       "/var/www/html/new-location/index.html");
 
@@ -65,9 +102,9 @@ const std::string *ConfigAdapter::searchRedirectUri(const std::string &host,
   (void)path;
 }
 
-int ConfigAdapter::searchRedirectStatusCode(const std::string &host,
+int ConfigAdapter::searchRedirectStatusCode(const std::string& host,
                                             size_t port,
-                                            const std::string &path) {
+                                            const std::string& path) {
   int random_number = (rand() % 6);
   int status_code;
   switch (random_number) {
@@ -99,15 +136,15 @@ int ConfigAdapter::searchRedirectStatusCode(const std::string &host,
   (void)path;
 }
 
-bool ConfigAdapter::isCgiPath(const std::string &host, size_t port,
-                              const std::string &path) {
+bool ConfigAdapter::isCgiPath(const std::string& host, size_t port,
+                              const std::string& path) {
   return (rand() % 2 == 0);
   (void)host;
   (void)port;
   (void)path;
 }
 
-const std::string *ConfigAdapter::searchErrorPage(const std::string &host,
+const std::string* ConfigAdapter::searchErrorPage(const std::string& host,
                                                   size_t port,
                                                   size_t status_code) {
   static const std::string mock_error_page("/var/www/html/error/error.html");
@@ -119,9 +156,9 @@ const std::string *ConfigAdapter::searchErrorPage(const std::string &host,
   (void)status_code;
 }
 
-bool ConfigAdapter::isAllowMethods(const std::string &host, size_t port,
-                                   const std::string &path,
-                                   const std::string &method) {
+bool ConfigAdapter::isAllowMethods(const std::string& host, size_t port,
+                                   const std::string& path,
+                                   const std::string& method) {
   return (rand() % 2 == 0);
   (void)host;
   (void)port;
@@ -130,7 +167,7 @@ bool ConfigAdapter::isAllowMethods(const std::string &host, size_t port,
 }
 
 std::vector<std::string> ConfigAdapter::getAllowMethods(
-    const std::string &host, size_t port, const std::string &path) {
+    const std::string& host, size_t port, const std::string& path) {
   std::vector<std::string> allow_methods;
 
   if (rand() % 2 == 0) allow_methods.push_back("GET");
@@ -142,12 +179,12 @@ std::vector<std::string> ConfigAdapter::getAllowMethods(
   (void)path;
 }
 
-bool ConfigAdapter::isCorrespondingMethod(const std::string &method) {
+bool ConfigAdapter::isCorrespondingMethod(const std::string& method) {
   return (method == "GET" || method == "POST" || method == "DELETE");
 }
 
 std::vector<std::string> ConfigAdapter::makeAbsolutePaths(
-    const std::string &host, size_t port, const std::string &path) {
+    const std::string& host, size_t port, const std::string& path) {
   const std::string base_dir("/var/www/html");
   const std::string base_cgi_dir("/lib");
   std::vector<std::string> absolute_paths;
@@ -168,8 +205,8 @@ std::vector<std::string> ConfigAdapter::makeAbsolutePaths(
   (void)port;
 }
 
-size_t ConfigAdapter::getMaxBodySize(const std::string &host, size_t port,
-                                     const std::string &path) {
+size_t ConfigAdapter::getMaxBodySize(const std::string& host, size_t port,
+                                     const std::string& path) {
   return INTERNAL::DEFAULT_MAX_BODY_SIZE;
   (void)host;
   (void)port;
@@ -201,7 +238,7 @@ size_t ConfigAdapter::getMaxNumberOfCrlfBeforeMethod(void) {
 // using namespace std;
 // int main(void) {
 //   srand(time(NULL));
-//   const std::string *uri = searchRedirectUri("", 0, "");
+//   const std::string* uri = searchRedirectUri("", 0, "");
 //   cout << (uri ? *uri : "NULL") << endl;
 //   cout << searchRedirectStatusCode("", 0, "") << endl;
 //   cout << isCgiPath("", 0, "") << endl;
