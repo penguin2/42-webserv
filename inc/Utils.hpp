@@ -2,8 +2,8 @@
 #define WEBSERV_UTILS_H_
 
 #include <map>
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
 
 class Utils {
@@ -35,6 +35,9 @@ class Utils {
       const std::map<std::string, std::string>& mp, const std::string& key,
       const std::string& value);
   static std::string uintToString(unsigned int val);
+  static bool isPrefixComponents(
+      const std::vector<std::string>& prefix_components,
+      const std::vector<std::string>& components);
 
  private:
   Utils(void);

@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 
-void Utils::strTrim(std::string &str, const char *charset) {
+void Utils::strTrim(std::string& str, const char* charset) {
   const size_t left = str.find_first_not_of(charset);
   if (left == std::string::npos)
     str = "";
@@ -13,60 +13,60 @@ void Utils::strTrim(std::string &str, const char *charset) {
   }
 }
 
-bool Utils::isContain(const std::string &str, int (*is_func)(int)) {
+bool Utils::isContain(const std::string& str, int (*is_func)(int)) {
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
     if (is_func(*it)) return true;
   }
   return false;
 }
 
-bool Utils::isContain(const std::string &str, const std::string charset) {
+bool Utils::isContain(const std::string& str, const std::string charset) {
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
     if (charset.find(*it) != std::string::npos) return true;
   }
   return false;
 }
 
-bool Utils::isContainsOnly(const std::string &str, int (*is_func)(int)) {
+bool Utils::isContainsOnly(const std::string& str, int (*is_func)(int)) {
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
     if (!is_func(*it)) return false;
   }
   return true;
 }
 
-bool Utils::isContainsOnly(const std::string &str, const std::string charset) {
+bool Utils::isContainsOnly(const std::string& str, const std::string charset) {
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
     if (charset.find(*it) == std::string::npos) return false;
   }
   return true;
 }
 
-void Utils::toLowerString(std::string &str) {
+void Utils::toLowerString(std::string& str) {
   for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
     if (std::isupper(*it)) *it = std::tolower(*it);
   }
 }
 
-std::string Utils::toLower(const std::string &str) {
+std::string Utils::toLower(const std::string& str) {
   std::string cpy(str);
   Utils::toLowerString(cpy);
   return cpy;
 }
 
-void Utils::toUpperString(std::string &str) {
+void Utils::toUpperString(std::string& str) {
   for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
     if (std::islower(*it)) *it = std::toupper(*it);
   }
 }
 
-std::string Utils::toUpper(const std::string &str) {
+std::string Utils::toUpper(const std::string& str) {
   std::string cpy(str);
   Utils::toUpperString(cpy);
   return cpy;
 }
 
 // 符号なし 8 or 10 or 16進数対応
-bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
+bool Utils::strToSize_t(const std::string& str, size_t& num, int base) {
   static const std::string string16 = "0123456789abcdef";
   std::string lower_str = Utils::toLower(str);
 
@@ -90,17 +90,17 @@ bool Utils::strToSize_t(const std::string &str, size_t &num, int base) {
   return true;
 }
 
-bool Utils::isStartsWith(const std::string &str, const std::string &prefix) {
+bool Utils::isStartsWith(const std::string& str, const std::string& prefix) {
   return (str.compare(0, prefix.size(), prefix) == 0);
 }
 
-std::string Utils::popFrontSubstr(std::string &str, std::size_t n) {
+std::string Utils::popFrontSubstr(std::string& str, std::size_t n) {
   std::string front_substr = str.substr(0, n);
   str.erase(0, n);
   return front_substr;
 }
 
-std::string Utils::getExtension(const std::string &file) {
+std::string Utils::getExtension(const std::string& file) {
   size_t pos_last_of_period = file.find_last_of('.');
   // '.'がない || '.'よりも後ろに'/'
   if (pos_last_of_period == std::string::npos ||
@@ -109,7 +109,7 @@ std::string Utils::getExtension(const std::string &file) {
   return file.substr(pos_last_of_period + 1);
 }
 
-std::vector<std::string> Utils::split(const std::string &str, char separator) {
+std::vector<std::string> Utils::split(const std::string& str, char separator) {
   std::vector<std::string> strings;
   std::string buf;
   std::stringstream ss(str);
@@ -122,7 +122,7 @@ std::vector<std::string> Utils::split(const std::string &str, char separator) {
   return strings;
 }
 
-std::string Utils::joinStrings(const std::vector<std::string> &strings,
+std::string Utils::joinStrings(const std::vector<std::string>& strings,
                                std::string delimiter) {
   std::stringstream ss;
   for (std::vector<std::string>::const_iterator it = strings.begin();
@@ -135,8 +135,8 @@ std::string Utils::joinStrings(const std::vector<std::string> &strings,
 }
 
 bool Utils::isSameValueCaseInsensitive(
-    const std::map<std::string, std::string> &mp, const std::string &key,
-    const std::string &value) {
+    const std::map<std::string, std::string>& mp, const std::string& key,
+    const std::string& value) {
   std::map<std::string, std::string>::const_iterator it = mp.find(key);
   if (it == mp.end()) return false;
   return Utils::toLower(it->second) == Utils::toLower(value);
@@ -146,4 +146,13 @@ std::string Utils::uintToString(unsigned int val) {
   std::stringstream ss;
   ss << std::dec << val;
   return ss.str();
+}
+
+bool Utils::isPrefixComponents(
+    const std::vector<std::string>& prefix_components,
+    const std::vector<std::string>& components) {
+  if (prefix_components.size() > components.size()) return false;
+  for (std::size_t i = 0; i < prefix_components.size(); ++i)
+    if (prefix_components[i] != components[i]) return false;
+  return true;
 }
