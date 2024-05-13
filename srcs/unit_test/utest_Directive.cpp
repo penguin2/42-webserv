@@ -3,6 +3,7 @@
 #include "config/AllowMethodsDirectiveHandler.hpp"
 #include "config/AutoIndexDirectiveHandler.hpp"
 #include "config/CgiExtDirectiveHandler.hpp"
+#include "config/ClientMaxBodySizeDirectiveHandler.hpp"
 #include "config/ConfigParser.hpp"
 
 static std::vector<std::string> tempTokenize(const std::string& line) {
@@ -89,6 +90,18 @@ TEST(Directive, CgiExtDirectiveHandler) {
   testIsValid<DirectiveHandler>("", true);
 }
 
+TEST(Directive, ClientMaxBodySizeDirectiveHandler) {
+  typedef ClientMaxBodySizeDirectiveHandler DirectiveHandler;
+
+  testIsValid<DirectiveHandler>("client_max_body_size 10M;", true);
+  testIsValid<DirectiveHandler>("client_max_body_size 10m;", true);
+
+  testIsValid<DirectiveHandler>("client_max_body_size 10G;", false);
+  testIsValid<DirectiveHandler>("client_max_body_size 10K;", false);
+  testIsValid<DirectiveHandler>("client_max_body_size 10g;", false);
+  testIsValid<DirectiveHandler>("client_max_body_size 10k;", false);
+  testIsValid<DirectiveHandler>("client_max_body_size; 10m;", false);
+}
 // ...
 //
 // TEST(Directive, 'SomeDirectiveHandler') {

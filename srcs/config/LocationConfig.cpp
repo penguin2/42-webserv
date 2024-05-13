@@ -25,10 +25,10 @@ void LocationConfig::setTryFilesErrorCode(int newErrorCode) {
   try_files_error_code = newErrorCode;
 }
 
-const std::string& LocationConfig::getClientMaxBodySize() const {
+size_t LocationConfig::getClientMaxBodySize() const {
   return client_max_body_size;
 }
-void LocationConfig::setClientMaxBodySize(const std::string& newSize) {
+void LocationConfig::setClientMaxBodySize(size_t newSize) {
   client_max_body_size = newSize;
 }
 

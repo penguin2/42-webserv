@@ -12,5 +12,13 @@ bool ClientMaxBodySizeDirectiveHandler::isDirectiveValid() const {
 void ClientMaxBodySizeDirectiveHandler::setConfig() {
   log();
   LocationConfig& locationConfig = getLocationConfig();
-  locationConfig.setClientMaxBodySize(tokens_[1]);
+  if (!tokens_[1].empty()) {
+    tokens_[1].pop_back();
+  }
+  size_t num;
+  if (Utils::strToSize_t(tokens_[1], num, 10) == false) {
+    std::cerr << "Failed to strToSize_t" << tokens_[1] << std::endl;
+    exit(1);
+  }
+  locationConfig.setClientMaxBodySize(num);
 }

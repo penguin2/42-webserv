@@ -13,7 +13,7 @@ class LocationConfig {
   std::string index;
   std::vector<std::string> try_files_path;
   int try_files_error_code;
-  std::string client_max_body_size;
+  size_t client_max_body_size;
   bool autoindex;
   std::vector<std::string> allow_methods;
   int return_status_code;
@@ -36,8 +36,8 @@ class LocationConfig {
   int getTryFilesErrorCode() const;
   void setTryFilesErrorCode(int newErrorCode);
 
-  const std::string& getClientMaxBodySize() const;
-  void setClientMaxBodySize(const std::string& newSize);
+  size_t getClientMaxBodySize() const;
+  void setClientMaxBodySize(size_t newSize);
 
   bool getAutoindex() const;
   void setAutoindex(bool newAutoindex);
