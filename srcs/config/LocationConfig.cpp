@@ -37,11 +37,11 @@ void LocationConfig::setAutoindex(bool newAutoindex) {
   autoindex = newAutoindex;
 }
 
-const std::vector<HttpMethod>& LocationConfig::getAllowMethods() const {
+const std::vector<std::string>& LocationConfig::getAllowMethods() const {
   return allow_methods;
 }
 void LocationConfig::setAllowMethods(
-    const std::vector<HttpMethod> new_methods) {
+    const std::vector<std::string> new_methods) {
   this->allow_methods = new_methods;
 }
 
@@ -93,17 +93,7 @@ void LocationConfig::print() {
   std::cout << "allow_methods: ";
 
   for (size_t i = 0; i < allow_methods.size(); i++) {
-    switch (allow_methods[i]) {
-      case GET:
-        std::cout << "GET ";
-        break;
-      case POST:
-        std::cout << "POST ";
-        break;
-      case DELETE:
-        std::cout << "DELETE ";
-        break;
-    }
+    std::cout << allow_methods[i];
   }
   std::cout << std::endl;
 }

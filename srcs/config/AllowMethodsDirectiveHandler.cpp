@@ -5,7 +5,28 @@ AllowMethodsDirectiveHandler::AllowMethodsDirectiveHandler() {
 }
 
 bool AllowMethodsDirectiveHandler::isDirectiveValid() const {
-  (void)tokens_;
+  std::map<std::string, int> methodCounts;
+
+  if (tokens_.size() < 3) {
+    return false;
+  }
+  for (size_t i = 1; i < tokens_.size(); ++i) {
+    if (i == tokens_.size() - 1) {
+      break;
+    }
+    methodCounts[tokens_[i]]++;
+  }
+
+  for (std::map<std::string, int>::const_iterator it = methodCounts.begin();
+       it != methodCounts.end(); ++it) {
+    if (it->first != "GET" && it->first != "POST" && it->first != "DELETE") {
+      return false;
+    } else {
+      if (it->second > 1) {
+        return false;
+      }
+    }
+  }
   return true;
 }
 
@@ -14,20 +35,11 @@ void AllowMethodsDirectiveHandler::setConfig() {
 
   LocationConfig& locationConfig = getLocationConfig();
 
-  std::vector<HttpMethod> allow_methods_vector;
+  std::vector<std::string> allow_methods_vector;
 
   size_t i = 1;
   while (tokens_[i] != ";") {
-    if (tokens_[i] == "GET") {
-      allow_methods_vector.push_back(GET);
-    } else if (tokens_[i] == "POST") {
-      allow_methods_vector.push_back(POST);
-    } else if (tokens_[i] == "DELETE") {
-      allow_methods_vector.push_back(DELETE);
-    } else {
-      std::cerr << tokens_[i] << " method does not exist" << std::endl;
-      exit(1);
-    }
+    allow_methods_vector.push_back(tokens_[i]);
     i++;
   }
   locationConfig.setAllowMethods(allow_methods_vector);
