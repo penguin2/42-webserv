@@ -12,7 +12,7 @@ bool ClientMaxBodySizeDirectiveHandler::isDirectiveValid() const {
   const std::string& token = tokens_[1];
 
   char lastChar = token.back();
-  if (!isdigit(lastChar) && lastChar != 'M' && lastChar != 'm') {
+  if (lastChar != 'M' && lastChar != 'm') {
     return false;
   }
   return true;
