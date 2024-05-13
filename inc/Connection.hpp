@@ -9,6 +9,7 @@
 #include "ConnectionState.hpp"
 #include "EventManager.hpp"
 #include "SocketAddress.hpp"
+#include "config/ServerConfig.hpp"
 
 #ifdef MOCK
 #include "HttpMock.hpp"
@@ -19,7 +20,9 @@
 class Connection : public ASocket {
  public:
   Connection(int socket_fd, const SocketAddress& local_address,
-             const SocketAddress& peer_address, EventManager* event_manager);
+             const SocketAddress& peer_address,
+             const std::vector<const ServerConfig*>& server_configs,
+             EventManager* event_manager);
   ~Connection();
 
   int handler(Server* server);

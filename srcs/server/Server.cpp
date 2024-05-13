@@ -32,14 +32,14 @@ Server::~Server() {
   delete timeout_manager_;
 }
 
-int Server::acceptListenSocket(int listen_socket_fd) {
+int Server::acceptListenSocket(const ListenSocket& listen_socket) {
   struct sockaddr peer_sockaddr;
   socklen_t peer_sockaddr_len = sizeof(struct sockaddr);
   struct sockaddr local_sockaddr;
   socklen_t local_sockaddr_len = sizeof(struct sockaddr);
 
   const int connected_socket_fd =
-      accept(listen_socket_fd, &peer_sockaddr, &peer_sockaddr_len);
+      accept(listen_socket.getSocketFd(), &peer_sockaddr, &peer_sockaddr_len);
   if (connected_socket_fd < 0) return -1;
   if (getsockname(connected_socket_fd, &local_sockaddr, &local_sockaddr_len) <
       0) {
@@ -55,7 +55,8 @@ int Server::acceptListenSocket(int listen_socket_fd) {
 
   if (SysUtils::addNonblockingFlag(connected_socket_fd) < 0 ||
       SysUtils::addCloseOnExecFlag(connected_socket_fd) < 0 ||
-      addConnection(connected_socket_fd, local_address, peer_address) < 0) {
+      addConnection(connected_socket_fd, local_address, peer_address,
+                    listen_socket.getServerConfigs()) < 0) {
     close(connected_socket_fd);
     return -1;
   }
@@ -107,16 +108,18 @@ void Server::setSockets(const std::map<int, ListenSocket*>& listen_sockets) {
   }
 }
 
-int Server::addConnection(int connected_socket_fd,
-                          const SocketAddress& local_address,
-                          const SocketAddress& peer_address) {
+int Server::addConnection(
+    int connected_socket_fd, const SocketAddress& local_address,
+    const SocketAddress& peer_address,
+    const std::vector<const ServerConfig*>& server_configs) {
   if (sockets_.find(connected_socket_fd) != sockets_.end()) {
     LOG(WARN, "addConnection: duplicated fd: ", connected_socket_fd);
     return -1;
   }
 
-  Connection* new_connection = new Connection(
-      connected_socket_fd, local_address, peer_address, event_manager_);
+  Connection* new_connection =
+      new Connection(connected_socket_fd, local_address, peer_address,
+                     server_configs, event_manager_);
 
   if (event_manager_->insert(connected_socket_fd, new_connection,
                              EventType::READ) < 0) {

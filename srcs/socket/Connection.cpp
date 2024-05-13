@@ -12,10 +12,12 @@ char Connection::recv_buffer_[Connection::kRecvBufferSize];
 
 Connection::Connection(int socket_fd, const SocketAddress& local_address,
                        const SocketAddress& peer_address,
+                       const std::vector<const ServerConfig*>& server_configs,
                        EventManager* event_manager)
     : ASocket(socket_fd, local_address),
       peer_address_(peer_address),
       state_(connection::RECV),
+      http_(peer_address, server_configs),
       event_manager_(event_manager),
       cgi_(NULL) {}
 
@@ -174,6 +176,7 @@ int Connection::cgiToSend(Connection* conn) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Connection& connection) {
-  return os << "fd: " << connection.getSocketFd() << " (local) " << connection.getLocalAddress() << " -> (peer) "
+  return os << "fd: " << connection.getSocketFd() << " (local) "
+            << connection.getLocalAddress() << " -> (peer) "
             << connection.getPeerAddress();
 }

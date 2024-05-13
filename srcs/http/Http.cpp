@@ -9,7 +9,11 @@
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
 
-Http::Http() : keep_alive_flag_(true) {}
+Http::Http(SocketAddress peer_address,
+           const std::vector<const ServerConfig*>& server_configs)
+    : peer_address_(peer_address),
+      server_configs_(server_configs),
+      keep_alive_flag_(true) {}
 
 Http::~Http() {}
 

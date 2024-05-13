@@ -6,10 +6,13 @@
 
 #include "CgiRequestMock.hpp"
 #include "ConnectionState.hpp"
+#include "SocketAddress.hpp"
+#include "config/ServerConfig.hpp"
 
 class HttpMock {
  public:
-  HttpMock();
+  HttpMock(SocketAddress peer_address,
+           const std::vector<const ServerConfig*>& server_configs);
   ~HttpMock();
 
   connection::State httpHandler(connection::State state);
@@ -28,6 +31,7 @@ class HttpMock {
 
   static const std::string kCgiCheckString;
 
+  HttpMock();
   HttpMock(const HttpMock&);
   HttpMock& operator=(const HttpMock&);
 
