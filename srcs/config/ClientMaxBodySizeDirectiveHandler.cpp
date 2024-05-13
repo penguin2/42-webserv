@@ -5,7 +5,16 @@ ClientMaxBodySizeDirectiveHandler::ClientMaxBodySizeDirectiveHandler() {
 }
 
 bool ClientMaxBodySizeDirectiveHandler::isDirectiveValid() const {
-  (void)tokens_;
+  if (tokens_.size() < 2) {
+    return false;
+  }
+
+  const std::string& token = tokens_[1];
+
+  char lastChar = token.back();
+  if (!isdigit(lastChar) && lastChar != 'M' && lastChar != 'm') {
+    return false;
+  }
   return true;
 }
 
