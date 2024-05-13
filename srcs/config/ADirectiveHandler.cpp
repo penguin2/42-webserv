@@ -5,6 +5,11 @@ ADirectiveHandler::ADirectiveHandler() {}
 ADirectiveHandler::~ADirectiveHandler() {}
 
 bool ADirectiveHandler::isSyntaxValid() const {
+  int semicolonCount =
+      std::count(this->tokens_.begin(), this->tokens_.end(), ";");
+  if (semicolonCount != 1) {
+    return false;
+  }
   return this->tokens_.size() >= 2 && this->tokens_.back() == ";";
 }
 
