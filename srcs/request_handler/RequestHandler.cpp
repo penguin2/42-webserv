@@ -27,7 +27,7 @@ connection::State RequestHandler::dispatch(Request& request, Response& response,
                           "Method not allowed");
 
   if (ConfigAdapter::searchRedirectUri(*location_conf) != NULL) {
-    return RequestHandler::redirectHandler(request, response, *location_conf);
+    return RequestHandler::redirectHandler(request, response, path);
   }
   // TODO CGI Handle
   // else if (ConfigAdapter::isCgiPath(uri.getHost(), uri.getPort(),
@@ -36,25 +36,26 @@ connection::State RequestHandler::dispatch(Request& request, Response& response,
   // }
   const std::string& method = request.getRequestData()->getMethod();
   if (method_handler_map.find(method) != method_handler_map.end())
-    return method_handler_map.find(method)->second(request, response,
-                                                   *location_conf);
+    return method_handler_map.find(method)->second(request, response, path);
 
   throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                         "Unknown Method");
 }
 
-connection::State RequestHandler::redirectHandler(
-    const Request& request, Response& response,
-    const LocationConfig& location_conf) {
+connection::State RequestHandler::redirectHandler(const Request& request,
+                                                  Response& response,
+                                                  std::string path) {
+  const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
+      path, request.getServerConfig()->getLocationConfigs());
   const std::string* redirect_uri =
-      ConfigAdapter::searchRedirectUri(location_conf);
+      ConfigAdapter::searchRedirectUri(*location_conf);
   int redirect_status_code =
-      ConfigAdapter::searchRedirectStatusCode(location_conf);
+      ConfigAdapter::searchRedirectStatusCode(*location_conf);
 
-  if (!HttpUtils::isRedirectStatusCode(redirect_status_code))
+  if (!HttpUtils::isRedirectStatusCode(redirect_status_code)) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Return directive is invalid");
-
+  }
   response.appendBody(
       generateErrorPageContent(request, redirect_status_code, "Redirect"));
   response.insertHeader("Location", *redirect_uri);
