@@ -30,6 +30,8 @@ connection::State postMethodHandler(const Request& request, Response& response,
 connection::State deleteMethodHandler(const Request& request,
                                       Response& response,
                                       const LocationConfig& location_conf);
+std::string generatePostSuccessJsonData(const std::string& absolute_path,
+                                        const std::string& absolute_uri);
 }  // namespace MethodHandler
 }  // namespace RequestHandler
 
