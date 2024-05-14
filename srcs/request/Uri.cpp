@@ -151,3 +151,19 @@ void Uri::setFragment(const std::string& fragment) {
   // サーバではfragmentは一律に無視をするため処理は特にしない
   this->fragment_ = fragment;
 }
+
+std::string Uri::buildAbsoluteUri(void) const {
+  std::stringstream ss;
+
+  ss << scheme_ << "://" << buildAuthority() << path_;
+  if (query_.empty() == false) ss << "?" << query_;
+  return ss.str();
+}
+
+std::string Uri::buildAuthority(void) const {
+  std::stringstream ss;
+
+  if (user_info_.empty() == false) ss << user_info_ << '@';
+  ss << host_ << ':' << port_;
+  return ss.str();
+}
