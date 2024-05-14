@@ -53,12 +53,23 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
   (void)location_conf;
 }
 
-// (仮)
 connection::State RequestHandler::MethodHandler::deleteMethodHandler(
     const Request& request, Response& response,
     const LocationConfig& location_conf) {
-  return connection::SEND;
-  (void)request;
-  (void)response;
-  (void)location_conf;
+  std::string absolute_path = ConfigAdapter::makeAbsolutePath(
+      location_conf, request.getRequestData()->getUri().getPath());
+
+  if (!FileUtils::isExistFile(absolute_path)) {
+    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
+                          "File Not Exist");
+  } else if (!FileUtils::hasFilePermission(absolute_path, W_OK)) {
+    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
+                          "Has not permission");
+  } else if (std::remove(absolute_path.c_str()) != 0) {
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Can not remove file");
+  } else {
+    response.setStatusLine(204, "No Content");
+    return connection::SEND;
+  }
 }
