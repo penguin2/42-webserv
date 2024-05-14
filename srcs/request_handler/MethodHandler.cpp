@@ -24,7 +24,7 @@ connection::State RequestHandler::MethodHandler::getMethodHandler(
     Request& request, Response& response, std::string path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       path, request.getServerConfig()->getLocationConfigs());
-  std::string absolute_path =
+  const std::string absolute_path =
       ConfigAdapter::makeAbsolutePath(*location_conf, path);
 
   if (FileUtils::isExistFile(absolute_path) &&
@@ -42,7 +42,7 @@ connection::State RequestHandler::MethodHandler::getMethodFileHandler(
     Request& request, Response& response, std::string path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       path, request.getServerConfig()->getLocationConfigs());
-  std::string absolute_path =
+  const std::string absolute_path =
       ConfigAdapter::makeAbsolutePath(*location_conf, path);
   std::stringstream ss;
 
@@ -62,16 +62,16 @@ connection::State RequestHandler::MethodHandler::getMethodDirHandler(
     Request& request, Response& response, std::string path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       path, request.getServerConfig()->getLocationConfigs());
-  std::string absolute_path =
+  const std::string absolute_path =
       ConfigAdapter::makeAbsolutePath(*location_conf, path);
   std::stringstream ss;
 
   const std::string& index = ConfigAdapter::searchIndex(*location_conf);
-  if (index.empty() == false) {
+  if (!index.empty()) {
     try {
       return RequestHandler::dispatch(request, response, path + index);
     } catch (ServerException& e) {
-      ;
+      // 内部リダイレクト失敗時の情報は無視, 後工程の処理を続ける
     }
   }
   if (!ConfigAdapter::isAutoindex(*location_conf)) {
@@ -92,17 +92,17 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
     Request& request, Response& response, std::string path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       path, request.getServerConfig()->getLocationConfigs());
-  std::string absolute_path =
+  const std::string absolute_path =
       ConfigAdapter::makeAbsolutePath(*location_conf, path);
   const std::string& body = request.getRequestData()->getBody();
 
   if (FileUtils::isExistFile(absolute_path)) {
     throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
-                          "File Exist");
+                          "Cannot POST because file exists");
   }
   if (FileUtils::writeAllDataToFile(absolute_path, body) == false) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Write Error");
+                          "Internal Error");
   }
   const std::string absolute_uri =
       request.getRequestData()->getUri().buildAbsoluteUri();
@@ -118,7 +118,7 @@ connection::State RequestHandler::MethodHandler::deleteMethodHandler(
     Request& request, Response& response, std::string path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       path, request.getServerConfig()->getLocationConfigs());
-  std::string absolute_path =
+  const std::string absolute_path =
       ConfigAdapter::makeAbsolutePath(*location_conf, path);
 
   if (!FileUtils::isExistFile(absolute_path)) {

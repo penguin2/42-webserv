@@ -18,14 +18,15 @@ connection::State RequestHandler::dispatch(Request& request, Response& response,
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       path, request.getServerConfig()->getLocationConfigs());
 
-  if (location_conf == NULL)
+  // ここでNULLcheckをするので以降searchLocationConfig実行時,NULLが返ることは絶対にない
+  if (location_conf == NULL) {
     throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
-
+  }
   if (!ConfigAdapter::isAllowMethods(*location_conf,
-                                     request.getRequestData()->getMethod()))
+                                     request.getRequestData()->getMethod())) {
     throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
                           "Method not allowed");
-
+  }
   if (ConfigAdapter::searchRedirectUri(*location_conf) != NULL) {
     return RequestHandler::redirectHandler(request, response, path);
   }
@@ -35,9 +36,9 @@ connection::State RequestHandler::dispatch(Request& request, Response& response,
   //     return cgiHandler();
   // }
   const std::string& method = request.getRequestData()->getMethod();
-  if (method_handler_map.find(method) != method_handler_map.end())
+  if (method_handler_map.find(method) != method_handler_map.end()) {
     return method_handler_map.find(method)->second(request, response, path);
-
+  }
   throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                         "Unknown Method");
 }
@@ -52,6 +53,7 @@ connection::State RequestHandler::redirectHandler(const Request& request,
   int redirect_status_code =
       ConfigAdapter::searchRedirectStatusCode(*location_conf);
 
+  // TODO Configパース時にreturnディレクティブのstatus_codeを確認する
   if (!HttpUtils::isRedirectStatusCode(redirect_status_code)) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Return directive is invalid");
@@ -77,11 +79,14 @@ connection::State RequestHandler::errorRequestHandler(
 
 std::string RequestHandler::generateErrorPageContent(
     const Request& request, int status_code, const std::string& phrase) {
-  if (request.getServerConfig() == NULL)
+  // requestのParseError時はServerConfigが特定できていないためNULL
+  const ServerConfig* server_conf = request.getServerConfig();
+
+  if (server_conf == NULL)
     return HttpUtils::generateErrorPage(status_code, phrase);
   else {
     const std::string* error_page =
-        ConfigAdapter::searchErrorPage(*request.getServerConfig(), status_code);
+        ConfigAdapter::searchErrorPage(*server_conf, status_code);
     return HttpUtils::generateErrorPage(error_page, status_code, phrase);
   }
 }
