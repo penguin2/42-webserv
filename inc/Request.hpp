@@ -5,7 +5,7 @@
 #include <string>
 
 #include "RequestData.hpp"
-#include "ServerConfig.hpp"
+#include "config/ServerConfig.hpp"
 
 class Request {
  public:

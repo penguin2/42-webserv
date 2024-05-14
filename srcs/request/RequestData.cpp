@@ -1,10 +1,10 @@
 #include "RequestData.hpp"
 
-#include "ServerConfig.hpp"
 #include "ServerException.hpp"
 #include "Uri.hpp"
 #include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
+#include "config/ServerConfig.hpp"
 
 RequestData::RequestData(void) : server_config(NULL) {}
 RequestData::~RequestData(void) {}

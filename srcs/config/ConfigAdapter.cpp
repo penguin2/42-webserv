@@ -4,11 +4,11 @@
 #include <cstdlib>
 
 #include "ListenSocket.hpp"
-#include "LocationConfig.hpp"
-#include "ServerConfig.hpp"
 #include "SysUtils.hpp"
 #include "Utils.hpp"
 #include "config/Config.hpp"
+#include "config/LocationConfig.hpp"
+#include "config/ServerConfig.hpp"
 
 std::map<SocketAddress, std::vector<const ServerConfig*> >
 ConfigAdapter::makeServerConfigGroups() {
@@ -115,6 +115,7 @@ int ConfigAdapter::searchRedirectStatusCode(
 bool ConfigAdapter::isCgiPath(const LocationConfig& location_conf,
                               const std::string& path) {
   return (false);
+  (void)location_conf;
   (void)path;
 }
 

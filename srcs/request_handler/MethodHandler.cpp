@@ -8,6 +8,7 @@
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
 #include "config/ConfigAdapter.hpp"
+#include "config/LocationConfig.hpp"
 
 std::map<std::string, RequestHandler::MethodHandler::method_handler>
 RequestHandler::MethodHandler::makeMethodHandlerMap(void) {
@@ -20,10 +21,9 @@ RequestHandler::MethodHandler::makeMethodHandlerMap(void) {
 
 // (仮)
 connection::State RequestHandler::MethodHandler::getMethodHandler(
-    const Request& request, Response& response) {
+    const Request& request, Response& response,
+    const LocationConfig& location_conf) {
   const Uri& uri = request.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
 
   if (!FileUtils::isExistFile(uri.getPath()))
     throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND,
@@ -41,31 +41,24 @@ connection::State RequestHandler::MethodHandler::getMethodHandler(
                         HttpUtils::convertPathToContentType(uri.getPath()));
   response.setStatusLine(200, "OK");
   return connection::SEND;
-  (void)paths;
 }
 
 // (仮)
 connection::State RequestHandler::MethodHandler::postMethodHandler(
-    const Request& request, Response& response) {
-  const Uri& uri = request.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
-
+    const Request& request, Response& response,
+    const LocationConfig& location_conf) {
   return connection::SEND;
-  (void)paths;
   (void)request;
   (void)response;
+  (void)location_conf;
 }
 
 // (仮)
 connection::State RequestHandler::MethodHandler::deleteMethodHandler(
-    const Request& request, Response& response) {
-  const Uri& uri = request.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
-
+    const Request& request, Response& response,
+    const LocationConfig& location_conf) {
   return connection::SEND;
-  (void)paths;
   (void)request;
   (void)response;
+  (void)location_conf;
 }

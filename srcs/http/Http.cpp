@@ -7,9 +7,10 @@
 #include "ConnectionState.hpp"
 #include "HttpUtils.hpp"
 #include "RequestHandler.hpp"
-#include "ServerConfig.hpp"
 #include "ServerException.hpp"
+#include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
+#include "config/ServerConfig.hpp"
 
 Http::Http(SocketAddress peer_address,
            const std::vector<const ServerConfig*>& server_configs)
@@ -81,6 +82,17 @@ void Http::prepareToSendResponse(void) {
   this->keep_alive_flag_ =
       ((request_.haveConnectionCloseHeader() == false) &&
        HttpUtils::isMaintainConnection(this->response_.getStatusCode()));
+
+  // status_code == 405 になるのはdispatch関数のsearchLocationConfig関数の実行後
+  if (response_.getStatusCode() == 405) {
+    const std::string& path = request_.getRequestData()->getUri().getPath();
+    const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
+        path, request_.getServerConfig()->getLocationConfigs());
+    std::vector<std::string> allow_methods =
+        ConfigAdapter::getAllowMethods(*location_conf);
+    response_.insertHeader("Allow", Utils::joinStrings(allow_methods, ", "));
+  }
+
   response_.insertCommonHeaders(this->keep_alive_flag_);
   response_.getResponseRawData(raw_response_data_);
 }
