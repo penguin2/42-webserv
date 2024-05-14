@@ -70,6 +70,17 @@ connection::State RequestHandler::redirectHandler(const Request& request,
 connection::State RequestHandler::errorRequestHandler(
     const Request& request, Response& response, int status_code,
     const std::string& phrase) {
+  // status_code == 405 になるのはdispatch関数のsearchLocationConfig関数実行後
+  if (status_code == 405) {
+    const std::string& path = request.getRequestData()->getUri().getPath();
+    // 制御フロー的に必ず (location_conf != NULL) になります
+    const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
+        path, request.getServerConfig()->getLocationConfigs());
+    std::vector<std::string> allow_methods =
+        ConfigAdapter::getAllowMethods(*location_conf);
+    response.insertHeader("Allow", Utils::joinStrings(allow_methods, ", "));
+  }
+
   response.appendBody(generateErrorPageContent(request, status_code, phrase));
   response.insertHeader("Content-Type", "text/html");
   response.insertContentLengthIfNotSet();

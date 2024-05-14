@@ -82,18 +82,6 @@ void Http::prepareToSendResponse(void) {
   this->keep_alive_flag_ =
       ((request_.haveConnectionCloseHeader() == false) &&
        HttpUtils::isMaintainConnection(this->response_.getStatusCode()));
-
-  // status_code == 405 になるのはdispatch関数のsearchLocationConfig関数実行後
-  if (response_.getStatusCode() == 405) {
-    const std::string& path = request_.getRequestData()->getUri().getPath();
-    // 制御フロー的に必ず (location_conf != NULL) になります
-    const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
-        path, request_.getServerConfig()->getLocationConfigs());
-    std::vector<std::string> allow_methods =
-        ConfigAdapter::getAllowMethods(*location_conf);
-    response_.insertHeader("Allow", Utils::joinStrings(allow_methods, ", "));
-  }
-
   response_.insertCommonHeaders(this->keep_alive_flag_);
   response_.getResponseRawData(raw_response_data_);
 }
