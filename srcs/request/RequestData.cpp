@@ -1,11 +1,12 @@
 #include "RequestData.hpp"
 
+#include "ServerConfig.hpp"
 #include "ServerException.hpp"
 #include "Uri.hpp"
 #include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 
-RequestData::RequestData(void) {}
+RequestData::RequestData(void) : server_config(NULL) {}
 RequestData::~RequestData(void) {}
 
 void RequestData::setMethod(const std::string &method) {
@@ -65,6 +66,10 @@ void RequestData::insertHeader(std::string &line) {
 
 void RequestData::appendBody(const std::string &data) { body_.append(data); }
 
+void RequestData::setServerConfig(const ServerConfig &server_conf) {
+  this->server_config = &server_conf;
+}
+
 const std::string &RequestData::getMethod(void) const { return method_; }
 
 const Uri &RequestData::getUri(void) const { return uri_; }
@@ -76,3 +81,7 @@ const std::map<std::string, std::string> &RequestData::getHeaders(void) const {
 }
 
 const std::string &RequestData::getBody(void) const { return body_; }
+
+const ServerConfig *RequestData::getServerConfig(void) const {
+  return server_config;
+}

@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "RequestData.hpp"
+#include "ServerConfig.hpp"
 #include "ServerException.hpp"
 #include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
@@ -255,4 +256,12 @@ void Request::insertContentLength(void) {
 bool Request::haveConnectionCloseHeader(void) const {
   return Utils::isSameValueCaseInsensitive(this->data_->getHeaders(),
                                            "connection", "close");
+}
+
+void Request::setServerConfig(const ServerConfig& server_conf) {
+  data_->setServerConfig(server_conf);
+}
+
+const ServerConfig* Request::getServerConfig(void) const {
+  return data_->getServerConfig();
 }

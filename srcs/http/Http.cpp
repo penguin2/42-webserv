@@ -7,7 +7,9 @@
 #include "ConnectionState.hpp"
 #include "HttpUtils.hpp"
 #include "RequestHandler.hpp"
+#include "ServerConfig.hpp"
 #include "ServerException.hpp"
+#include "config/ConfigAdapter.hpp"
 
 Http::Http(SocketAddress peer_address,
            const std::vector<const ServerConfig*>& server_configs)
@@ -55,6 +57,7 @@ void Http::setCgiResponseMessage(const std::string& message) {
 connection::State Http::httpHandlerRecv(void) {
   try {
     if (request_.parse(this->client_data_) == true) {
+      Http::setServerConfig(request_, server_configs_);
       return RequestHandler::dispatch(request_, response_);
     }
     return connection::RECV;
@@ -79,4 +82,16 @@ void Http::prepareToSendResponse(void) {
        HttpUtils::isMaintainConnection(this->response_.getStatusCode()));
   response_.insertCommonHeaders(this->keep_alive_flag_);
   response_.getResponseRawData(raw_response_data_);
+}
+
+void Http::setServerConfig(
+    Request& request, const std::vector<const ServerConfig*>& server_configs) {
+  const std::string& host = request.getRequestData()->getUri().getHost();
+  const ServerConfig* server_conf =
+      ConfigAdapter::searchServerConfig(host, server_configs);
+
+  if (server_conf == NULL)
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Internal Error");
+  request.setServerConfig(*server_conf);
 }
