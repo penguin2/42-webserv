@@ -6,7 +6,8 @@
 #include "Response.hpp"
 
 namespace RequestHandler {
-connection::State dispatch(const Request& request, Response& response);
+connection::State dispatch(Request& request, Response& response,
+                           std::string path);
 connection::State errorRequestHandler(const Request& request,
                                       Response& response, int status_code,
                                       const std::string& phrase);

@@ -9,12 +9,18 @@
 #include "ServerException.hpp"
 #include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
+#include "config/LocationConfig.hpp"
 
-connection::State RequestHandler::dispatch(const Request& request,
-                                           Response& response) {
+connection::State RequestHandler::dispatch(Request& request, Response& response,
+                                           std::string path) {
   static const std::map<std::string, MethodHandler::method_handler>
       method_handler_map = MethodHandler::makeMethodHandlerMap();
   const Uri& uri = request.getRequestData()->getUri();
+  const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
+      path, request.getServerConfig()->getLocationConfigs());
+
+  if (location_conf == NULL)
+    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
 
   if (!ConfigAdapter::isAllowMethods(uri.getHost(), uri.getPort(),
                                      uri.getPath(),

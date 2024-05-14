@@ -58,7 +58,8 @@ connection::State Http::httpHandlerRecv(void) {
   try {
     if (request_.parse(this->client_data_) == true) {
       Http::setServerConfig(request_, server_configs_);
-      return RequestHandler::dispatch(request_, response_);
+      return RequestHandler::dispatch(
+          request_, response_, request_.getRequestData()->getUri().getPath());
     }
     return connection::RECV;
   } catch (ServerException& e) {
