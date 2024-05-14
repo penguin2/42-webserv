@@ -100,6 +100,10 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
     throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
                           "Cannot POST because file exists");
   }
+  if (ConfigAdapter::getClientMaxBodySize(*location_conf) < body.size()) {
+    throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
+                          "Payload too large");
+  }
   if (FileUtils::writeAllDataToFile(absolute_path, body) == false) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Internal Error");
