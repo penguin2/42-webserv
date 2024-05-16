@@ -48,14 +48,16 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 $(NAME) : $(OBJ_SUBDIRS) $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) $(INCLUDE) -o $@
 
-OK_OR_KO		=	"KO"
-TEST_SH			=	"./test/test.sh"
-REQUEST_PARSE	=	"request_parse"
+### REQUEST PARSE TEST by shellscript
+OK_OR_KO				=	"KO"
+REQUEST_PARSE_TEST_DIR	=	"./test/request_parse_test"
+REQUEST_PARSE_TEST_SH	=	"./run.sh"
 
-request_parse_test: $(OBJ_SUBDIRS) $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) $(INCLUDE) -owebserv
-	$(TEST_SH) $(OK_OR_KO) $(REQUEST_PARSE)
+request_parse_test: $(NAME)
+	cd $(REQUEST_PARSE_TEST_DIR) && $(REQUEST_PARSE_TEST_SH) $(OK_OR_KO)
+###
 
+### UNIT TEST by GoogleTest
 gtestdir		=	./test
 unit_testdir	=	$(SRC_DIR)/unit_test
 gtest			=	$(gtestdir)/gtest $(gtestdir)/googletest-release-1.11.0
@@ -70,6 +72,15 @@ $(gtest):
 unit_test: $(gtest) $(OBJ_SUBDIRS) $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) $(gtestdir)/googletest-release-1.11.0/googletest/src/gtest_main.cc $(gtestdir)/gtest/gtest-all.cc -I$(gtestdir) $(INCLUDE) -lpthread -pthread -owebserv
 	./webserv
+###
+
+### SYSTEM TEST by pytest
+SYSTEM_TEST_DIR	=	"./test/system_test"
+SYSTEM_TEST_SH	=	"./run.sh"
+
+system_test: $(NAME)
+	cd $(SYSTEM_TEST_DIR) && $(SYSTEM_TEST_SH)
+###
 
 .DEFAULT_GOAL = all
 .PHONY : all

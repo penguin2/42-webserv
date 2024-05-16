@@ -10,3 +10,9 @@ compile_flags.txt
 
 # temporary logs
 log_webserv.txt
+
+# pytest cache
+test/system_test/tests/*/__pycache__
+
+# venv
+test/system_test/venv

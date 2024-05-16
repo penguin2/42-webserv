@@ -1,7 +1,7 @@
-#! /bin/bash
+#!/bin/bash
 
 RESULT=0
-EXEC_FILE="./webserv"
+EXEC_FILE="../../webserv"
 
 ESC='\e['
 RED=31
@@ -61,7 +61,7 @@ _ONLY_KO() {
 }
 
 EXEC_REQUEST_PARSE() {
-	http_sample_dir="./test/http_sample/"
+	http_sample_dir="./http_sample/"
 
 	success_dir=$http_sample_dir'success/*/*'
 	error_dir=$http_sample_dir'error/*/*'
@@ -78,8 +78,6 @@ else
 	FUNC=_RESULT
 fi
 
-if [ $2 == 'request_parse' ] ; then
-	EXEC_REQUEST_PARSE $FUNC
-fi
+EXEC_REQUEST_PARSE $FUNC
 
 exit $RESULT
