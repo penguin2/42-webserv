@@ -58,7 +58,7 @@ request_parse_test: $(NAME)
 ###
 
 ### UNIT TEST by GoogleTest
-gtestdir		=	./test
+gtestdir		=	./test/unit_test
 unit_testdir	=	$(SRC_DIR)/unit_test
 gtest			=	$(gtestdir)/gtest $(gtestdir)/googletest-release-1.11.0
 

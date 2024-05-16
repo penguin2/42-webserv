@@ -4,6 +4,8 @@ webserv
 # googletest
 test/googletest*
 test/gtest
+test/unit_test/googletest*
+test/unit_test/gtest
 
 # lsp: clangd
 compile_flags.txt
