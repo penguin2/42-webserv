@@ -16,3 +16,9 @@ test/system_test/tests/*/__pycache__
 
 # venv
 test/system_test/venv
+
+# golang
+test/stress_test/go
+
+#k6
+test/stress_test/k6

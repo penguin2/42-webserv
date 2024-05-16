@@ -82,6 +82,43 @@ system_test: $(NAME)
 	cd $(SYSTEM_TEST_DIR) && $(SYSTEM_TEST_SH)
 ###
 
+### STRESS TEST by k6
+.PHONY: stress_test
+STRESS_TEST_DIR	=	"./test/stress_test"
+STRESS_TEST_SH	=	"./run.sh"
+
+K6_DIR			=	$(STRESS_TEST_DIR)/k6
+K6_REPO			=	"https://github.com/grafana/k6"
+
+GOLANG_DIR		=	$(STRESS_TEST_DIR)/go
+GOLANG_BASE_URL	=	https://golang.org/dl/
+GO_VERSION		=	1.22.3
+GOLANG_GIP_FILE	=	go$(GO_VERSION).linux-arm64.tar.gz
+
+ifeq ($(OS), Darwin)
+	GOLANG_GIP_FILE	=	go$(GO_VERSION).darwin-amd64.tar.gz
+endif
+
+$(GOLANG_DIR):
+	@if [ ! -d $(GOLANG_DIR) ]; then \
+		curl -LO $(GOLANG_BASE_URL)$(GOLANG_GIP_FILE); \
+		tar -xzf $(GOLANG_GIP_FILE); \
+		mv go $(GOLANG_DIR); \
+		rm $(GOLANG_GIP_FILE); \
+	fi
+
+$(K6_DIR):
+	@if [ ! -d $(K6_DIR) ]; then \
+		git clone $(K6_REPO) $(K6_DIR); \
+		cd $(K6_DIR); \
+		../go/bin/go build; \
+	fi
+
+stress_test: $(GOLANG_DIR) $(K6_DIR) $(NAME)
+	@cd $(STRESS_TEST_DIR) && $(STRESS_TEST_SH)
+###
+
+
 .DEFAULT_GOAL = all
 .PHONY : all
 all : $(NAME)
