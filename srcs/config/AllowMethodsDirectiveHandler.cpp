@@ -19,7 +19,7 @@ bool AllowMethodsDirectiveHandler::isDirectiveValid() const {
 
   for (std::map<std::string, int>::const_iterator it = methodCounts.begin();
        it != methodCounts.end(); ++it) {
-    if (it->first != "GET" && it->first != "POST" && it->first != "DELETE") {
+    if (!Config::isCorrespondingMethod(it->first)) {
       return false;
     } else {
       if (it->second > 1) {

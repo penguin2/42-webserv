@@ -10,6 +10,8 @@ class Uri {
 
   void parse(const std::string& uri);
   void overwriteAuthorityIfNotSet(const std::string& authority);
+  std::string buildAbsoluteUri(void) const;
+  std::string buildAuthority(void) const;
 
   const std::string& getScheme(void) const;
   const std::string& getUserInfo(void) const;

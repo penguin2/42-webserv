@@ -45,6 +45,8 @@ class Http {
   // TODO connection::State httpHandlerCgi(void);
 
   void prepareToSendResponse(void);
+  static void setServerConfig(
+      Request& request, const std::vector<const ServerConfig*>& server_configs);
 
   Http(void);
   Http(const Http&);

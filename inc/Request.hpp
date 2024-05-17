@@ -5,6 +5,7 @@
 #include <string>
 
 #include "RequestData.hpp"
+#include "config/ServerConfig.hpp"
 
 class Request {
  public:
@@ -14,6 +15,8 @@ class Request {
   bool parse(std::string& buffer);
   const RequestData* getRequestData(void) const;
   bool haveConnectionCloseHeader(void) const;
+  void setServerConfig(const ServerConfig& server_conf);
+  const ServerConfig* getServerConfig(void) const;
 
  private:
   typedef enum eRequestState {

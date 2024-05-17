@@ -1,10 +1,10 @@
 #ifndef WEBSERV_CONFIG_H
 #define WEBSERV_CONFIG_H
 
+#include <cstdlib>
+#include <iostream>
 #include <memory>
 #include <vector>
-#include <iostream>
-#include <cstdlib>
 
 #include "ServerConfig.hpp"
 
@@ -28,6 +28,9 @@ class Config {
   const std::vector<ServerConfig>& getServers() const;
 
   void print();
+
+  static bool isCorrespondingMethod(const std::string& method);
+  static std::vector<std::string> makeCorrespondingMethods(void);
 };
 
 #endif
