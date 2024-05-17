@@ -44,17 +44,18 @@ void Config::print() {
 }
 
 bool Config::isCorrespondingMethod(const std::string& method) {
-  static const std::vector<std::string> all_methods = Config::makeAllMethods();
+  static const std::vector<std::string> corresponding_methods =
+      Config::makeCorrespondingMethods();
 
-  return (std::find(all_methods.begin(), all_methods.end(), method) !=
-          all_methods.end());
+  return (std::find(corresponding_methods.begin(), corresponding_methods.end(),
+                    method) != corresponding_methods.end());
 }
 
-std::vector<std::string> Config::makeAllMethods(void) {
-  std::vector<std::string> all_methods;
+std::vector<std::string> Config::makeCorrespondingMethods(void) {
+  std::vector<std::string> corresponding_methods;
 
-  all_methods.push_back("GET");
-  all_methods.push_back("POST");
-  all_methods.push_back("DELETE");
-  return all_methods;
+  corresponding_methods.push_back("GET");
+  corresponding_methods.push_back("POST");
+  corresponding_methods.push_back("DELETE");
+  return corresponding_methods;
 }

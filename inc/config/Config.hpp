@@ -30,7 +30,7 @@ class Config {
   void print();
 
   static bool isCorrespondingMethod(const std::string& method);
-  static std::vector<std::string> makeAllMethods(void);
+  static std::vector<std::string> makeCorrespondingMethods(void);
 };
 
 #endif
