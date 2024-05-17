@@ -1,5 +1,7 @@
 #include "./config/Config.hpp"
 
+#include <algorithm>
+
 Config::Config() {}
 
 // Config::Config(const char* config_file) { (void)config_file; }
@@ -34,8 +36,25 @@ ServerConfig& Config::getServer(long unsigned int server_index) {
 const std::vector<ServerConfig>& Config::getServers() const { return servers; }
 
 void Config::print() {
-    for (std::vector<ServerConfig>::iterator it = servers.begin(); it != servers.end(); ++it) {
-        std::cout << "********** server **********" << std::endl;
-        it->print();
-    }
+  for (std::vector<ServerConfig>::iterator it = servers.begin();
+       it != servers.end(); ++it) {
+    std::cout << "********** server **********" << std::endl;
+    it->print();
+  }
+}
+
+bool Config::isCorrespondingMethod(const std::string& method) {
+  static const std::vector<std::string> all_methods = Config::makeAllMethods();
+
+  return (std::find(all_methods.begin(), all_methods.end(), method) !=
+          all_methods.end());
+}
+
+std::vector<std::string> Config::makeAllMethods(void) {
+  std::vector<std::string> all_methods;
+
+  all_methods.push_back("GET");
+  all_methods.push_back("POST");
+  all_methods.push_back("DELETE");
+  return all_methods;
 }

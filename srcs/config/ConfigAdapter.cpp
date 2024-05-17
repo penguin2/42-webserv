@@ -131,20 +131,16 @@ bool ConfigAdapter::isAllowMethods(const LocationConfig& location_conf,
                                    const std::string& method) {
   const std::vector<std::string>& methods = location_conf.getAllowMethods();
 
-  if (methods.empty()) return true;
-  if (std::find(methods.begin(), methods.end(), method) != methods.end())
-    return true;
-  return false;
+  return (methods.empty() || Config::isCorrespondingMethod(method));
 }
 
 std::vector<std::string> ConfigAdapter::getAllowMethods(
     const LocationConfig& location_conf) {
-  std::vector<std::string> methods;
+  const std::vector<std::string>& allow_methods =
+      location_conf.getAllowMethods();
 
-  if (isAllowMethods(location_conf, "GET")) methods.push_back("GET");
-  if (isAllowMethods(location_conf, "POST")) methods.push_back("POST");
-  if (isAllowMethods(location_conf, "DELETE")) methods.push_back("DELETE");
-  return methods;
+  if (allow_methods.empty()) return Config::makeAllMethods();
+  return allow_methods;
 }
 
 const std::string* ConfigAdapter::searchHostName(
@@ -199,5 +195,5 @@ size_t ConfigAdapter::getMaxBodySize(void) {
 }
 
 bool ConfigAdapter::isCorrespondingMethod(const std::string& method) {
-  return (method == "GET" || method == "POST" || method == "DELETE");
+  return Config::isCorrespondingMethod(method);
 }
