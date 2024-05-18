@@ -164,12 +164,10 @@ std::string ConfigAdapter::searchIndex(const LocationConfig& location_conf) {
 // TODO
 size_t ConfigAdapter::getClientMaxBodySize(
     const LocationConfig& location_conf) {
-  const std::string& max_body_size = location_conf.getClientMaxBodySize();
+  size_t max_body_size = location_conf.getClientMaxBodySize();
 
-  if (max_body_size.empty()) return INTERNAL::DEFAULT_MAX_CLIENT_BODY_SIZE;
-  size_t size = 0;
-  if (Utils::strToSize_t(max_body_size, size, 10) == true) return size;
-  return 0;
+  if (max_body_size == 0) return INTERNAL::DEFAULT_MAX_CLIENT_BODY_SIZE;
+  return max_body_size;
 }
 
 size_t ConfigAdapter::getMaxNumberOfCrlfBeforeMethod(void) {
