@@ -12,6 +12,7 @@ class Response {
   virtual ~Response(void);
 
   void getResponseRawData(std::stringstream &ss) const;
+  ResponseData &getResponseData(void);
 
   void setStatusLine(int code, const std::string &phrase);
   void insertHeader(const std::string &key, const std::string &value);
