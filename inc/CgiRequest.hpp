@@ -25,13 +25,6 @@ class CgiRequest {
   static CgiRequest* createCgiRequest(const Request& request,
                                       SocketAddress peer_addr);
 
-  // FileDataMap contains the elements DIR, FILE, and PATH_INFO
-  // if (FileDataMap["FILE"] == "") -> Not CGI Pattern
-  static std::map<std::string, std::string> makeFileDataMapFromAbsolutePath(
-      const std::string& absolute_path, const std::string& ext);
-  static std::map<std::string, std::string> makeFileDataMapFromAbsolutePath(
-      const std::string& absolute_path, const std::vector<std::string>& exts);
-
  private:
   std::map<std::string, std::string> env_vars_;
   std::string message_;

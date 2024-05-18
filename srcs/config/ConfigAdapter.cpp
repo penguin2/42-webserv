@@ -115,9 +115,8 @@ int ConfigAdapter::searchRedirectStatusCode(
 
 bool ConfigAdapter::isCgiPath(const LocationConfig& location_conf,
                               const std::string& path) {
-  const std::vector<std::string>& exts = location_conf.getCgiExt();
   std::map<std::string, std::string> file_data_map =
-      CgiRequest::makeFileDataMapFromAbsolutePath(path, exts);
+      makeFileDataMap(location_conf, path);
 
   if (file_data_map["FILE"].empty()) return false;
   return true;
@@ -173,6 +172,45 @@ std::string ConfigAdapter::searchIndex(const LocationConfig& location_conf) {
 std::vector<std::string> ConfigAdapter::getCgiExts(
     const LocationConfig& location_conf) {
   return location_conf.getCgiExt();
+}
+
+std::map<std::string, std::string> ConfigAdapter::makeFileDataMap(
+    const LocationConfig& location_conf, const std::string& path) {
+  const std::vector<std::string>& exts = getCgiExts(location_conf);
+  std::map<std::string, std::string> file_data_map;
+
+  for (std::vector<std::string>::const_iterator it_ext = exts.begin();
+       it_ext != exts.end(); ++it_ext) {
+    file_data_map = makeFileDataMapFromAbsolutePath(path, *it_ext);
+    if (!file_data_map["FILE"].empty()) return file_data_map;
+  }
+  return file_data_map;
+}
+
+std::map<std::string, std::string>
+ConfigAdapter::makeFileDataMapFromAbsolutePath(const std::string& path,
+                                               const std::string& ext) {
+  std::vector<std::string> path_elements = Utils::split(path, '/');
+  std::map<std::string, std::string> file_data_map;
+  file_data_map["DIR"] = "/";
+  file_data_map["FILE"] = "";
+  file_data_map["PATH_INFO"] = "";
+
+  std::vector<std::string>::const_iterator it = path_elements.begin();
+  for (; it != path_elements.end(); ++it) {
+    if (Utils::isEndsWith(*it, ext)) {
+      file_data_map["FILE"] = *it;
+      ++it;
+      break;
+    }
+    file_data_map["DIR"].append(*it).append("/");
+  }
+  if (file_data_map["FILE"].empty()) return file_data_map;
+  for (; it != path_elements.end(); ++it) {
+    file_data_map["PATH_INFO"].append("/").append(*it);
+  }
+  if (Utils::isEndsWith(path, "/")) file_data_map["PATH_INFO"].append("/");
+  return file_data_map;
 }
 
 // TODO

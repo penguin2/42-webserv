@@ -48,8 +48,7 @@ CgiRequest* CgiRequest::createCgiRequest(const Request& request,
   const std::string absolute_path =
       ConfigAdapter::makeAbsolutePath(*location_conf, path);
   std::map<std::string, std::string> file_data_map =
-      makeFileDataMapFromAbsolutePath(
-          absolute_path, ConfigAdapter::getCgiExts(*location_conf));
+      ConfigAdapter::makeFileDataMap(*location_conf, absolute_path);
 
   new_cgi_request->insertContentLengthAndBodyIfHasHeader(request);
   new_cgi_request->insertContentTypeIfHasHeader(request);
@@ -122,49 +121,9 @@ void CgiRequest::insertScriptName(const Request& request) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       path, request.getServerConfig()->getLocationConfigs());
   std::map<std::string, std::string> file_data_map =
-      makeFileDataMapFromAbsolutePath(
-          path, ConfigAdapter::getCgiExts(*location_conf));
+      ConfigAdapter::makeFileDataMap(*location_conf, path);
 
   addEnvVar("SCRIPT_NAME", file_data_map["DIR"] + file_data_map["FILE"]);
-}
-
-std::map<std::string, std::string> CgiRequest::makeFileDataMapFromAbsolutePath(
-    const std::string& absolute_path, const std::string& ext) {
-  std::vector<std::string> path_elements = Utils::split(absolute_path, '/');
-  std::map<std::string, std::string> file_data_map;
-  file_data_map["DIR"] = "/";
-  file_data_map["FILE"] = "";
-  file_data_map["PATH_INFO"] = "";
-
-  std::vector<std::string>::const_iterator it = path_elements.begin();
-  for (; it != path_elements.end(); ++it) {
-    if (Utils::isEndsWith(*it, ext)) {
-      file_data_map["FILE"] = *it;
-      ++it;
-      break;
-    }
-    file_data_map["DIR"].append(*it).append("/");
-  }
-  if (file_data_map["FILE"].empty()) return file_data_map;
-  for (; it != path_elements.end(); ++it) {
-    file_data_map["PATH_INFO"].append("/").append(*it);
-  }
-  if (Utils::isEndsWith(absolute_path, "/"))
-    file_data_map["PATH_INFO"].append("/");
-  return file_data_map;
-}
-
-std::map<std::string, std::string> CgiRequest::makeFileDataMapFromAbsolutePath(
-    const std::string& absolute_path, const std::vector<std::string>& exts) {
-  std::map<std::string, std::string> file_data_map;
-
-  for (std::vector<std::string>::const_iterator it = exts.begin();
-       it != exts.end(); ++it) {
-    file_data_map =
-        CgiRequest::makeFileDataMapFromAbsolutePath(absolute_path, *it);
-    if (!file_data_map["FILE"].empty()) return file_data_map;
-  }
-  return file_data_map;
 }
 
 void CgiRequest::insertHTTPHeaders(const Request& request) {
