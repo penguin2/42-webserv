@@ -9,7 +9,7 @@
 class Response {
  public:
   Response(void);
-  ~Response(void);
+  virtual ~Response(void);
 
   void getResponseRawData(std::stringstream &ss) const;
 
@@ -21,16 +21,10 @@ class Response {
   void insertCommonHeaders(bool keep_alive);
   int getStatusCode(void) const;
 
-  // TODO CGI用インターフェースの作成
-  // bool cgiParse(std::stringstream&);
-
- private:
-  // CGIパース時に使用するステート
-  // typedef enum eResponseState { HEADER, BODY } ResponseState;
-  // ResponseState state_;
-
+ protected:
   ResponseData *data_;
 
+ private:
   Response(const Response &);
   void operator=(const Response &);
 };
