@@ -50,9 +50,13 @@ std::vector<std::string> getAllowMethods(const LocationConfig& location_conf);
 
 const std::string* searchHostName(const ServerConfig& server_conf);
 
+const std::string& getListenPort(const ServerConfig& server_conf);
+
 bool isAutoindex(const LocationConfig& location_conf);
 
 std::string searchIndex(const LocationConfig& location_conf);
+
+std::vector<std::string> getCgiExts(const LocationConfig& location_conf);
 
 size_t getClientMaxBodySize(const LocationConfig& location_conf);
 
