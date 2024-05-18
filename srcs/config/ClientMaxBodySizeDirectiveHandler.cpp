@@ -15,6 +15,10 @@ bool ClientMaxBodySizeDirectiveHandler::isDirectiveValid() const {
   if (lastChar != 'M' && lastChar != 'm') {
     return false;
   }
+  if (token.length() > 4) {
+    std::cerr << "ClientMaxBodySize is too large" << tokens_[1] << std::endl;
+    return false;
+  }
   return true;
 }
 
@@ -25,7 +29,7 @@ void ClientMaxBodySizeDirectiveHandler::setConfig() {
     tokens_[1].pop_back();
   }
   size_t num;
-  if (Utils::strToSize_t(tokens_[1], num, 10) == false) {
+  if (Utils::strToSize_t(tokens_[1], num * 100000, 10) == false) {
     std::cerr << "Failed to strToSize_t" << tokens_[1] << std::endl;
     exit(1);
   }
