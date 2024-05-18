@@ -7,6 +7,9 @@ AllowMethodsDirectiveHandler::AllowMethodsDirectiveHandler() {
 bool AllowMethodsDirectiveHandler::isDirectiveValid() const {
   std::map<std::string, int> methodCounts;
 
+  if (tokens_.size() < 3) {
+    return false;
+  }
   for (size_t i = 1; i < tokens_.size(); ++i) {
     if (i == tokens_.size() - 1) {
       break;
@@ -16,7 +19,7 @@ bool AllowMethodsDirectiveHandler::isDirectiveValid() const {
 
   for (std::map<std::string, int>::const_iterator it = methodCounts.begin();
        it != methodCounts.end(); ++it) {
-    if (it->first != "GET" && it->first != "POST" && it->first != "DELETE") {
+    if (!Config::isCorrespondingMethod(it->first)) {
       return false;
     } else {
       if (it->second > 1) {

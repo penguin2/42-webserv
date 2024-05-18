@@ -7,6 +7,7 @@
 #include "ServerException.hpp"
 #include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
+#include "config/ServerConfig.hpp"
 
 Request::Request(void)
     : state_(METHOD), header_line_counter_(0), crlf_counter_before_method_(0) {
@@ -178,10 +179,7 @@ void Request::parseChunkedSize(std::string& buffer) {
                           "Bad chunk size");
 
   // body_size_ or 合計のbodyのサイズが正常な数値であるが大き過ぎる場合
-  const Uri& uri = data_->getUri();
-  if (ConfigAdapter::getMaxBodySize(uri.getHost(), uri.getPort(),
-                                    uri.getPath()) <
-      (body_size_ + data_->getBody().size()))
+  if (ConfigAdapter::getMaxBodySize() < (body_size_ + data_->getBody().size()))
     throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                           "Body size too large");
 
@@ -231,9 +229,7 @@ void Request::determineParseBody(std::string& buffer) {
                             "Bad Content-Length");
 
     // body_size_が正常な数値であるが大き過ぎる場合
-    const Uri& uri = data_->getUri();
-    if (ConfigAdapter::getMaxBodySize(uri.getHost(), uri.getPort(),
-                                      uri.getPath()) < body_size_)
+    if (ConfigAdapter::getMaxBodySize() < body_size_)
       throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                             "Body size too large");
 
@@ -255,4 +251,12 @@ void Request::insertContentLength(void) {
 bool Request::haveConnectionCloseHeader(void) const {
   return Utils::isSameValueCaseInsensitive(this->data_->getHeaders(),
                                            "connection", "close");
+}
+
+void Request::setServerConfig(const ServerConfig& server_conf) {
+  data_->setServerConfig(server_conf);
+}
+
+const ServerConfig* Request::getServerConfig(void) const {
+  return data_->getServerConfig();
 }

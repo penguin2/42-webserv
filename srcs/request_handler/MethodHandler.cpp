@@ -1,5 +1,6 @@
 #include <unistd.h>
 
+#include <cstdio>
 #include <utility>
 
 #include "Connection.hpp"
@@ -8,6 +9,7 @@
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
 #include "config/ConfigAdapter.hpp"
+#include "config/LocationConfig.hpp"
 
 std::map<std::string, RequestHandler::MethodHandler::method_handler>
 RequestHandler::MethodHandler::makeMethodHandlerMap(void) {
@@ -18,54 +20,142 @@ RequestHandler::MethodHandler::makeMethodHandlerMap(void) {
   return method_handler_map;
 }
 
-// (仮)
 connection::State RequestHandler::MethodHandler::getMethodHandler(
-    const Request& request, Response& response) {
-  const Uri& uri = request.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
+    Request& request, Response& response, std::string path) {
+  const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
+      path, request.getServerConfig()->getLocationConfigs());
+  const std::string absolute_path =
+      ConfigAdapter::makeAbsolutePath(*location_conf, path);
 
-  if (!FileUtils::isExistFile(uri.getPath()))
-    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND,
-                          "File not Found");
-  if (!FileUtils::hasFilePermission(uri.getPath(), R_OK))
-    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
-                          "Has not permission");
+  if (FileUtils::isExistFile(absolute_path) &&
+      FileUtils::hasFilePermission(absolute_path, R_OK)) {
+    return getMethodFileHandler(request, response, path);
+  }
+  if (FileUtils::isExistDir(absolute_path) &&
+      FileUtils::hasFilePermission(absolute_path, R_OK)) {
+    return getMethodDirHandler(request, response, path);
+  }
+  throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not found");
+}
+
+connection::State RequestHandler::MethodHandler::getMethodFileHandler(
+    Request& request, Response& response, std::string path) {
+  const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
+      path, request.getServerConfig()->getLocationConfigs());
+  const std::string absolute_path =
+      ConfigAdapter::makeAbsolutePath(*location_conf, path);
   std::stringstream ss;
-  if (FileUtils::readAllDataFromFile(uri.getPath(), ss) == false)
+
+  if (FileUtils::readAllDataFromFile(absolute_path, ss) == false) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Internal Server Error");
+                          "Read Error");
+  }
   response.appendBody(ss.str());
   response.insertContentLengthIfNotSet();
   response.insertHeader("Content-Type",
-                        HttpUtils::convertPathToContentType(uri.getPath()));
+                        HttpUtils::convertPathToContentType(path));
   response.setStatusLine(200, "OK");
   return connection::SEND;
-  (void)paths;
 }
 
-// (仮)
+connection::State RequestHandler::MethodHandler::getMethodDirHandler(
+    Request& request, Response& response, std::string path) {
+  const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
+      path, request.getServerConfig()->getLocationConfigs());
+  const std::string absolute_path =
+      ConfigAdapter::makeAbsolutePath(*location_conf, path);
+  std::stringstream ss;
+
+  const std::string& index = ConfigAdapter::searchIndex(*location_conf);
+  if (!index.empty()) {
+    try {
+      return RequestHandler::dispatch(request, response, path + index);
+    } catch (ServerException& e) {
+      // 内部リダイレクト失敗時の情報は無視, 後工程の処理を続ける
+    }
+  }
+  if (!ConfigAdapter::isAutoindex(*location_conf)) {
+    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
+  }
+  if (HttpUtils::generateAutoindexPage(path, absolute_path, ss) == false) {
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Autoindex Error");
+  }
+  response.appendBody(ss.str());
+  response.insertContentLengthIfNotSet();
+  response.insertHeader("Content-Type", "text/html");
+  response.setStatusLine(200, "OK");
+  return connection::SEND;
+}
+
 connection::State RequestHandler::MethodHandler::postMethodHandler(
-    const Request& request, Response& response) {
-  const Uri& uri = request.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
+    Request& request, Response& response, std::string path) {
+  const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
+      path, request.getServerConfig()->getLocationConfigs());
+  const std::string absolute_path =
+      ConfigAdapter::makeAbsolutePath(*location_conf, path);
+  const std::string& body = request.getRequestData()->getBody();
 
+  if (FileUtils::isExistFile(absolute_path)) {
+    throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
+                          "Cannot POST because file exists");
+  }
+  if (ConfigAdapter::getClientMaxBodySize(*location_conf) < body.size()) {
+    throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
+                          "Payload too large");
+  }
+  if (FileUtils::writeAllDataToFile(absolute_path, body) == false) {
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Internal Error");
+  }
+  const std::string absolute_uri =
+      request.getRequestData()->getUri().buildAbsoluteUri();
+  response.appendBody(generatePostSuccessJsonData(absolute_path, absolute_uri));
+  response.insertHeader("Content-Type", "application/json");
+  response.insertHeader("Location", absolute_uri);
+  response.insertContentLengthIfNotSet();
+  response.setStatusLine(201, "Created");
   return connection::SEND;
-  (void)paths;
-  (void)request;
-  (void)response;
 }
 
-// (仮)
 connection::State RequestHandler::MethodHandler::deleteMethodHandler(
-    const Request& request, Response& response) {
-  const Uri& uri = request.getRequestData()->getUri();
-  const std::vector<std::string>& paths = ConfigAdapter::makeAbsolutePaths(
-      uri.getHost(), uri.getPort(), uri.getPath());
+    Request& request, Response& response, std::string path) {
+  const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
+      path, request.getServerConfig()->getLocationConfigs());
+  const std::string absolute_path =
+      ConfigAdapter::makeAbsolutePath(*location_conf, path);
 
+  if (!FileUtils::isExistFile(absolute_path)) {
+    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
+                          "File Not Exist");
+  }
+  if (!FileUtils::hasFilePermission(absolute_path, W_OK)) {
+    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
+                          "Has not permission");
+  }
+  if (std::remove(absolute_path.c_str()) != 0) {
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Can not remove file");
+  }
+  response.setStatusLine(204, "No Content");
   return connection::SEND;
-  (void)paths;
-  (void)request;
-  (void)response;
+}
+
+std::string RequestHandler::MethodHandler::generatePostSuccessJsonData(
+    const std::string& absolute_path, const std::string& absolute_uri) {
+  std::stringstream ss;
+  const off_t file_size = FileUtils::getFileSize(absolute_path);
+  std::time_t raw_time;
+  std::time(&raw_time);
+
+  ss << "{\r\n";
+  ss << "  \"URI\": " << absolute_uri << ",\r\n";
+  if (0 <= file_size) {
+    ss << "  \"FILE_SIZE\": " << file_size << ",\r\n";
+  }
+  ss << "  \"CREATED\": "
+     << HttpUtils::generateDateAsFormat(raw_time, "%Y-%m-%d %H:%M:%S")
+     << "\r\n";
+  ss << "}\r\n";
+  return ss.str();
 }

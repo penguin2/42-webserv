@@ -198,6 +198,33 @@ TEST(Utils, isStartsWith_FALSE) {
   EXPECT_FALSE(Utils::isStartsWith("banana-apple", "banana-banana"));
 }
 
+TEST(Utils, isStartsWithCaseInsensitive_TRUE) {
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("", ""));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("hello", "hello"));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("banana", ""));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("banana", "b"));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("banana", "ban"));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("banana", "banana"));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("", ""));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("hello", "HeLlo"));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("banana", ""));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("banana", "B"));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("banana", "bAN"));
+  EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("banana", "BaNaNa"));
+}
+
+TEST(Utils, isStartsWithCaseInsensitive_FALSE) {
+  EXPECT_FALSE(Utils::isStartsWithCaseInsensitive("", "42"));
+  EXPECT_FALSE(Utils::isStartsWithCaseInsensitive("hello", "world"));
+  EXPECT_FALSE(Utils::isStartsWithCaseInsensitive("banana", "false"));
+  EXPECT_FALSE(Utils::isStartsWithCaseInsensitive("banana", "banana-banana"));
+  EXPECT_FALSE(
+      Utils::isStartsWithCaseInsensitive("banana-apple", "banana-banana"));
+  EXPECT_FALSE(Utils::isStartsWithCaseInsensitive("banana", "BANANA-BANANA"));
+  EXPECT_FALSE(
+      Utils::isStartsWithCaseInsensitive("banana-apple", "BANANA-BANANA"));
+}
+
 TEST(Utils, popFrontSubstr) {
   std::string test_str = "hello_world";
   EXPECT_EQ(Utils::popFrontSubstr(test_str, 0), "");

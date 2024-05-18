@@ -9,7 +9,7 @@ ListenSocket::ListenSocket(int socket_fd, const SocketAddress& local_address)
 ListenSocket::~ListenSocket() {}
 
 int ListenSocket::handler(Server* server) {
-  if (server->acceptListenSocket(socket_fd_) < 0)
+  if (server->acceptListenSocket(*this) < 0)
     LOG(WARN, "accepting connection failed on ListenSocket: ", *this);
   return 0;
 }

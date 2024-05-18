@@ -17,7 +17,7 @@ class Server {
   Server(const char* config_file);
   ~Server();
 
-  int acceptListenSocket(int listen_socket_fd);
+  int acceptListenSocket(const ListenSocket& listen_socket);
   int updateTimeout(ASocket* socket);
 
   int start();
@@ -35,7 +35,8 @@ class Server {
   void setSockets(const std::map<int, ListenSocket*>& listen_sockets);
 
   int addConnection(int connected_socket_fd, const SocketAddress& local_address,
-                    const SocketAddress& peer_address);
+                    const SocketAddress& peer_address,
+                    const std::vector<const ServerConfig*>& server_configs);
 
   int executeEventSockets(const std::vector<ASocket*>& event_sockets,
                           std::vector<ASocket*>& closing_sockets);

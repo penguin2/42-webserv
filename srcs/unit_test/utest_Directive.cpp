@@ -76,6 +76,7 @@ TEST(Directive, AllowMethodsDirectiveHandler) {
   testIsValid<DirectiveHandler>("allow_methods GET GET POST DELETE;", false);
 
   testIsValid<DirectiveHandler>("allow_methods GET; POST DELETE;", false);
+  testIsValid<DirectiveHandler>("allow_methods;", false);
 }
 
 TEST(Directive, AutoIndexDirectiveHandler) {

@@ -4,23 +4,37 @@
 #include "ConnectionState.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
+#include "config/LocationConfig.hpp"
 
 namespace RequestHandler {
-connection::State dispatch(const Request& request, Response& response);
+connection::State dispatch(Request& request, Response& response,
+                           std::string path);
 connection::State errorRequestHandler(const Request& request,
                                       Response& response, int status_code,
                                       const std::string& phrase);
-connection::State redirectHandler(const Request& request, Response& response);
+connection::State redirectHandler(const Request& request, Response& response,
+                                  std::string path);
+std::string generateErrorPageContent(const Request& request, int status_code,
+                                     const std::string& phrase);
 // connection::State cgiHandler(Request& request, Response& response);
 
 namespace MethodHandler {
-typedef connection::State (*method_handler)(const Request&, Response&);
+typedef connection::State (*method_handler)(Request&, Response&,
+                                            std::string path);
 std::map<std::string, method_handler> makeMethodHandlerMap(void);
 
-connection::State getMethodHandler(const Request& request, Response& response);
-connection::State postMethodHandler(const Request& request, Response& response);
-connection::State deleteMethodHandler(const Request& request,
-                                      Response& response);
+connection::State getMethodHandler(Request& request, Response& response,
+                                   std::string path);
+connection::State getMethodFileHandler(Request& request, Response& response,
+                                       std::string path);
+connection::State getMethodDirHandler(Request& request, Response& response,
+                                      std::string path);
+connection::State postMethodHandler(Request& request, Response& response,
+                                    std::string path);
+connection::State deleteMethodHandler(Request& request, Response& response,
+                                      std::string path);
+std::string generatePostSuccessJsonData(const std::string& absolute_path,
+                                        const std::string& absolute_uri);
 }  // namespace MethodHandler
 }  // namespace RequestHandler
 
