@@ -90,7 +90,9 @@ void CgiResponse::insertStatusHeader(const std::string& value) {
       !HttpUtils::isStatusCode(code))
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Status Header is invalid");
-  insertHeader("status", Utils::uintToString(code));
+  std::string phrase = value.substr(pos_first_space);
+  Utils::strTrim(phrase, " ");
+  insertHeader("status", Utils::uintToString(code) + " " + phrase);
 }
 
 void CgiResponse::insertLocationHeader(const std::string& value) {
