@@ -94,6 +94,11 @@ bool Utils::isStartsWith(const std::string& str, const std::string& prefix) {
   return (str.compare(0, prefix.size(), prefix) == 0);
 }
 
+bool Utils::isEndsWith(const std::string& str, const std::string& suffix) {
+  if (str.size() < suffix.size()) return false;
+  return (str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0);
+}
+
 bool Utils::isStartsWithCaseInsensitive(const std::string& str,
                                         const std::string& prefix) {
   return (Utils::toLower(str).compare(0, prefix.size(),

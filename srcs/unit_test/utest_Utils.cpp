@@ -198,6 +198,19 @@ TEST(Utils, isStartsWith_FALSE) {
   EXPECT_FALSE(Utils::isStartsWith("banana-apple", "banana-banana"));
 }
 
+TEST(Utils, IS_ENDS_WITH) {
+  EXPECT_TRUE(Utils::isEndsWith("", ""));
+  EXPECT_TRUE(Utils::isEndsWith("abc", "abc"));
+  EXPECT_TRUE(Utils::isEndsWith("abc", "bc"));
+  EXPECT_TRUE(Utils::isEndsWith("abc", "c"));
+  EXPECT_TRUE(Utils::isEndsWith("abc", ""));
+
+  EXPECT_FALSE(Utils::isEndsWith("", "abc"));
+  EXPECT_FALSE(Utils::isEndsWith("def", "abc"));
+  EXPECT_FALSE(Utils::isEndsWith("def", "abcdef"));
+  EXPECT_FALSE(Utils::isEndsWith("123-456-789", "-456"));
+}
+
 TEST(Utils, isStartsWithCaseInsensitive_TRUE) {
   EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("", ""));
   EXPECT_TRUE(Utils::isStartsWithCaseInsensitive("hello", "hello"));
