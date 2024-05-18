@@ -1,12 +1,11 @@
 #include "./config/LocationConfig.hpp"
 
-LocationConfig::LocationConfig() {}
+LocationConfig::LocationConfig()
+    : client_max_body_size(0), try_files_error_code(0), return_status_code(0) {}
 
 const std::string& LocationConfig::getRoot() const { return root; }
 
-void LocationConfig::setRoot(const std::string& newRoot) {
-  root = newRoot;
-}
+void LocationConfig::setRoot(const std::string& newRoot) { root = newRoot; }
 
 const std::string& LocationConfig::getIndex() const { return index; }
 void LocationConfig::setIndex(const std::string& newIndex) { index = newIndex; }
