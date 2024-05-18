@@ -24,6 +24,7 @@ std::set<int> makeRedirectCodeSet(void);
 bool generateAutoindexPage(const std::string& path_component,
                            const std::string& absolute_dir_path,
                            std::stringstream& ss);
+bool isStatusCode(int code);
 
 namespace AutoindexUtils {
 bool generateFileRecord(const FileUtils::Entry& entry, const std::string& dir,
