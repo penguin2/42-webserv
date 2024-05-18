@@ -4,15 +4,12 @@
 #include <sstream>
 #include <string>
 
+#include "CgiRequest.hpp"
 #include "ConnectionState.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "SocketAddress.hpp"
 #include "config/ServerConfig.hpp"
-
-// TODO: CgiRequestMock -> CgiRequest
-// #include "CgiRequest.hpp"
-#include "CgiRequestMock.hpp"
 
 class Http {
  public:
