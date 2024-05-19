@@ -67,18 +67,20 @@ TEST(CgiResponseHandler, ConvertCgi2Http) {
   testConvertCgi2Http("Location: http://youser:pass@localhost/\n\n");
   // ClientRedirectResponseWithDocument
   testConvertCgi2Http(
-      "Location: http://localhost/index.html\nStatus:302 "
+      "Location: http://localhost/index.html\nStatus:301 "
       "F\nContent-Type:text/html\n\nabc");
   testConvertCgi2Http(
       "Location: http://localhost/?q=50\nStatus:302 "
       "F\nContent-Type:a/b\n\nabc");
   testConvertCgi2Http(
       "LOCATION: "
-      "http://localhost/?c=%20#fragment\nsTATUS:302 "
+      "http://localhost/?c=%20#fragment\nsTATUS:303 "
       "Found\ncontent-type:1/2\n\nabc");
   testConvertCgi2Http(
-      "status:302 FOUND\ncontent-type:a/a; charset=UTF=8\nLocation: "
+      "status:307 FOUND\ncontent-type:a/a; charset=UTF=8\nLocation: "
       "http://youser:pass@localhost/\n\nabc");
+  testConvertCgi2Http(
+      "status:308 FOUND\ncontent-type:a/a\nLocation:http://abc/\n\nabc");
 }
 
 TEST(CgiResponseHandler, ConvertCgi2HttpError) {
@@ -109,4 +111,7 @@ TEST(CgiResponseHandler, ConvertCgi2HttpError) {
   testConvertCgi2HttpError("Location: /\nContent-Type: text/html\n\n");
   // Location and Content-Type and BODY
   testConvertCgi2HttpError("Location: /\nContent-Type: text/html\n\nabc");
+  // INVALID REDIRECT STATUS CODE
+  testConvertCgi2HttpError(
+      "status:305 F\ncontent-type:a/a\nLocation:http://abc/\n\nabc");
 }

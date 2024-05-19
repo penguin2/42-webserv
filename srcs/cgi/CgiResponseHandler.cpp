@@ -67,7 +67,7 @@ void CgiResponseHandler::clientRedirectResponseHandler(ResponseData& data,
 void CgiResponseHandler::clientRedirectResponseWithDocumentHandler(
     ResponseData& data) {
   INTERNAL::convertStatusHeaderToStatusLine(data);
-  if (data.getStatusCode() != 302)
+  if (!HttpUtils::isRedirectStatusCode(data.getStatusCode()))
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "INTERNAL Server Error");
 }
