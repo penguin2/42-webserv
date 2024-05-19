@@ -74,6 +74,8 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
     insertLocationHeader(value);
   else if (key == "status")
     insertStatusHeader(value);
+  else if (key == "content-type")
+    insertContentTypeHeader(value);
   else
     insertHeader(key, value);
 }
@@ -104,4 +106,19 @@ void CgiResponse::insertLocationHeader(const std::string& value) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Location Header Value is invalid");
   }
+}
+
+void CgiResponse::insertContentTypeHeader(const std::string& value) {
+  size_t pos_slash = value.find('/');
+
+  if (pos_slash == std::string::npos)
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Invalid Content-Type value");
+  std::string type = value.substr(0, pos_slash);
+  std::string subtype = value.substr(pos_slash + 1);
+
+  if (type.empty() || subtype.empty())
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Invalid Content-Type value");
+  insertHeader("content-type", value);
 }

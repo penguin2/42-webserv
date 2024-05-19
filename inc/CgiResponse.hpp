@@ -19,6 +19,7 @@ class CgiResponse : public Response {
   void insertHeaderLine(const std::string& line);
   void insertStatusHeader(const std::string& value);
   void insertLocationHeader(const std::string& value);
+  void insertContentTypeHeader(const std::string& value);
 
   CgiResponse(const CgiResponse&);
   void operator=(const CgiResponse&);

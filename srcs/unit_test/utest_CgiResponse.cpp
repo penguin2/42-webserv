@@ -31,6 +31,9 @@ TEST(CgiResponse, PARSE) {
   testParse("Status: 444 Four Four Four\n\n", true);
   testParse("MY-Header: MyValue\n\n", true);
   testParse("\nBODY", true);
+  testParse("Content-Type: text/html\n\n", true);
+  testParse("Content-Type: my/type\n\n", true);
+  testParse("Content-Type: my/type; charset=UTF-8\n\n", true);
 
   testParse("", false);
   testParse("Location: /abc", false);
@@ -51,4 +54,7 @@ TEST(CgiResponse, ParseThrowServerException) {
   testParseThrowException("Status: 200\n\n");
   testParseThrowException("Status: 200 \n\n");
   testParseThrowException("Status: 200 \n\nBODY");
+  testParseThrowException("Content-Type: text \n\n");
+  testParseThrowException("Content-Type: text/ \n\n");
+  testParseThrowException("Content-Type:  /html \n\n");
 }
