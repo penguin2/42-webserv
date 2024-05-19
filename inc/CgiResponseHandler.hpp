@@ -17,6 +17,11 @@ namespace INTERNAL {
 void convertStatusHeaderToStatusLine(ResponseData& data);
 std::string convertLocalLocationToAbsoluteLocation(ResponseData& data,
                                                    const Request& request);
+
+bool isDocumentResponse(const ResponseData& data);
+bool isLocalRedirectResponse(const ResponseData& data);
+bool isClientRedirectResponse(const ResponseData& data);
+bool isClientRedirectResponseWithDocument(const ResponseData& data);
 }  // namespace INTERNAL
 }  // namespace CgiResponseHandler
 

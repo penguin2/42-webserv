@@ -12,29 +12,28 @@
 
 void CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
     const Request& request, ResponseData& data) {
-  const std::map<std::string, std::string>& headers = data.getHeaders();
-  const std::string& body = data.getBody();
-  std::map<std::string, std::string>::const_iterator location =
-      headers.find("location");
-  std::map<std::string, std::string>::const_iterator status =
-      headers.find("status");
-  std::map<std::string, std::string>::const_iterator content_type =
-      headers.find("content-type");
-
-  if (body.empty() && headers.size() == 1 && location != headers.end()) {
-    if (Utils::isStartsWith(location->second, "/"))
-      localRedirectResponseHandler(data, request);
-    else
-      clientRedirectResponseHandler(data, request);
-  } else if (!body.empty() && content_type != headers.end()) {
-    if (status != headers.end() && location != headers.end() &&
-        !Utils::isStartsWith(location->second, "/"))
-      clientRedirectResponseWithDocumentHandler(data);
-    else
-      documentResponseHandler(data);
-  } else {
+  if (INTERNAL::isDocumentResponse(data))
+    documentResponseHandler(data);
+  else if (INTERNAL::isLocalRedirectResponse(data))
+    localRedirectResponseHandler(data, request);
+  else if (INTERNAL::isClientRedirectResponse(data))
+    clientRedirectResponseHandler(data, request);
+  else if (INTERNAL::isClientRedirectResponseWithDocument(data))
+    clientRedirectResponseWithDocumentHandler(data);
+  else
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "INTERNAL Server Error");
+}
+
+void CgiResponseHandler::documentResponseHandler(ResponseData& data) {
+  const std::map<std::string, std::string>& headers = data.getHeaders();
+
+  if (headers.find("status") != headers.end()) {
+    // 3digitであれば全て許容する仕様
+    INTERNAL::convertStatusHeaderToStatusLine(data);
+  } else {
+    data.setStatusCode(200);
+    data.setPhrase("OK");
   }
 }
 
@@ -65,27 +64,12 @@ void CgiResponseHandler::clientRedirectResponseHandler(ResponseData& data,
   data.setPhrase("Found");
 }
 
-void CgiResponseHandler::documentResponseHandler(ResponseData& data) {
-  const std::map<std::string, std::string>& headers = data.getHeaders();
-
-  if (headers.find("status") != headers.end()) {
-    INTERNAL::convertStatusHeaderToStatusLine(data);
-  } else {
-    data.setStatusCode(200);
-    data.setPhrase("OK");
-  }
-}
-
 void CgiResponseHandler::clientRedirectResponseWithDocumentHandler(
     ResponseData& data) {
-  const std::map<std::string, std::string>& headers = data.getHeaders();
-
-  if (headers.find("status") != headers.end()) {
-    INTERNAL::convertStatusHeaderToStatusLine(data);
-    if (data.getStatusCode() != 302)
-      throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                            "INTERNAL Server Error");
-  }
+  INTERNAL::convertStatusHeaderToStatusLine(data);
+  if (data.getStatusCode() != 302)
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "INTERNAL Server Error");
 }
 
 void CgiResponseHandler::INTERNAL::convertStatusHeaderToStatusLine(
@@ -113,4 +97,52 @@ CgiResponseHandler::INTERNAL::convertLocalLocationToAbsoluteLocation(
   absolute_location.overwriteAuthorityIfNotSet(
       request.getRequestData()->getUri().buildAuthority());
   return absolute_location.buildAbsoluteUri();
+}
+
+bool CgiResponseHandler::INTERNAL::isDocumentResponse(
+    const ResponseData& data) {
+  bool has_body = !data.getBody().empty();
+  const std::map<std::string, std::string>& headers = data.getHeaders();
+  bool has_content_type = headers.find("content-type") != headers.end();
+  bool has_location = headers.find("location") != headers.end();
+
+  return (has_content_type && !has_location && has_body);
+}
+
+bool CgiResponseHandler::INTERNAL::isLocalRedirectResponse(
+    const ResponseData& data) {
+  bool has_body = !data.getBody().empty();
+  const std::map<std::string, std::string>& headers = data.getHeaders();
+  const std::map<std::string, std::string>::const_iterator location =
+      headers.find("location");
+  bool only_location = (headers.size() == 1) && (location != headers.end());
+
+  return (only_location && Utils::isStartsWith(location->second, "/") &&
+          !has_body);
+}
+
+bool CgiResponseHandler::INTERNAL::isClientRedirectResponse(
+    const ResponseData& data) {
+  bool has_body = !data.getBody().empty();
+  const std::map<std::string, std::string>& headers = data.getHeaders();
+  std::map<std::string, std::string>::const_iterator location =
+      headers.find("location");
+  bool only_location = (headers.size() == 1) && (location != headers.end());
+
+  return (only_location && !Utils::isStartsWith(location->second, "/")) &&
+         !has_body;
+}
+
+bool CgiResponseHandler::INTERNAL::isClientRedirectResponseWithDocument(
+    const ResponseData& data) {
+  const std::map<std::string, std::string>& headers = data.getHeaders();
+  bool has_body = !data.getBody().empty();
+  std::map<std::string, std::string>::const_iterator location =
+      headers.find("location");
+  bool has_location = location != headers.end();
+  bool has_content_type = headers.find("content-type") != headers.end();
+  bool has_status = headers.find("status") != headers.end();
+
+  return (has_content_type && has_status && has_location &&
+          !Utils::isStartsWith(location->second, "/") && has_body);
 }
