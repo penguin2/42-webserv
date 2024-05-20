@@ -8,8 +8,8 @@ class ListenDirectiveHandler : public ADirectiveHandler {
   ListenDirectiveHandler();
   virtual bool isDirectiveValid() const;
   virtual void setConfig();
-  void parseAddressAndPort(const std::string& input, std::string& address,
-                           std::string& port);
+  static bool parseAddressAndPort(const std::string& str, std::string& address,
+                                  std::string& port);
 };
 
 #endif
