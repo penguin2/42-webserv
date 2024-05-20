@@ -16,7 +16,7 @@ bool CgiExtDirectiveHandler::isDirectiveValid() const {
 
   std::vector<std::string> unique_cgi_exts = tokensToUniqueCgiExts(tokens_);
 
-#ifndef BONUS
+#if !defined(BONUS)
   if (unique_cgi_exts.size() != 1) return false;
 #endif
 

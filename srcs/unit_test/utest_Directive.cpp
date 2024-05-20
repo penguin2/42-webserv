@@ -94,7 +94,7 @@ TEST(Directive, CgiExtDirectiveHandler) {
   testIsValid<DirectiveHandler>("cgi_ext .c;", true);
   testIsValid<DirectiveHandler>("cgi_ext .abcdefg;", true);
 
-#ifdef BONUS
+#if defined(BONUS)
   testIsValid<DirectiveHandler>("cgi_ext .py .php .c;", true);
   testIsValid<DirectiveHandler>("cgi_ext .php .py .py .php;", true);
   testIsValid<DirectiveHandler>("cgi_ext .php .py .py .;", false);
