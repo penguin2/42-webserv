@@ -93,9 +93,6 @@ TEST(Directive, CgiExtDirectiveHandler) {
   testIsValid<DirectiveHandler>("cgi_ext .php .php;", true);
   testIsValid<DirectiveHandler>("cgi_ext .c;", true);
   testIsValid<DirectiveHandler>("cgi_ext .abcdefg;", true);
-  // Webservの仕様上、この拡張子にマッチすることはない
-  testIsValid<DirectiveHandler>("cgi_ext ./ls;", true);
-  testIsValid<DirectiveHandler>("cgi_ext .py/abc;", true);
 
 #ifdef BONUS
   testIsValid<DirectiveHandler>("cgi_ext .py .php .c;", true);
@@ -113,6 +110,9 @@ TEST(Directive, CgiExtDirectiveHandler) {
   testIsValid<DirectiveHandler>("cgi_ext ..py;", false);
   testIsValid<DirectiveHandler>("cgi_ext .tar.gz;", false);
   testIsValid<DirectiveHandler>("cgi_ext ls;", false);
+  testIsValid<DirectiveHandler>("cgi_ext ./ls;", false);
+  testIsValid<DirectiveHandler>("cgi_ext .py/abc;", false);
+  testIsValid<DirectiveHandler>("cgi_ext .php/;", false);
 }
 
 // ...
