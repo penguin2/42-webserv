@@ -68,6 +68,10 @@ int UriUtils::isRegName(int c) {
   return (isUnreserved(c) || isPctEncodingCharset(c) || isSubDelims(c));
 }
 
+int UriUtils::isRegNameWithoutPctEncoding(int c) {
+  return (isUnreserved(c) || isSubDelims(c));
+}
+
 int UriUtils::isUserInfoCharset(int c) { return (isRegName(c) || c == ':'); }
 
 int UriUtils::isPathCharset(int c) {
