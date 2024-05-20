@@ -47,21 +47,22 @@ static void testIsValid(const std::string& line, bool expected) {
   T directive_handler;
   directive_handler.setToken(tempTokenize(line));
   if (directive_handler.isSyntaxValid()) {
-    EXPECT_EQ(directive_handler.isDirectiveValid(), expected) << "testing... " << line;
+    EXPECT_EQ(directive_handler.isDirectiveValid(), expected)
+        << "testing... " << line;
   }
 }
 
 TEST(Directive, AllowMethodsDirectiveHandler) {
   typedef AllowMethodsDirectiveHandler DirectiveHandler;
 
-  //true
+  // true
   testIsValid<DirectiveHandler>("allow_methods GET;", true);
   testIsValid<DirectiveHandler>("allow_methods POST;", true);
   testIsValid<DirectiveHandler>("allow_methods DELETE;", true);
   testIsValid<DirectiveHandler>("allow_methods DELETE GET;", true);
   testIsValid<DirectiveHandler>("allow_methods GET POST DELETE;", true);
 
-  //false
+  // false
   testIsValid<DirectiveHandler>("", false);
   testIsValid<DirectiveHandler>("allow_methods get;", false);
   testIsValid<DirectiveHandler>("allow_methods post;", false);
@@ -71,7 +72,7 @@ TEST(Directive, AllowMethodsDirectiveHandler) {
   testIsValid<DirectiveHandler>("allow_methods head;", false);
   testIsValid<DirectiveHandler>("allow_methods HEAD;", false);
   testIsValid<DirectiveHandler>("allow_methods get POST DELETE;", false);
-  
+
   testIsValid<DirectiveHandler>("allow_methods GET GET POST DELETE;", false);
 
   testIsValid<DirectiveHandler>("allow_methods GET; POST DELETE;", false);
@@ -81,7 +82,16 @@ TEST(Directive, AllowMethodsDirectiveHandler) {
 TEST(Directive, AutoIndexDirectiveHandler) {
   typedef AutoIndexDirectiveHandler DirectiveHandler;
 
-  testIsValid<DirectiveHandler>("", true);
+  testIsValid<DirectiveHandler>("autoindex oN;", true);
+  testIsValid<DirectiveHandler>("autoindex ON;", true);
+  testIsValid<DirectiveHandler>("autoindex off;", true);
+  testIsValid<DirectiveHandler>("autoindex Off;", true);
+
+  testIsValid<DirectiveHandler>("autoindex ", false);
+  testIsValid<DirectiveHandler>("autoindex ;", false);
+  testIsValid<DirectiveHandler>("autoindex of;", false);
+  testIsValid<DirectiveHandler>("autoindex on off;", false);
+  testIsValid<DirectiveHandler>("autoindex half;", false);
 }
 
 TEST(Directive, CgiExtDirectiveHandler) {
@@ -95,5 +105,6 @@ TEST(Directive, CgiExtDirectiveHandler) {
 // TEST(Directive, 'SomeDirectiveHandler') {
 //   typedef 'SomeDirectiveHandler' DirectiveHandler;
 //
-//   testIsValid<DirectiveHandler>('line_to_test', 'true if "line_to_test" is valid else false');
+//   testIsValid<DirectiveHandler>('line_to_test', 'true if "line_to_test" is
+//   valid else false');
 // }
