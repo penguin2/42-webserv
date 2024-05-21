@@ -37,8 +37,8 @@ class Utils {
       const std::map<std::string, std::string>& mp, const std::string& key,
       const std::string& value);
   static std::string uintToString(unsigned int val);
-  static bool hasPairInStringMap(const std::map<std::string, std::string>& mp,
-                                 const std::string& key);
+  static bool hasContentInMap(const std::map<std::string, std::string>& mp,
+                              const std::string& key);
 
  private:
   Utils(void);

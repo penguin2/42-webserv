@@ -154,7 +154,7 @@ std::string Utils::uintToString(unsigned int val) {
   return ss.str();
 }
 
-bool Utils::hasPairInStringMap(const std::map<std::string, std::string>& mp,
-                               const std::string& key) {
+bool Utils::hasContentInMap(const std::map<std::string, std::string>& mp,
+                            const std::string& key) {
   return (mp.find(key) != mp.end());
 }

@@ -68,8 +68,8 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
   // keyに空白文字が含まれる or value 無し
   if (Utils::isContain(key, std::isspace) || value.empty()) return;
 
-  // if (Multiple header) true -> ERROR, false -> ignore
-  if (Utils::hasPairInStringMap(data_->getHeaders(), key)) {
+  // if (Multiple header) CGI-field -> ERROR, Other-field -> ignore
+  if (Utils::hasContentInMap(data_->getHeaders(), key)) {
     if (key == "location" || key == "status" || key == "content-type") {
       throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                             "Multiple CGI-field");
