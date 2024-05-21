@@ -4,6 +4,7 @@
 #include "config/AutoIndexDirectiveHandler.hpp"
 #include "config/CgiExtDirectiveHandler.hpp"
 #include "config/ConfigParser.hpp"
+#include "config/ErrorPageDirectiveHandler.hpp"
 #include "config/IndexDirectiveHandler.hpp"
 #include "config/RootDirectiveHandler.hpp"
 
@@ -137,6 +138,32 @@ TEST(Directive, IndexDirectiveHandler) {
   testIsValid<DirectiveHandler>("index /var /www/html/;", false);
   testIsValid<DirectiveHandler>("index /index.html/?q=50;", false);
   testIsValid<DirectiveHandler>("index /index%20.html;", false);
+}
+
+TEST(Directive, ErrorPageDirectiveHandler) {
+  typedef ErrorPageDirectiveHandler DirectiveHandler;
+
+  testIsValid<DirectiveHandler>("error_page 100 index.html", true);
+  testIsValid<DirectiveHandler>("error_page 200 ./index.html", true);
+  testIsValid<DirectiveHandler>("error_page 302 ../index.html", true);
+  testIsValid<DirectiveHandler>("error_page 999 /var/www/html/", true);
+  testIsValid<DirectiveHandler>("error_page 000200 /var/www/html/", true);
+  testIsValid<DirectiveHandler>("error_page 301 302 303 307 308 redirect.html",
+                                true);
+  // 数値のみのファイルを作成可能
+  testIsValid<DirectiveHandler>("error_page 200 400 401;", true);
+
+  testIsValid<DirectiveHandler>("error_page ", false);
+  testIsValid<DirectiveHandler>("error_page ;", false);
+  testIsValid<DirectiveHandler>("error_page 200;", false);
+  testIsValid<DirectiveHandler>("error_page index.html;", false);
+  testIsValid<DirectiveHandler>("error_page 200 index.html index.py;", false);
+  testIsValid<DirectiveHandler>("error_page 200 301 index.html index.py;",
+                                false);
+  testIsValid<DirectiveHandler>("error_page 99 index.html;", false);
+  testIsValid<DirectiveHandler>("error_page 1000 index.html;", false);
+  testIsValid<DirectiveHandler>("error_page -200 index.html;", false);
+  testIsValid<DirectiveHandler>("error_page abc index.html;", false);
 }
 
 // ...
