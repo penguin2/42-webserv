@@ -65,9 +65,9 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "CGI Header in space between key and colon");
 
-  // keyに空白文字が含まれる or ヘッダが重複する
+  // keyに空白文字が含まれる or ヘッダが重複する or value 無し
   if (Utils::isContain(key, std::isspace) ||
-      data_->getHeaders().count(key) != 0)
+      data_->getHeaders().count(key) != 0 || value.empty())
     return;
 
   if (key == "location")
@@ -81,6 +81,10 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
 }
 
 void CgiResponse::insertStatusHeader(const std::string& value) {
+  if (Utils::hasPairInStringMap(data_->getHeaders(), "status"))
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Multiple Status");
+
   size_t pos_first_space = value.find(' ');
   if (pos_first_space == std::string::npos)
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
@@ -98,6 +102,10 @@ void CgiResponse::insertStatusHeader(const std::string& value) {
 }
 
 void CgiResponse::insertLocationHeader(const std::string& value) {
+  if (Utils::hasPairInStringMap(data_->getHeaders(), "location"))
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Multiple Location");
+
   Uri uri;
   try {
     uri.parse(value);
@@ -109,6 +117,10 @@ void CgiResponse::insertLocationHeader(const std::string& value) {
 }
 
 void CgiResponse::insertContentTypeHeader(const std::string& value) {
+  if (Utils::hasPairInStringMap(data_->getHeaders(), "content-type"))
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Multiple Content-Type");
+
   size_t pos_slash = value.find('/');
 
   if (pos_slash == std::string::npos)
