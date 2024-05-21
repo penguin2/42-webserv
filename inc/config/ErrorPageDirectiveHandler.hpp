@@ -8,6 +8,11 @@ class ErrorPageDirectiveHandler : public ADirectiveHandler {
   ErrorPageDirectiveHandler();
   virtual bool isDirectiveValid() const;
   virtual void setConfig();
+
+  static std::vector<std::string> tokensToUniqueCodeStrings(
+      const std::vector<std::string>& tokens);
+  static std::vector<int> codeStringsToStatusCodes(
+      const std::vector<std::string>& code_stirngs);
 };
 
 #endif
