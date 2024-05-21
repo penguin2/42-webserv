@@ -4,6 +4,7 @@
 #include "config/AutoIndexDirectiveHandler.hpp"
 #include "config/CgiExtDirectiveHandler.hpp"
 #include "config/ConfigParser.hpp"
+#include "config/IndexDirectiveHandler.hpp"
 #include "config/RootDirectiveHandler.hpp"
 
 static std::vector<std::string> tempTokenize(const std::string& line) {
@@ -113,6 +114,29 @@ TEST(Directive, RootDirectiveHandler) {
   testIsValid<DirectiveHandler>("root /var /www/html/;", false);
   testIsValid<DirectiveHandler>("root /index.html/?q=50;", false);
   testIsValid<DirectiveHandler>("root /index%20.html;", false);
+}
+
+TEST(Directive, IndexDirectiveHandler) {
+  typedef IndexDirectiveHandler DirectiveHandler;
+
+  testIsValid<DirectiveHandler>("index inc;", true);
+  testIsValid<DirectiveHandler>("index inc/;", true);
+  testIsValid<DirectiveHandler>("index ./inc;", true);
+  testIsValid<DirectiveHandler>("index ./inc/;", true);
+  testIsValid<DirectiveHandler>("index ../html;", true);
+  testIsValid<DirectiveHandler>("index ../html/;", true);
+  testIsValid<DirectiveHandler>("index ./html/index.html;", true);
+  testIsValid<DirectiveHandler>("index ./html/index.html/;", true);
+  testIsValid<DirectiveHandler>("index /var/www/youser:pass@h_t-m.l;", true);
+  testIsValid<DirectiveHandler>("index /var/www/html/;", true);
+  testIsValid<DirectiveHandler>("index /../../etc/hosts;", true);
+  testIsValid<DirectiveHandler>("index /../../etc/hosts/;", true);
+
+  testIsValid<DirectiveHandler>("index ", false);
+  testIsValid<DirectiveHandler>("index ;", false);
+  testIsValid<DirectiveHandler>("index /var /www/html/;", false);
+  testIsValid<DirectiveHandler>("index /index.html/?q=50;", false);
+  testIsValid<DirectiveHandler>("index /index%20.html;", false);
 }
 
 // ...
