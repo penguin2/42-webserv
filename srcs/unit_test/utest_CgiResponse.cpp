@@ -28,6 +28,9 @@ TEST(CgiResponse, PARSE) {
   testParse("Content-Type: text/html\n\n");
   testParse("Content-Type: my/type\n\n");
   testParse("Content-Type: my/type; charset=UTF-8\n\n");
+  testParse("Location:\nLocation:/index.html\n\n");
+  testParse("status: \nstatus: 200 OK\n\n");
+  testParse("Content-Type:  \nContent-Type: n/n \n\n");
 
   // 改行のみの場合はCgiResponseHandlerでエラーになります
   testParse("\n");
@@ -63,4 +66,13 @@ TEST(CgiResponse, ParseThrowServerException) {
   testParseError("Content-Type: text \n\n");
   testParseError("Content-Type: text/ \n\n");
   testParseError("Content-Type:  /html \n\n");
+  // phrase is TAB
+  testParseError("Status: 301	 \n\n");
+  testParseError("Status: 301 \v \n\n");
+  // Multiple CGI field
+  testParseError("Location: /index.html\nLocation: /index.html\n\n");
+  testParseError("Status: 200 OK\nstatus: 302 Found\n\n");
+  testParseError("Content-Type: a/a\ncONTENT-tYPE: b/b\n\n");
+  // int overflow
+  testParseError("status: 4294967496 KO\n\n");
 }
