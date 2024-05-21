@@ -4,6 +4,7 @@
 #include "config/AutoIndexDirectiveHandler.hpp"
 #include "config/CgiExtDirectiveHandler.hpp"
 #include "config/ConfigParser.hpp"
+#include "config/ListenDirectiveHandler.hpp"
 #include "config/ReturnDirectiveHandler.hpp"
 
 static std::vector<std::string> tempTokenize(const std::string& line) {
@@ -124,6 +125,41 @@ TEST(Directive, ReturnDirectiveHandler) {
 
   // HTTPSは対応しないためredirect先としても認めない
   testIsValid<DirectiveHandler>("return 308 https://localhost/new", false);
+}
+
+TEST(Directive, ListenDirectiveHandler) {
+  typedef ListenDirectiveHandler DirectiveHandler;
+
+  testIsValid<DirectiveHandler>("listen 0000000001;", true);
+  testIsValid<DirectiveHandler>("listen 65535;", true);
+  testIsValid<DirectiveHandler>("listen 255.255.255.255:80;", true);
+  testIsValid<DirectiveHandler>("listen 0.0.0.0:443;", true);
+  testIsValid<DirectiveHandler>("listen 127.0.0.1:25;", true);
+  testIsValid<DirectiveHandler>("listen LoCaLhOsT:1024;", true);
+
+  testIsValid<DirectiveHandler>("listen ;", false);
+  testIsValid<DirectiveHandler>("listen  ", false);
+  testIsValid<DirectiveHandler>("listen  0.0.0.0 80;", false);
+  testIsValid<DirectiveHandler>("listen  0.0.0.0.:80;", false);
+  testIsValid<DirectiveHandler>("listen  .0.0.0.0:80;", false);
+  testIsValid<DirectiveHandler>("listen  .0.0.0.0.:80;", false);
+  testIsValid<DirectiveHandler>("listen  0..0...0.0:80;", false);
+  testIsValid<DirectiveHandler>("listen  ...:80;", false);
+  testIsValid<DirectiveHandler>("listen  .0.0.0:80;", false);
+  testIsValid<DirectiveHandler>("listen  0.0.0.:80;", false);
+  testIsValid<DirectiveHandler>("listen  -1.0.0.0:80;", false);
+  testIsValid<DirectiveHandler>("listen  .0.0.:80;", false);
+  testIsValid<DirectiveHandler>("listen  127.0.0.0:80 ab;", false);
+  testIsValid<DirectiveHandler>("listen a;", false);
+  testIsValid<DirectiveHandler>("listen -1;", false);
+  testIsValid<DirectiveHandler>("listen 0;", false);
+  testIsValid<DirectiveHandler>("listen 0000000000;", false);
+  testIsValid<DirectiveHandler>("listen 65536;", false);
+  testIsValid<DirectiveHandler>("listen :65535;", false);
+  testIsValid<DirectiveHandler>("listen 0.0.0.0:;", false);
+  testIsValid<DirectiveHandler>("listen 256.0.0.1:80;", false);
+  testIsValid<DirectiveHandler>("listen 0000001.0.0.1:80;", false);
+  testIsValid<DirectiveHandler>("listen a.b.c.d:80;", false);
 }
 
 // ...
