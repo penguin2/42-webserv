@@ -89,15 +89,20 @@ void CgiResponse::insertStatusHeader(const std::string& value) {
   if (pos_first_space == std::string::npos)
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Status Header Value is invalid");
+
   const std::string code_str = value.substr(0, pos_first_space);
   size_t code;
-
   if (Utils::strToSize_t(code_str, code, 10) == false ||
       !HttpUtils::isStatusCode(code))
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Status Header is invalid");
+
   std::string phrase = value.substr(pos_first_space);
   Utils::strTrim(phrase, " ");
+  if (Utils::isContainsOnly(phrase, std::isspace))
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Phrase only space");
+
   insertHeader("status", Utils::uintToString(code) + " " + phrase);
 }
 
