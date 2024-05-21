@@ -11,6 +11,7 @@ class UriUtils {
   static int isPctEncodingCharset(int c);
   static int isUserInfoCharset(int c);
   static int isPathCharset(int c);
+  static int isPathCharsetWithoutPctEncoding(int c);
   static int isQueryCharset(int c);
 
   static bool decodeUrlEncoding(std::string& str);

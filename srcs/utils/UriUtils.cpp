@@ -74,6 +74,11 @@ int UriUtils::isPathCharset(int c) {
   return (isRegName(c) || c == ':' || c == '@' || c == '/');
 }
 
+int UriUtils::isPathCharsetWithoutPctEncoding(int c) {
+  return (isUnreserved(c) || isSubDelims(c) || c == ':' || c == '@' ||
+          c == '/');
+}
+
 int UriUtils::isQueryCharset(int c) {
   return (isRegName(c) || c == ':' || c == '@' || c == '/' || c == '?');
 }
