@@ -25,7 +25,7 @@ bool ReturnDirectiveHandler::isDirectiveValid() const {
   }
 
   if (Utils::strToSize_t(status_code_string, status_code, 10) == false ||
-      1000 <= status_code || !HttpUtils::isRedirectStatusCode(status_code))
+      !HttpUtils::isRedirectStatusCode(status_code))
     return false;
   return true;
 }

@@ -17,10 +17,10 @@ std::string generateErrorPage(const std::string* file, int code,
 std::string generateDateAsFormat(std::time_t t, const std::string& fmt);
 std::string convertPathToContentType(const std::string& path);
 bool isMaintainConnection(int code);
-bool isRedirectStatusCode(int code);
+bool isRedirectStatusCode(size_t code);
 std::map<std::string, std::string> makeContentTypeMap(void);
 std::set<int> makeDisconnectCodeSet(void);
-std::set<int> makeRedirectCodeSet(void);
+std::set<size_t> makeRedirectCodeSet(void);
 bool generateAutoindexPage(const std::string& path_component,
                            const std::string& absolute_dir_path,
                            std::stringstream& ss);
