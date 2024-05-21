@@ -232,4 +232,6 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
   return true;
 }
 
-bool HttpUtils::isStatusCode(int code) { return (100 <= code && code < 1000); }
+bool HttpUtils::isStatusCode(size_t code) {
+  return (100 <= code && code < 1000);
+}
