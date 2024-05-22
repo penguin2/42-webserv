@@ -22,6 +22,8 @@ void Response::getResponseRawData(std::stringstream &ss) const {
   ss << data_->getBody();
 }
 
+ResponseData &Response::getResponseData(void) { return *data_; }
+
 void Response::setStatusLine(int code, const std::string &phrase) {
   data_->setStatusCode(code);
   data_->setPhrase(phrase);
