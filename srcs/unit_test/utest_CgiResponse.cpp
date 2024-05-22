@@ -66,9 +66,11 @@ TEST(CgiResponse, ParseThrowServerException) {
   testParseError("Content-Type: text \n\n");
   testParseError("Content-Type: text/ \n\n");
   testParseError("Content-Type:  /html \n\n");
-  // phrase is TAB
-  testParseError("Status: 301	 \n\n");
-  testParseError("Status: 301 \v \n\n");
+  // phrase contaion non-printable
+  testParseError("Status: 301  \abc\a \n\n");
+  testParseError("Status: 301 \bcd\b \n\n");
+  testParseError("Status: 301 \tuv\t \n\n");
+  testParseError("Status: 301 \rst\r \n\n");
   // Multiple CGI field
   testParseError("Location: /index.html\nLocation: /index.html\n\n");
   testParseError("Status: 200 OK\nstatus: 302 Found\n\n");
