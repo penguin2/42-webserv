@@ -5,6 +5,7 @@
 #include "config/CgiExtDirectiveHandler.hpp"
 #include "config/ConfigParser.hpp"
 #include "config/ListenDirectiveHandler.hpp"
+#include "config/ReturnDirectiveHandler.hpp"
 
 static std::vector<std::string> tempTokenize(const std::string& line) {
   std::vector<std::string> tokens;
@@ -90,6 +91,40 @@ TEST(Directive, CgiExtDirectiveHandler) {
   typedef CgiExtDirectiveHandler DirectiveHandler;
 
   testIsValid<DirectiveHandler>("", true);
+}
+
+TEST(Directive, ReturnDirectiveHandler) {
+  typedef ReturnDirectiveHandler DirectiveHandler;
+
+  testIsValid<DirectiveHandler>("return 301 /;", true);
+  testIsValid<DirectiveHandler>("return 302 /index.html;", true);
+  testIsValid<DirectiveHandler>("return 303 /abc/def;", true);
+  testIsValid<DirectiveHandler>("return 307 http://localhost/;", true);
+  testIsValid<DirectiveHandler>("return 308 http://abc/?q=50#fragment;", true);
+  testIsValid<DirectiveHandler>("return 301 /././index.html;", true);
+  testIsValid<DirectiveHandler>("return 302 /abc/../index.html;", true);
+  testIsValid<DirectiveHandler>("return 303 http://localhost/;", true);
+  testIsValid<DirectiveHandler>("return 307 http://youser:pass@abc/;", true);
+  testIsValid<DirectiveHandler>("return 308 ////////;", true);
+
+  testIsValid<DirectiveHandler>("return ", false);
+  testIsValid<DirectiveHandler>("return ;", false);
+  testIsValid<DirectiveHandler>("return 301;", false);
+  testIsValid<DirectiveHandler>("return /;", false);
+  testIsValid<DirectiveHandler>("return -301 /;", false);
+  testIsValid<DirectiveHandler>("return 301 /index.html OK;", false);
+  testIsValid<DirectiveHandler>("return 18446744073709551317 /;", false);
+  testIsValid<DirectiveHandler>("return 301 ../;", false);
+  testIsValid<DirectiveHandler>("return 301 /../root;", false);
+  testIsValid<DirectiveHandler>("return 301 http:///abc;", false);
+  testIsValid<DirectiveHandler>("return 301 http:///abc;", false);
+  testIsValid<DirectiveHandler>("return 300 /;", false);
+  testIsValid<DirectiveHandler>("return 304 /;", false);
+  testIsValid<DirectiveHandler>("return 305 /;", false);
+  testIsValid<DirectiveHandler>("return /abc 301;", false);
+
+  // HTTPSは対応しないためredirect先としても認めない
+  testIsValid<DirectiveHandler>("return 308 https://localhost/new", false);
 }
 
 TEST(Directive, ListenDirectiveHandler) {
