@@ -102,10 +102,10 @@ void CgiResponse::insertStatusHeader(const std::string& value) {
                           "Status Header is invalid");
 
   std::string phrase = value.substr(pos_first_space);
-  Utils::strTrim(phrase, " ");
-  if (Utils::isContainsOnly(phrase, std::isspace))
+  if (!Utils::isContainsOnly(phrase, std::isprint))
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Phrase only space");
+                          "Phrase contain non-printable character");
+  Utils::strTrim(phrase, " ");
 
   insertHeader("status", Utils::uintToString(code) + " " + phrase);
 }
