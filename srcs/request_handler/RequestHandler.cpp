@@ -53,11 +53,6 @@ connection::State RequestHandler::redirectHandler(const Request& request,
   int redirect_status_code =
       ConfigAdapter::searchRedirectStatusCode(*location_conf);
 
-  // TODO Configパース時にreturnディレクティブのstatus_codeを確認する
-  if (!HttpUtils::isRedirectStatusCode(redirect_status_code)) {
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Return directive is invalid");
-  }
   response.appendBody(
       generateErrorPageContent(request, redirect_status_code, "Redirect"));
   response.insertHeader("Location", *redirect_uri);

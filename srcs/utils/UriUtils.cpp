@@ -1,5 +1,6 @@
 #include "UriUtils.hpp"
 
+#include <algorithm>
 #include <sstream>
 #include <vector>
 
@@ -33,9 +34,9 @@ bool UriUtils::decodeUrlEncoding(std::string &str) {
 bool UriUtils::isIPv4Address(const std::string &str) {
   std::istringstream iss(str);
   std::string segment;
-  std::vector<std::string> segments;
+  std::vector<std::string> segments = Utils::split(str, '.');
 
-  while (std::getline(iss, segment, '.')) segments.push_back(segment);
+  if (std::count(str.begin(), str.end(), '.') != 3) return false;
   if (segments.size() != 4) return false;
 
   size_t num;

@@ -25,5 +25,8 @@ void ResponseData::insertHeader(const std::string& key,
                                 const std::string& value) {
   // Headerのkeyは大文字小文字を区別しないため内部で小文字で管理
   std::string lower_case_key = Utils::toLower(key);
-  headers_.insert(std::make_pair(lower_case_key, value));
+  // 既に存在していれば上書きする
+  headers_[lower_case_key] = value;
 }
+
+void ResponseData::eraseHeader(const std::string& key) { headers_.erase(key); }

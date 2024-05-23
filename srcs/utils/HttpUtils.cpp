@@ -99,8 +99,9 @@ bool HttpUtils::isMaintainConnection(int code) {
   return (disconn_codes.find(code) == disconn_codes.end());
 }
 
-bool HttpUtils::isRedirectStatusCode(int code) {
-  static const std::set<int> redirect_codes = HttpUtils::makeRedirectCodeSet();
+bool HttpUtils::isRedirectStatusCode(size_t code) {
+  static const std::set<size_t> redirect_codes =
+      HttpUtils::makeRedirectCodeSet();
   return (redirect_codes.find(code) != redirect_codes.end());
 }
 
@@ -138,8 +139,8 @@ std::set<int> HttpUtils::makeDisconnectCodeSet(void) {
 }
 
 // リダイレクトは301,302,303,307,308のみ対応
-std::set<int> HttpUtils::makeRedirectCodeSet(void) {
-  std::set<int> redirect_status_codes;
+std::set<size_t> HttpUtils::makeRedirectCodeSet(void) {
+  std::set<size_t> redirect_status_codes;
   redirect_status_codes.insert(301);
   redirect_status_codes.insert(302);
   redirect_status_codes.insert(303);
@@ -230,4 +231,8 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
     ss << ss_file_size.str();
   }
   return true;
+}
+
+bool HttpUtils::isStatusCode(size_t code) {
+  return (100 <= code && code < 1000);
 }
