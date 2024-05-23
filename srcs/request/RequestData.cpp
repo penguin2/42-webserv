@@ -1,5 +1,6 @@
 #include "RequestData.hpp"
 
+#include "HttpUtils.hpp"
 #include "ServerException.hpp"
 #include "Uri.hpp"
 #include "Utils.hpp"
@@ -46,6 +47,11 @@ void RequestData::insertHeader(std::string &line) {
   if (std::isspace(key[key.size() - 1]))
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Header in space between key and colon");
+
+  // keyに使用不可能文字が含まれる
+  if (!Utils::isContainsOnly(key, HttpUtils::isHeaderKeyChar))
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Header contain unusable char");
 
   if (key == "host") {
     // hostヘッダが重複する場合

@@ -236,3 +236,10 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
 bool HttpUtils::isStatusCode(size_t code) {
   return (100 <= code && code < 1000);
 }
+
+int HttpUtils::isHeaderKeyChar(int c) {
+  std::string str;
+  str.push_back(c);
+
+  return (std::isalnum(c) || Utils::isContain(str, "!#$%&'*+-.^_`"));
+}
