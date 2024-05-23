@@ -56,6 +56,12 @@ void RequestData::insertHeader(std::string &line) {
     if (value.size() == 0)
       throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                             "Bad host header");
+
+    // Hostヘッダにyouser_infoコンポーネントが含まれる
+    if (Utils::isContain(value, "@"))
+      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                            "Host header contain youser_info");
+
     // URIがorigin-formの場合、Hostヘッダの値でURIの情報を上書き
     this->uri_.overwriteAuthorityIfNotSet(value);
   }
