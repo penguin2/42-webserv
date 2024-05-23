@@ -2,6 +2,7 @@
 
 #include <dirent.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <ctime>
@@ -67,7 +68,8 @@ std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
 std::string HttpUtils::generateErrorPage(const std::string* file, int code,
                                          const std::string& phrase) {
   std::stringstream ss;
-  if (file == NULL ||
+  if (file == NULL || !FileUtils::isExistFile(*file) ||
+      !FileUtils::hasFilePermission(*file, R_OK) ||
       FileUtils::readAllDataFromFile(file->c_str(), ss) == false)
     return HttpUtils::generateErrorPage(code, phrase);
   return ss.str();
