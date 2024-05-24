@@ -8,6 +8,7 @@ class UriUtils {
   static int isUnreserved(int c);
   static int isSubDelims(int c);
   static int isRegName(int c);
+  static int isRegNameWithoutPctEncoding(int c);
   static int isPctEncodingCharset(int c);
   static int isUserInfoCharset(int c);
   static int isPathCharset(int c);
