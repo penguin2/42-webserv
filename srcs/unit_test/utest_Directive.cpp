@@ -99,7 +99,31 @@ TEST(Directive, AutoIndexDirectiveHandler) {
 TEST(Directive, CgiExtDirectiveHandler) {
   typedef CgiExtDirectiveHandler DirectiveHandler;
 
-  testIsValid<DirectiveHandler>("", true);
+  testIsValid<DirectiveHandler>("cgi_ext .py;", true);
+  testIsValid<DirectiveHandler>("cgi_ext .php;", true);
+  testIsValid<DirectiveHandler>("cgi_ext .php .php;", true);
+  testIsValid<DirectiveHandler>("cgi_ext .c;", true);
+  testIsValid<DirectiveHandler>("cgi_ext .abcdefg;", true);
+
+#if defined(BONUS)
+  testIsValid<DirectiveHandler>("cgi_ext .py .php .c;", true);
+  testIsValid<DirectiveHandler>("cgi_ext .php .py .py .php;", true);
+  testIsValid<DirectiveHandler>("cgi_ext .php .py .py .;", false);
+#endif
+
+  testIsValid<DirectiveHandler>("cgi_ext ", false);
+  testIsValid<DirectiveHandler>("cgi_ext ;", false);
+  testIsValid<DirectiveHandler>("cgi_ext .;", false);
+  testIsValid<DirectiveHandler>("cgi_ext test.py;", false);
+  testIsValid<DirectiveHandler>("cgi_ext py.;", false);
+  testIsValid<DirectiveHandler>("cgi_ext .a.;", false);
+  testIsValid<DirectiveHandler>("cgi_ext ..;", false);
+  testIsValid<DirectiveHandler>("cgi_ext ..py;", false);
+  testIsValid<DirectiveHandler>("cgi_ext .tar.gz;", false);
+  testIsValid<DirectiveHandler>("cgi_ext ls;", false);
+  testIsValid<DirectiveHandler>("cgi_ext ./ls;", false);
+  testIsValid<DirectiveHandler>("cgi_ext .py/abc;", false);
+  testIsValid<DirectiveHandler>("cgi_ext .php/;", false);
 }
 
 TEST(Directive, ReturnDirectiveHandler) {

@@ -8,6 +8,8 @@ class CgiExtDirectiveHandler : public ADirectiveHandler {
   CgiExtDirectiveHandler();
   virtual bool isDirectiveValid() const;
   virtual void setConfig();
+  static std::vector<std::string> tokensToUniqueCgiExts(
+      const std::vector<std::string>& tokens);
 };
 
 #endif
