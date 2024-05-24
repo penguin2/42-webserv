@@ -6,6 +6,7 @@
 #include "config/ConfigParser.hpp"
 #include "config/ListenDirectiveHandler.hpp"
 #include "config/ReturnDirectiveHandler.hpp"
+#include "config/ServerNameDirectiveHandler.hpp"
 
 static std::vector<std::string> tempTokenize(const std::string& line) {
   std::vector<std::string> tokens;
@@ -124,6 +125,29 @@ TEST(Directive, CgiExtDirectiveHandler) {
   testIsValid<DirectiveHandler>("cgi_ext ./ls;", false);
   testIsValid<DirectiveHandler>("cgi_ext .py/abc;", false);
   testIsValid<DirectiveHandler>("cgi_ext .php/;", false);
+}
+
+TEST(Directive, serverNameDirectiveHandler) {
+  typedef ServerNameDirectiveHandler DirectiveHandler;
+
+  testIsValid<DirectiveHandler>("server_name 1;", true);
+  testIsValid<DirectiveHandler>("server_name localhost;", true);
+  testIsValid<DirectiveHandler>("server_name 0.0.0.0;", true);
+  testIsValid<DirectiveHandler>("server_name 100.115.92.194;", true);
+  testIsValid<DirectiveHandler>("server_name '';", true);
+  testIsValid<DirectiveHandler>("server_name a_b-c~d;", true);
+  testIsValid<DirectiveHandler>("server_name !a$b&c(d)*e+f,=;", true);
+
+  testIsValid<DirectiveHandler>("server_name ", false);
+  testIsValid<DirectiveHandler>("server_name ;", false);
+  testIsValid<DirectiveHandler>("server_name localhost 8080;", false);
+  testIsValid<DirectiveHandler>("server_name google.com/abc;", false);
+  testIsValid<DirectiveHandler>("server_name google.%20com;", false);
+  testIsValid<DirectiveHandler>("server_name google.com#abc;", false);
+  testIsValid<DirectiveHandler>("server_name localhost:80;", false);
+  testIsValid<DirectiveHandler>("server_name youser:pass@localhost;", false);
+  testIsValid<DirectiveHandler>("server_name http://google.com;", false);
+  testIsValid<DirectiveHandler>("server_name \"\";", false);
 }
 
 TEST(Directive, ReturnDirectiveHandler) {
