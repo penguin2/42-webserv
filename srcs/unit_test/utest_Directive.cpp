@@ -84,7 +84,16 @@ TEST(Directive, AllowMethodsDirectiveHandler) {
 TEST(Directive, AutoIndexDirectiveHandler) {
   typedef AutoIndexDirectiveHandler DirectiveHandler;
 
-  testIsValid<DirectiveHandler>("", true);
+  testIsValid<DirectiveHandler>("autoindex oN;", true);
+  testIsValid<DirectiveHandler>("autoindex ON;", true);
+  testIsValid<DirectiveHandler>("autoindex off;", true);
+  testIsValid<DirectiveHandler>("autoindex Off;", true);
+
+  testIsValid<DirectiveHandler>("autoindex ", false);
+  testIsValid<DirectiveHandler>("autoindex ;", false);
+  testIsValid<DirectiveHandler>("autoindex of;", false);
+  testIsValid<DirectiveHandler>("autoindex on off;", false);
+  testIsValid<DirectiveHandler>("autoindex half;", false);
 }
 
 TEST(Directive, CgiExtDirectiveHandler) {
