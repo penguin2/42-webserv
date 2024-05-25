@@ -105,6 +105,7 @@ TEST(Directive, ClientMaxBodySizeDirectiveHandler) {
   testIsValid<DirectiveHandler>("client_max_body_size 10k;", false);
   testIsValid<DirectiveHandler>("client_max_body_size; 10m;", false);
   testIsValid<DirectiveHandler>("client_max_body_size 1; 10m;", false);
+  testIsValid<DirectiveHandler>("client_max_body_size 1m 10m;", false);
 }
 // ...
 //

@@ -5,7 +5,7 @@ ClientMaxBodySizeDirectiveHandler::ClientMaxBodySizeDirectiveHandler() {
 }
 
 bool ClientMaxBodySizeDirectiveHandler::isDirectiveValid() const {
-  if (tokens_.size() < 2) {
+  if (tokens_.size() != 3) {
     return false;
   }
 
