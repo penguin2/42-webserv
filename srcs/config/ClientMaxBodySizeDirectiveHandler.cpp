@@ -9,13 +9,21 @@ bool ClientMaxBodySizeDirectiveHandler::isDirectiveValid() const {
     return false;
   }
 
-  const std::string& size_string = tokens_[1];
+  std::string size_string = tokens_[1];
 
   char lastChar = size_string.back();
   if (lastChar != 'M' && lastChar != 'm') {
     return false;
   }
-  if (size_string.length() > 4) {
+  if (!size_string.empty()) {
+    size_string.pop_back();
+  }
+
+  size_t client_max_body_size_bytes;
+  if (Utils::strToSize_t(size_string, client_max_body_size_bytes, 10) == false) {
+    return false;
+  }
+  if (client_max_body_size_bytes > 999) {
     std::cerr << "ClientMaxBodySize is too large" << tokens_[1] << std::endl;
     return false;
   }
