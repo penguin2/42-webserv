@@ -1,7 +1,7 @@
 #include "./config/LocationConfig.hpp"
 
 LocationConfig::LocationConfig()
-    : client_max_body_size(0), try_files_error_code(0), return_status_code(0) {}
+    : client_max_body_size(0), autoindex(false), try_files_error_code(0), return_status_code(0) {}
 
 const std::string& LocationConfig::getRoot() const { return root; }
 
