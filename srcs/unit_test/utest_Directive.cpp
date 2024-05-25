@@ -4,8 +4,11 @@
 #include "config/AutoIndexDirectiveHandler.hpp"
 #include "config/CgiExtDirectiveHandler.hpp"
 #include "config/ConfigParser.hpp"
+#include "config/ErrorPageDirectiveHandler.hpp"
+#include "config/IndexDirectiveHandler.hpp"
 #include "config/ListenDirectiveHandler.hpp"
 #include "config/ReturnDirectiveHandler.hpp"
+#include "config/RootDirectiveHandler.hpp"
 #include "config/ServerNameDirectiveHandler.hpp"
 
 static std::vector<std::string> tempTokenize(const std::string& line) {
@@ -148,6 +151,78 @@ TEST(Directive, serverNameDirectiveHandler) {
   testIsValid<DirectiveHandler>("server_name youser:pass@localhost;", false);
   testIsValid<DirectiveHandler>("server_name http://google.com;", false);
   testIsValid<DirectiveHandler>("server_name \"\";", false);
+}
+
+TEST(Directive, RootDirectiveHandler) {
+  typedef RootDirectiveHandler DirectiveHandler;
+
+  testIsValid<DirectiveHandler>("root inc;", true);
+  testIsValid<DirectiveHandler>("root inc/;", true);
+  testIsValid<DirectiveHandler>("root ./inc;", true);
+  testIsValid<DirectiveHandler>("root ./inc/;", true);
+  testIsValid<DirectiveHandler>("root ../html;", true);
+  testIsValid<DirectiveHandler>("root ../html/;", true);
+  testIsValid<DirectiveHandler>("root ./html/index.html;", true);
+  testIsValid<DirectiveHandler>("root ./html/index.html/;", true);
+  testIsValid<DirectiveHandler>("root /var/www/youser:pass@h_t-m.l;", true);
+  testIsValid<DirectiveHandler>("root /var/www/html/;", true);
+  testIsValid<DirectiveHandler>("root /../../etc/hosts;", true);
+  testIsValid<DirectiveHandler>("root /../../etc/hosts/;", true);
+
+  testIsValid<DirectiveHandler>("root ", false);
+  testIsValid<DirectiveHandler>("root ;", false);
+  testIsValid<DirectiveHandler>("root /var /www/html/;", false);
+  testIsValid<DirectiveHandler>("root /index.html/?q=50;", false);
+  testIsValid<DirectiveHandler>("root /index%20.html;", false);
+}
+
+TEST(Directive, IndexDirectiveHandler) {
+  typedef IndexDirectiveHandler DirectiveHandler;
+
+  testIsValid<DirectiveHandler>("index inc;", true);
+  testIsValid<DirectiveHandler>("index inc/;", true);
+  testIsValid<DirectiveHandler>("index ./inc;", true);
+  testIsValid<DirectiveHandler>("index ./inc/;", true);
+  testIsValid<DirectiveHandler>("index ../html;", true);
+  testIsValid<DirectiveHandler>("index ../html/;", true);
+  testIsValid<DirectiveHandler>("index ./html/index.html;", true);
+  testIsValid<DirectiveHandler>("index ./html/index.html/;", true);
+  testIsValid<DirectiveHandler>("index /var/www/youser:pass@h_t-m.l;", true);
+  testIsValid<DirectiveHandler>("index /var/www/html/;", true);
+  testIsValid<DirectiveHandler>("index /../../etc/hosts;", true);
+  testIsValid<DirectiveHandler>("index /../../etc/hosts/;", true);
+
+  testIsValid<DirectiveHandler>("index ", false);
+  testIsValid<DirectiveHandler>("index ;", false);
+  testIsValid<DirectiveHandler>("index /var /www/html/;", false);
+  testIsValid<DirectiveHandler>("index /index.html/?q=50;", false);
+  testIsValid<DirectiveHandler>("index /index%20.html;", false);
+}
+
+TEST(Directive, ErrorPageDirectiveHandler) {
+  typedef ErrorPageDirectiveHandler DirectiveHandler;
+
+  testIsValid<DirectiveHandler>("error_page 100 index.html", true);
+  testIsValid<DirectiveHandler>("error_page 200 ./index.html", true);
+  testIsValid<DirectiveHandler>("error_page 302 ../index.html", true);
+  testIsValid<DirectiveHandler>("error_page 999 /var/www/html/", true);
+  testIsValid<DirectiveHandler>("error_page 000200 /var/www/html/", true);
+  testIsValid<DirectiveHandler>("error_page 301 302 303 307 308 redirect.html",
+                                true);
+  // 数値のみのファイルを作成可能
+  testIsValid<DirectiveHandler>("error_page 200 400 401;", true);
+
+  testIsValid<DirectiveHandler>("error_page ", false);
+  testIsValid<DirectiveHandler>("error_page ;", false);
+  testIsValid<DirectiveHandler>("error_page 200;", false);
+  testIsValid<DirectiveHandler>("error_page index.html;", false);
+  testIsValid<DirectiveHandler>("error_page 200 index.html index.py;", false);
+  testIsValid<DirectiveHandler>("error_page 200 301 index.html index.py;",
+                                false);
+  testIsValid<DirectiveHandler>("error_page 99 index.html;", false);
+  testIsValid<DirectiveHandler>("error_page 1000 index.html;", false);
+  testIsValid<DirectiveHandler>("error_page -200 index.html;", false);
+  testIsValid<DirectiveHandler>("error_page abc index.html;", false);
 }
 
 TEST(Directive, ReturnDirectiveHandler) {
