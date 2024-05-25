@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "Config.hpp"
 #include "ConfigEnums.hpp"
