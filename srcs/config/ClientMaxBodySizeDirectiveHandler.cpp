@@ -11,12 +11,12 @@ bool ClientMaxBodySizeDirectiveHandler::isDirectiveValid() const {
 
   std::string size_string = tokens_[1];
 
-  char lastChar = size_string.back();
+  char lastChar = size_string[size_string.size() - 1];
   if (lastChar != 'M' && lastChar != 'm') {
     return false;
   }
   if (!size_string.empty()) {
-    size_string.pop_back();
+    size_string.erase(size_string.size() - 1);
   }
 
   size_t client_max_body_size_bytes;
@@ -34,7 +34,7 @@ void ClientMaxBodySizeDirectiveHandler::setConfig() {
   log();
   LocationConfig& locationConfig = getLocationConfig();
   if (!tokens_[1].empty()) {
-    tokens_[1].pop_back();
+    tokens_[1].erase(tokens_[1].size() - 1);
   }
   size_t client_max_body_size_bytes;
   if (Utils::strToSize_t(tokens_[1], client_max_body_size_bytes, 10) == false) {
