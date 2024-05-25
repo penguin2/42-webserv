@@ -161,7 +161,6 @@ std::string ConfigAdapter::searchIndex(const LocationConfig& location_conf) {
   return location_conf.getIndex();
 }
 
-// TODO
 size_t ConfigAdapter::getClientMaxBodySize(
     const LocationConfig& location_conf) {
   size_t max_body_size = location_conf.getClientMaxBodySize();
