@@ -97,6 +97,8 @@ std::string ConfigAdapter::makeAbsolutePath(const LocationConfig& location_conf,
 
   if (root.empty()) return INTERNAL::DEFAULT_ROOT + path;
   if (root == "/") return path;
+  if (Utils::isEndsWith(root, "/") && Utils::isStartsWith(path, "/"))
+    return root + path.substr(1);
   return root + path;
 }
 
@@ -192,7 +194,7 @@ ConfigAdapter::makeFileDataMapFromAbsolutePath(const std::string& path,
                                                const std::string& ext) {
   std::vector<std::string> path_elements = Utils::split(path, '/');
   std::map<std::string, std::string> file_data_map;
-  file_data_map["DIR"] = "/";
+  file_data_map["DIR"] = Utils::isStartsWith(path, "/") ? "/" : "";
   file_data_map["FILE"] = "";
   file_data_map["PATH_INFO"] = "";
 

@@ -80,12 +80,13 @@ void testCreateCgiRequestFileData(string request_raw_str, string directory,
   cgi_request.expectEnvVar("SCRIPT_NAME", script_name.c_str());
 }
 
-void testCreateCgiRequestFileDataSpRootCase(string request_raw_str,
+void testCreateCgiRequestFileDataSpRootCase(string sp_root_str,
+                                            string request_raw_str,
                                             string directory, string filename,
                                             string path_info,
                                             string path_translated,
                                             string script_name) {
-  CreateCgiRequestTest cgi_request_set_root(request_raw_str, "/", "");
+  CreateCgiRequestTest cgi_request_set_root(request_raw_str, sp_root_str, "");
   EXPECT_STREQ(cgi_request_set_root.getDirectory().c_str(), directory.c_str());
   EXPECT_STREQ(cgi_request_set_root.getFilename().c_str(), filename.c_str());
   cgi_request_set_root.expectEnvVar("PATH_INFO", path_info.c_str());
@@ -143,21 +144,59 @@ TEST(CgiRequest, FILE_DATA) {
 }
 
 TEST(CgiRequest, FILE_DATA_SP_ROOT) {
-  // HTTPリクエスト, DIRECTORY, FILE, PATH_INFO, PATH_TRANSLATED, SCRIPT_NAME
-  // rootディレクティブの値を"/"に設定
+  // ROOT, REQUEST, DIRECTORY, FILE, PATH_INFO, PATH_TRANSLATED, SCRIPT_NAME
+  const string ROOT_STR1 = "/";
   testCreateCgiRequestFileDataSpRootCase(
-      "GET /cgi-bin/test.py/abc HTTP/1.1\r\nHost: 1\r\n\r\n", "/cgi-bin/",
-      "test.py", "/abc", "/abc", "/cgi-bin/test.py");
+      ROOT_STR1, "GET /cgi-bin/test.py/abc HTTP/1.1\r\nHost: 1\r\n\r\n",
+      "/cgi-bin/", "test.py", "/abc", "/abc", "/cgi-bin/test.py");
   testCreateCgiRequestFileDataSpRootCase(
-      "GET /a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "/", "a.py", "", "", "/a.py");
-  testCreateCgiRequestFileDataSpRootCase(
-      "GET //////a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "/", "a.py", "", "",
+      ROOT_STR1, "GET /a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "/", "a.py", "", "",
       "/a.py");
   testCreateCgiRequestFileDataSpRootCase(
-      "GET /././a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "/", "a.py", "", "",
-      "/a.py");
-}
+      ROOT_STR1, "GET //////a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "/", "a.py", "",
+      "", "/a.py");
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR1, "GET /././a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "/", "a.py", "",
+      "", "/a.py");
 
+  const string ROOT_STR2 = "../";
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR2, "GET /cgi-bin/test.py/abc HTTP/1.1\r\nHost: 1\r\n\r\n",
+      "../cgi-bin/", "test.py", "/abc", "../abc", "/cgi-bin/test.py");
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR2, "GET /a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "../", "a.py", "", "",
+      "/a.py");
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR2, "GET //////a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "../", "a.py",
+      "", "", "/a.py");
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR2, "GET /././a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "../", "a.py", "",
+      "", "/a.py");
+
+  const string ROOT_STR3 = "./";
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR3, "GET /a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "./", "a.py", "", "",
+      "/a.py");
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR3, "GET /././a.py/abc/ HTTP/1.1\r\nHost: 1\r\n\r\n", "./", "a.py",
+      "/abc/", "./abc/", "/a.py");
+
+  const string ROOT_STR4 = "current_path/";
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR4, "GET /a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "current_path/",
+      "a.py", "", "", "/a.py");
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR4, "GET /123/a.py/abc/ HTTP/1.1\r\nHost: 1\r\n\r\n",
+      "current_path/123/", "a.py", "/abc/", "current_path/abc/", "/123/a.py");
+
+  const string ROOT_STR5 = "path";
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR5, "GET /a.py HTTP/1.1\r\nHost: 1\r\n\r\n", "path/", "a.py", "",
+      "", "/a.py");
+  testCreateCgiRequestFileDataSpRootCase(
+      ROOT_STR5, "GET /123/a.py/abc/ HTTP/1.1\r\nHost: 1\r\n\r\n", "path/123/",
+      "a.py", "/abc/", "path/abc/", "/123/a.py");
+}
 TEST(CgiRequest, BODY) {
   // HTTPリクエスト, BODY, CONTENT_LENGTH, CONTENT_TYPE
   testCreateCgiRequestBody(
