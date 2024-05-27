@@ -64,7 +64,7 @@ TEST(CgiResponseHandler, ConvertCgi2Http) {
   testConvertCgi2Http("Location: http://localhost/index.html\n\n");
   testConvertCgi2Http("Location: http://localhost/?q=50\n\n");
   testConvertCgi2Http("Location: http://localhost/?c=%20#fragment\n\n");
-  testConvertCgi2Http("Location: http://youser:pass@localhost/\n\n");
+  testConvertCgi2Http("Location: http://user:pass@localhost/\n\n");
   // ClientRedirectResponseWithDocument
   testConvertCgi2Http(
       "Location: http://localhost/index.html\nStatus:301 "
@@ -78,7 +78,7 @@ TEST(CgiResponseHandler, ConvertCgi2Http) {
       "Found\ncontent-type:1/2\n\nabc");
   testConvertCgi2Http(
       "status:307 FOUND\ncontent-type:a/a; charset=UTF=8\nLocation: "
-      "http://youser:pass@localhost/\n\nabc");
+      "http://user:pass@localhost/\n\nabc");
   testConvertCgi2Http(
       "status:308 FOUND\ncontent-type:a/a\nLocation:http://abc/\n\nabc");
 }
