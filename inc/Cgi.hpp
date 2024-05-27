@@ -8,9 +8,7 @@
 #ifdef MOCK
 #include "CgiRequestMock.hpp"
 #else
-// TODO: CgiRequestMock -> CgiRequest
-// #include "CgiRequest.hpp"
-#include "CgiRequestMock.hpp"
+#include "CgiRequest.hpp"
 #endif
 
 class Cgi {

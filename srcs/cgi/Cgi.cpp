@@ -97,7 +97,7 @@ void Cgi::clearPipes(int read_pipe[2], int write_pipe[2]) {
   }
 }
 
-Cgi* Cgi::createCgi(const CgiRequestMock* cgi_request) {
+Cgi* Cgi::createCgi(const CgiRequest* cgi_request) {
   if (cgi_request == NULL) return NULL;
 
   int read_pipe[2];

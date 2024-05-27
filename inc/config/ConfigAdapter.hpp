@@ -50,9 +50,20 @@ std::vector<std::string> getAllowMethods(const LocationConfig& location_conf);
 
 const std::string* searchHostName(const ServerConfig& server_conf);
 
+const std::string& getListenPort(const ServerConfig& server_conf);
+
 bool isAutoindex(const LocationConfig& location_conf);
 
 std::string searchIndex(const LocationConfig& location_conf);
+
+std::vector<std::string> getCgiExts(const LocationConfig& location_conf);
+
+// FileDataMap contains the elements DIR, FILE, and PATH_INFO
+// if (FileDataMap["FILE"] == "") -> Not CGI Pattern
+std::map<std::string, std::string> makeFileDataMap(
+    const LocationConfig& location_conf, const std::string& path);
+std::map<std::string, std::string> makeFileDataMapFromAbsolutePath(
+    const std::string& absolute_path, const std::string& ext);
 
 size_t getClientMaxBodySize(const LocationConfig& location_conf);
 
