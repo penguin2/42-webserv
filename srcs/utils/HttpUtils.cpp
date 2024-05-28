@@ -245,3 +245,12 @@ int HttpUtils::isHeaderKeyChar(int c) {
 
   return (std::isalnum(c) || Utils::isContain(str, "!#$%&'*+-.^_`"));
 }
+
+int HttpUtils::isCookieValueChar(int c) {
+  if (c == 0x21) return true;
+  if (0x23 <= c && c <= 0x2B) return true;
+  if (0x2D <= c && c <= 0x3A) return true;
+  if (0x3C <= c && c <= 0x5B) return true;
+  if (0x5D <= c && c <= 0x7E) return true;
+  return false;
+}

@@ -26,6 +26,7 @@ bool generateAutoindexPage(const std::string& path_component,
                            std::stringstream& ss);
 bool isStatusCode(size_t code);
 int isHeaderKeyChar(int c);
+int isCookieValueChar(int c);
 
 namespace AutoindexUtils {
 bool generateFileRecord(const FileUtils::Entry& entry, const std::string& dir,
