@@ -39,4 +39,6 @@ class Cookie {
   bool httponly_;
 };
 
+std::ostream& operator<<(std::ostream& os, const Cookie& cookie);
+
 #endif

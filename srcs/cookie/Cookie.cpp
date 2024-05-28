@@ -92,3 +92,14 @@ const std::string& Cookie::getDomain(void) const { return domain_; }
 const std::string& Cookie::getPath(void) const { return path_; }
 bool Cookie::isSecure(void) const { return secure_; }
 bool Cookie::isHttpOnly(void) const { return httponly_; }
+
+std::ostream& operator<<(std::ostream& os, const Cookie& cookie) {
+  os << cookie.getName() << ": " << cookie.getValue();
+  if (!cookie.getExpires().empty()) os << "; Expires=" << cookie.getExpires();
+  if (!cookie.getMaxAge().empty()) os << "; Max-Age=" << cookie.getMaxAge();
+  if (!cookie.getDomain().empty()) os << "; Domain=" << cookie.getDomain();
+  if (!cookie.getPath().empty()) os << "; Path=" << cookie.getPath();
+  if (cookie.isSecure()) os << "; Secure";
+  if (cookie.isHttpOnly()) os << "; HttpOnly";
+  return os;
+}
