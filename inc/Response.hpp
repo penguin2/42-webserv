@@ -21,6 +21,7 @@ class Response {
   void insertContentLengthIfNotSet(void);
   void insertCommonHeaders(bool keep_alive);
   int getStatusCode(void) const;
+  bool insertSetCookieHeader(const std::string set_cookie_header_value);
 
  protected:
   ResponseData *data_;
