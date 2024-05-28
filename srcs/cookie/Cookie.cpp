@@ -1,6 +1,7 @@
 #include "Cookie.hpp"
 
 #include "HttpUtils.hpp"
+#include "UriUtils.hpp"
 #include "Utils.hpp"
 
 Cookie::Cookie(void) : secure_(false), httponly_(false) {}
@@ -39,21 +40,36 @@ void Cookie::setValue(const std::string& cookie_value) {
 }
 
 bool Cookie::setAndCheckExpires(const std::string& expires) {
+  if (expires.empty()) return false;
+  // Servers SHOULD NOT send Set-Cookie headers
+  // that fail to conform to the following grammar
+  // なので詳細な値のcheckは行わない
   this->expires_ = expires;
   return true;
 }
 
 bool Cookie::setAndCheckMaxAge(const std::string& max_age) {
+  if (max_age.empty()) return false;
+  int max_age_first_c = max_age[0];
+  if (!std::isdigit(max_age_first_c) && !(max_age_first_c == '-')) return false;
+  if (max_age_first_c == '0') return false;
+  if (!Utils::isContainsOnly(max_age.substr(1), std::isdigit)) return false;
   this->max_age_ = max_age;
   return true;
 }
 
 bool Cookie::setAndCheckDomain(const std::string& domain) {
+  if (domain.empty()) return false;
+  if (!Utils::isContainsOnly(domain, UriUtils::isRegNameWithoutPctEncoding))
+    return false;
   this->domain_ = domain;
   return true;
 }
 
 bool Cookie::setAndCheckPath(const std::string& path) {
+  if (path.empty()) return false;
+  if (!Utils::isContainsOnly(path, std::isprint)) return false;
+  if (Utils::isContain(path, ";")) return false;
   this->path_ = path;
   return true;
 }

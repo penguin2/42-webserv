@@ -18,6 +18,12 @@ class CookieManager {
  private:
   std::map<std::string, Cookie> cookies_;
 
+  bool parseCookieName(std::string& set_cookie_header_value, Cookie& cookie);
+  bool parseCookieValue(std::string& set_cookie_header_value, Cookie& cookie);
+  bool parseCookieAttributes(std::string& set_cookie_header_value,
+                             Cookie& cookie);
+  bool parseCookieAttribute(std::string attribute, Cookie& cookie);
+
   CookieManager(const CookieManager&);
   void operator=(const CookieManager&);
 };
