@@ -100,8 +100,8 @@ connection::State Http::httpHandlerCgi(void) {
     }
   } catch (ServerException& e) {
     this->cgi_response_->resetResponseData();
-    return RequestHandler::errorRequestHandler(request_, response_, e.code(),
-                                               e.what());
+    return RequestHandler::errorRequestHandler(request_, *cgi_response_,
+                                               e.code(), e.what());
   }
   return connection::SEND;
 }
