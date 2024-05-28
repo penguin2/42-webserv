@@ -12,6 +12,7 @@ class Uri {
   void overwriteAuthorityIfNotSet(const std::string& authority);
   std::string buildAbsoluteUri(void) const;
   std::string buildAuthority(void) const;
+  void overwritePath(const std::string& new_path);
 
   const std::string& getScheme(void) const;
   const std::string& getUserInfo(void) const;

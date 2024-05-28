@@ -17,6 +17,7 @@ class Request {
   bool haveConnectionCloseHeader(void) const;
   void setServerConfig(const ServerConfig& server_conf);
   const ServerConfig* getServerConfig(void) const;
+  void overwritePath(const std::string& new_path);
 
  private:
   typedef enum eRequestState {

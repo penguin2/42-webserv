@@ -97,3 +97,7 @@ const std::string &RequestData::getBody(void) const { return body_; }
 const ServerConfig *RequestData::getServerConfig(void) const {
   return server_config;
 }
+
+void RequestData::overwritePath(const std::string &new_path) {
+  this->uri_.overwritePath(new_path);
+}
