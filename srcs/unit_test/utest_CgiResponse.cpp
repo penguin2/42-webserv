@@ -31,6 +31,10 @@ TEST(CgiResponse, PARSE) {
   testParse("Location:\nLocation:/index.html\n\n");
   testParse("status: \nstatus: 200 OK\n\n");
   testParse("Content-Type:  \nContent-Type: n/n \n\n");
+  // 印字不可能文字が含まれる場合無視
+  testParse("My\aheader: myValue\n\n");
+  // separator文字が含まれる場合無視
+  testParse("My][header: myValue\n\n");
 
   // 改行のみの場合はCgiResponseHandlerでエラーになります
   testParse("\n");

@@ -65,8 +65,9 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "CGI Header in space between key and colon");
 
-  // keyに空白文字が含まれる or value 無し
-  if (Utils::isContain(key, std::isspace) || value.empty()) return;
+  // keyに使用不可能文字が含まれる or value 無し
+  if (!Utils::isContainsOnly(key, HttpUtils::isHeaderKeyChar) || value.empty())
+    return;
 
   // if (Multiple header) CGI-field -> ERROR, Other-field -> ignore
   if (Utils::hasContentInMap(data_->getHeaders(), key)) {

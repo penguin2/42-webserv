@@ -50,8 +50,8 @@ TEST(Uri, ABSOLUTE_FORM_SUCCESS) {
   // expect(bool) URIの構文が正しい場合はtrue, 誤っている場合はfalse
   testAbsoluteForm("http://localhost/index.html?q=50#abc", "http", "",
                    "localhost", 80, "/index.html", "q=50", "abc", true);
-  testAbsoluteForm("http://youser:pass@127.0.0.1/form.html", "http",
-                   "youser:pass", "127.0.0.1", 80, "/form.html", "", "", true);
+  testAbsoluteForm("http://user:pass@127.0.0.1/form.html", "http", "user:pass",
+                   "127.0.0.1", 80, "/form.html", "", "", true);
   testAbsoluteForm("http://@sample.com", "http", "", "sample.com", 80, "", "",
                    "", true);
   testAbsoluteForm("http://sample.com:4242/environ.py", "http", "",

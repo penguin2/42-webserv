@@ -1,5 +1,6 @@
 #include "RequestData.hpp"
 
+#include "HttpUtils.hpp"
 #include "ServerException.hpp"
 #include "Uri.hpp"
 #include "Utils.hpp"
@@ -47,6 +48,11 @@ void RequestData::insertHeader(std::string &line) {
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Header in space between key and colon");
 
+  // keyに使用不可能文字が含まれる
+  if (!Utils::isContainsOnly(key, HttpUtils::isHeaderKeyChar))
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Header contain unusable char");
+
   if (key == "host") {
     // hostヘッダが重複する場合
     if (headers_.count(key) != 0)
@@ -56,6 +62,12 @@ void RequestData::insertHeader(std::string &line) {
     if (value.size() == 0)
       throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                             "Bad host header");
+
+    // Hostヘッダにuser_infoコンポーネントが含まれる
+    if (Utils::isContain(value, "@"))
+      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                            "Host header contain user_info");
+
     // URIがorigin-formの場合、Hostヘッダの値でURIの情報を上書き
     this->uri_.overwriteAuthorityIfNotSet(value);
   }

@@ -236,7 +236,7 @@ TEST(Directive, ReturnDirectiveHandler) {
   testIsValid<DirectiveHandler>("return 301 /././index.html;", true);
   testIsValid<DirectiveHandler>("return 302 /abc/../index.html;", true);
   testIsValid<DirectiveHandler>("return 303 http://localhost/;", true);
-  testIsValid<DirectiveHandler>("return 307 http://youser:pass@abc/;", true);
+  testIsValid<DirectiveHandler>("return 307 http://user:pass@abc/;", true);
   testIsValid<DirectiveHandler>("return 308 ////////;", true);
 
   testIsValid<DirectiveHandler>("return ", false);
