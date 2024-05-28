@@ -5,6 +5,7 @@
 #include <string>
 
 #include "CgiRequest.hpp"
+#include "CgiResponse.hpp"
 #include "ConnectionState.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
@@ -35,13 +36,15 @@ class Http {
   Response response_;
 
   CgiRequest* cgi_request_;
+  CgiResponse* cgi_response_;
   std::string cgi_response_message_;
 
   connection::State httpHandlerRecv(void);
   connection::State httpHandlerSend(void);
-  // TODO connection::State httpHandlerCgi(void);
+  connection::State httpHandlerCgi(void);
 
-  void prepareToSendResponse(void);
+  void prepareToSendResponse(Response& response);
+  void prepareToSendCgiResponse(void);
   static void setServerConfig(
       Request& request, const std::vector<const ServerConfig*>& server_configs);
 
