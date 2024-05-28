@@ -30,11 +30,9 @@ connection::State RequestHandler::dispatch(Request& request, Response& response,
   if (ConfigAdapter::searchRedirectUri(*location_conf) != NULL) {
     return RequestHandler::redirectHandler(request, response, path);
   }
-  // TODO CGI Handle
-  // else if (ConfigAdapter::isCgiPath(uri.getHost(), uri.getPort(),
-  //   		  uri.getPath())) {
-  //     return cgiHandler();
-  // }
+  if (ConfigAdapter::isCgiPath(*location_conf, path)) {
+    return cgiHandler(request, path);
+  }
   const std::string& method = request.getRequestData()->getMethod();
   if (method_handler_map.find(method) != method_handler_map.end()) {
     return method_handler_map.find(method)->second(request, response, path);
@@ -81,6 +79,12 @@ connection::State RequestHandler::errorRequestHandler(
   response.insertContentLengthIfNotSet();
   response.setStatusLine(status_code, phrase);
   return connection::SEND;
+}
+
+connection::State RequestHandler::cgiHandler(Request& request,
+                                             const std::string& path) {
+  request.overwritePath(path);
+  return connection::CGI;
 }
 
 std::string RequestHandler::generateErrorPageContent(
