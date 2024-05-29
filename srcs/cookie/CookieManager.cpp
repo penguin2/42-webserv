@@ -50,7 +50,7 @@ bool CookieManager::parseCookieValue(std::string& set_cookie_header_value,
     if (pos_close_d_quote == std::string::npos) return false;
     std::string value_without_d_quote =
         set_cookie_header_value.substr(1, pos_close_d_quote - 1);
-    value = set_cookie_header_value.substr(0, pos_close_d_quote);
+    value = set_cookie_header_value.substr(0, pos_close_d_quote + 1);
     if (!Utils::isContainsOnly(value_without_d_quote,
                                HttpUtils::isCookieValueChar)) {
       return false;
