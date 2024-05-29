@@ -41,9 +41,7 @@ void Cookie::setValue(const std::string& cookie_value) {
 
 bool Cookie::setAndCheckExpires(const std::string& expires) {
   if (expires.empty()) return false;
-  // Servers SHOULD NOT send Set-Cookie headers
-  // that fail to conform to the following grammar
-  // なので詳細な値のcheckは行わない
+  if (!HttpUtils::isFullDateRFC1123(expires)) return false;
   this->expires_ = expires;
   return true;
 }

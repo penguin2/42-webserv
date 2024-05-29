@@ -27,6 +27,7 @@ bool generateAutoindexPage(const std::string& path_component,
 bool isStatusCode(size_t code);
 int isHeaderKeyChar(int c);
 int isCookieValueChar(int c);
+bool isFullDateRFC1123(const std::string& date_str);
 
 namespace AutoindexUtils {
 bool generateFileRecord(const FileUtils::Entry& entry, const std::string& dir,
@@ -38,6 +39,15 @@ bool generateFileDetailTimestamp(const std::string& path,
                                  std::stringstream& ss);
 
 }  // namespace AutoindexUtils
+
+namespace IsFullDateUtils {
+bool isWkDay(const std::string& wkday_str);
+std::vector<std::string> makeWkDay(void);
+bool isDate1(const std::string& date1_str);
+bool isMonth(const std::string& month_str);
+std::vector<std::string> makeMonth(void);
+bool isTime(const std::string& time_str);
+}  // namespace IsFullDateUtils
 }  // namespace HttpUtils
 
 #endif

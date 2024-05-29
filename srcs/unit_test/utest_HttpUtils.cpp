@@ -103,3 +103,15 @@ TEST(HttpUtils, IS_REDIRECT_STATUS_CODE) {
   EXPECT_EQ(HttpUtils::isRedirectStatusCode(400), false);
   EXPECT_EQ(HttpUtils::isRedirectStatusCode(500), false);
 }
+
+TEST(UttpUtils, IS_FULL_DATE_RFC1123) {
+  EXPECT_TRUE(HttpUtils::isFullDateRFC1123("Mon, 11 Jan 2000 12:34:56 GMT"));
+  EXPECT_TRUE(HttpUtils::isFullDateRFC1123("Wed, 99 Dec 9999 99:99:99 GMT"));
+  EXPECT_TRUE(HttpUtils::isFullDateRFC1123("Fri, 00 Nov 0000 00:00:00 GMT"));
+
+  EXPECT_FALSE(HttpUtils::isFullDateRFC1123(""));
+  EXPECT_FALSE(HttpUtils::isFullDateRFC1123("Mon, 11 Jan 2000 12:34:56 GMT "));
+  EXPECT_FALSE(HttpUtils::isFullDateRFC1123("Mon,11 Jan 2000 12:34:56 GMT"));
+  EXPECT_FALSE(HttpUtils::isFullDateRFC1123("mon, 11 jan 2000 12:34:56 GMT"));
+  EXPECT_FALSE(HttpUtils::isFullDateRFC1123("Mon, 11 Jan 2000 12:34:56 gmt"));
+}
