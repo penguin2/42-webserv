@@ -136,7 +136,8 @@ bool ConfigAdapter::isAllowMethods(const LocationConfig& location_conf,
                                    const std::string& method) {
   const std::vector<std::string>& methods = location_conf.getAllowMethods();
 
-  return (methods.empty() || Config::isCorrespondingMethod(method));
+  if (methods.empty()) return true;
+  return (std::find(methods.begin(), methods.end(), method) != methods.end());
 }
 
 std::vector<std::string> ConfigAdapter::getAllowMethods(
