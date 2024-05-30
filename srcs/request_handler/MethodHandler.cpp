@@ -96,7 +96,8 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
       ConfigAdapter::makeAbsolutePath(*location_conf, path);
   const std::string& body = request.getRequestData()->getBody();
 
-  if (FileUtils::isExistFile(absolute_path)) {
+  if (FileUtils::isExistFile(absolute_path) ||
+      FileUtils::isExistDir(absolute_path)) {
     throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
                           "Cannot POST because file exists");
   }
