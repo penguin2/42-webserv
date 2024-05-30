@@ -1,21 +1,36 @@
 #!/bin/bash
 
-VENV_DIR=venv
-WEBSERV="../../webserv"
+VENV_DIR="venv"
+WEBSERV="webserv"
+WEBSERV_FROM_CURRENT_DIR="../../"$WEBSERV
+WEBSERV_FROM_DETAIL_TEST_DIR="../../"$WEBSERV_FROM_CURRENT_DIR
 
-python3 -m venv $VENV_DIR
-source $VENV_DIR/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
+function main () {
+	init_venv_environment
+	exec_webserv
+	clean_up
+}
 
+function init_venv_environment () {
+	python3 -m venv $VENV_DIR
+	source $VENV_DIR/bin/activate
+	pip install --upgrade pip
+	pip install -r requirements.txt
+}
 
-for dir in tests/*
-do
-	$WEBSERV $dir/*.conf &
-	SERVER_PID=$!
-	pytest $dir/
-	kill $SERVER_PID
-done
+function clean_up () {
+	deactivate
+}
 
-# CLEAN UP
-deactivate
+function exec_webserv () {
+	for dir in tests/*
+	do
+		cd $dir && $WEBSERV_FROM_DETAIL_TEST_DIR *.conf &
+		pytest -s $dir/
+		SERVER_PID=$(ps aux | grep "$WEBSERV" | grep -v grep | awk '{print $2}')
+		kill $SERVER_PID
+	done
+}
+
+# call main function
+main
