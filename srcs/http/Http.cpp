@@ -44,12 +44,12 @@ connection::State Http::httpHandler(connection::State current_state) {
   if (current_state == connection::RECV && next_state == connection::SEND) {
     prepareToSendResponse(this->response_);
   }
-  if (current_state == connection::CGI && next_state == connection::SEND) {
-    prepareToSendCgiResponse();
-  }
   if (current_state == connection::RECV && next_state == connection::CGI) {
     this->cgi_request_ = CgiRequest::createCgiRequest(request_, peer_address_);
     this->cgi_response_ = new CgiResponse;
+  }
+  if (current_state == connection::CGI && next_state == connection::SEND) {
+    prepareToSendCgiResponse();
   }
   return next_state;
 }
