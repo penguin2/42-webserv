@@ -83,12 +83,12 @@ bool CookieManager::parseCookieAttributes(std::string& set_cookie_header_value,
 
 bool CookieManager::parseCookieAttribute(std::string attribute,
                                          Cookie& cookie) {
-  const std::string expires = "expires=";
-  const std::string max_age = "max-age=";
-  const std::string domain = "domain=";
-  const std::string path = "path=";
-  const std::string secure = "secure";
-  const std::string httponly = "httponly";
+  static const std::string expires = "expires=";
+  static const std::string max_age = "max-age=";
+  static const std::string domain = "domain=";
+  static const std::string path = "path=";
+  static const std::string secure = "secure";
+  static const std::string httponly = "httponly";
 
   if (Utils::isStartsWithCaseInsensitive(attribute, expires))
     return cookie.setAndCheckExpires(attribute.substr(expires.size()));

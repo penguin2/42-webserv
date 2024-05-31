@@ -262,7 +262,7 @@ bool HttpUtils::isFullDateRFC1123(const std::string& date_str) {
   // month = ("Jan" | "Feb" | "Mar" | "Apr" | "May" | "Jun"
   //          "Jul" | "Aug" | "Sep" | "Oct" | "Nov" | "Dec")
   // time = 2DIGIT ":" 2DIGIT ":" 2DIGIT (00:00:00 - 23:59:59)
-  const size_t total_date_size = (3 + 1 + 1 + 11 + 1 + 8 + 1 + 3);
+  static const size_t total_date_size = (3 + 1 + 1 + 11 + 1 + 8 + 1 + 3);
   if (date_str.size() != total_date_size) return false;
   if (!IsFullDateUtils::isWkDay(date_str.substr(0, 3))) return false;
   if (date_str.substr(3, 2) != ", ") return false;
