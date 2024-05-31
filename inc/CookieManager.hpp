@@ -13,7 +13,6 @@ class CookieManager {
   // if (適切なCookie) { return true; } else { return false; }
   bool parseCookie(std::string set_cookie_header_value);
   const std::map<std::string, Cookie>& getCookies(void) const;
-  const Cookie* searchCookie(const std::string& key) const;
 
  private:
   std::map<std::string, Cookie> cookies_;
