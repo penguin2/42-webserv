@@ -1,5 +1,6 @@
 #include "UriUtils.hpp"
 
+#include <algorithm>
 #include <sstream>
 #include <vector>
 
@@ -33,9 +34,9 @@ bool UriUtils::decodeUrlEncoding(std::string &str) {
 bool UriUtils::isIPv4Address(const std::string &str) {
   std::istringstream iss(str);
   std::string segment;
-  std::vector<std::string> segments;
+  std::vector<std::string> segments = Utils::split(str, '.');
 
-  while (std::getline(iss, segment, '.')) segments.push_back(segment);
+  if (std::count(str.begin(), str.end(), '.') != 3) return false;
   if (segments.size() != 4) return false;
 
   size_t num;
@@ -68,10 +69,19 @@ int UriUtils::isRegName(int c) {
   return (isUnreserved(c) || isPctEncodingCharset(c) || isSubDelims(c));
 }
 
+int UriUtils::isRegNameWithoutPctEncoding(int c) {
+  return (isUnreserved(c) || isSubDelims(c));
+}
+
 int UriUtils::isUserInfoCharset(int c) { return (isRegName(c) || c == ':'); }
 
 int UriUtils::isPathCharset(int c) {
   return (isRegName(c) || c == ':' || c == '@' || c == '/');
+}
+
+int UriUtils::isPathCharsetWithoutPctEncoding(int c) {
+  return (isUnreserved(c) || isSubDelims(c) || c == ':' || c == '@' ||
+          c == '/');
 }
 
 int UriUtils::isQueryCharset(int c) {

@@ -19,6 +19,7 @@ class Utils {
   static std::string toUpper(const std::string& str);
   static bool strToSize_t(const std::string& str, size_t& num, int base);
   static bool isStartsWith(const std::string& str, const std::string& prefix);
+  static bool isEndsWith(const std::string& str, const std::string& suffix);
   static bool isStartsWithCaseInsensitive(const std::string& str,
                                           const std::string& prefix);
   static std::string popFrontSubstr(std::string& str, std::size_t n);
@@ -37,6 +38,8 @@ class Utils {
       const std::map<std::string, std::string>& mp, const std::string& key,
       const std::string& value);
   static std::string uintToString(unsigned int val);
+  static bool hasContentInMap(const std::map<std::string, std::string>& mp,
+                              const std::string& key);
 
  private:
   Utils(void);

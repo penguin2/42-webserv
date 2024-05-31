@@ -17,11 +17,8 @@ class ResponseData {
   void setStatusCode(int code);
   void setPhrase(const std::string &phrase);
   void appendBody(const std::string &str);
-  // keyとvalueを渡してセットする一般的なインターフェース
   void insertHeader(const std::string &key, const std::string &value);
-
-  // TODO CGI用のHeader1行を丸々解析してinsertする関数
-  // void insertHeader(const std::string &line);
+  void eraseHeader(const std::string &key);
 
  private:
   int status_code_;

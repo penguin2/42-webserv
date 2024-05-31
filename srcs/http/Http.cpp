@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "CgiRequest.hpp"
 #include "ConnectionState.hpp"
 #include "HttpUtils.hpp"
 #include "RequestHandler.hpp"

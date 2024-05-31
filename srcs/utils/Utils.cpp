@@ -94,6 +94,11 @@ bool Utils::isStartsWith(const std::string& str, const std::string& prefix) {
   return (str.compare(0, prefix.size(), prefix) == 0);
 }
 
+bool Utils::isEndsWith(const std::string& str, const std::string& suffix) {
+  if (str.size() < suffix.size()) return false;
+  return (str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0);
+}
+
 bool Utils::isStartsWithCaseInsensitive(const std::string& str,
                                         const std::string& prefix) {
   return (Utils::toLower(str).compare(0, prefix.size(),
@@ -152,4 +157,9 @@ std::string Utils::uintToString(unsigned int val) {
   std::stringstream ss;
   ss << std::dec << val;
   return ss.str();
+}
+
+bool Utils::hasContentInMap(const std::map<std::string, std::string>& mp,
+                            const std::string& key) {
+  return (mp.find(key) != mp.end());
 }
