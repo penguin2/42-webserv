@@ -37,10 +37,7 @@ void ClientMaxBodySizeDirectiveHandler::setConfig() {
     tokens_[1].erase(tokens_[1].size() - 1);
   }
   size_t client_max_body_size_bytes;
-  if (Utils::strToSize_t(tokens_[1], client_max_body_size_bytes, 10) == false) {
-    std::cerr << "Failed to strToSize_t" << tokens_[1] << std::endl;
-    exit(1);
-  }
+  Utils::strToSize_t(tokens_[1], client_max_body_size_bytes, 10);
   size_t client_max_body_size_mega_bytes = (client_max_body_size_bytes * 1000000);
   locationConfig.setClientMaxBodySize(client_max_body_size_mega_bytes);
 }
