@@ -18,6 +18,7 @@ class RequestData {
   void insertHeader(std::string& line);
   void appendBody(const std::string& data);
   void setServerConfig(const ServerConfig& server_conf);
+  void overwritePath(const std::string& new_path);
 
   const std::string& getMethod(void) const;
   const Uri& getUri(void) const;

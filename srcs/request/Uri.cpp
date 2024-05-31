@@ -11,6 +11,10 @@ void Uri::overwriteAuthorityIfNotSet(const std::string& authority) {
   if (this->host_.size() == 0) parseAuthority(authority);
 }
 
+void Uri::overwritePath(const std::string& new_path) {
+  this->setAndCheckAndDecodePath(new_path);
+}
+
 void Uri::parse(const std::string& uri) {
   // origin-form(原形式)
   // AuthorityはHostヘッダを読み取ったらをセットする

@@ -53,6 +53,7 @@ int Cgi::readMessage() {
 }
 
 int Cgi::writeMessage() {
+  if (cgi_request_message_.empty()) return 0;
   const int write_size = write(
       write_fd_, cgi_request_message_.c_str() + cgi_request_message_sent_size_,
       cgi_request_message_.size() - cgi_request_message_sent_size_);

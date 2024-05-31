@@ -18,6 +18,10 @@ Request::~Request(void) { delete this->data_; }
 
 const RequestData* Request::getRequestData(void) const { return this->data_; }
 
+void Request::overwritePath(const std::string& new_path) {
+  this->data_->overwritePath(new_path);
+}
+
 bool Request::parse(std::string& buffer) {
   if (this->state_ == END) {
     this->state_ = METHOD;

@@ -16,7 +16,7 @@ connection::State redirectHandler(const Request& request, Response& response,
                                   std::string path);
 std::string generateErrorPageContent(const Request& request, int status_code,
                                      const std::string& phrase);
-// connection::State cgiHandler(Request& request, Response& response);
+connection::State cgiHandler(Request& request, const std::string& path);
 
 namespace MethodHandler {
 typedef connection::State (*method_handler)(Request&, Response&,
