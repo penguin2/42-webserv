@@ -1,12 +1,11 @@
 #include "./config/LocationConfig.hpp"
 
-LocationConfig::LocationConfig() {}
+LocationConfig::LocationConfig()
+    : try_files_error_code(0), client_max_body_size(0), autoindex(false), return_status_code(0) {}
 
 const std::string& LocationConfig::getRoot() const { return root; }
 
-void LocationConfig::setRoot(const std::string& newRoot) {
-  root = newRoot;
-}
+void LocationConfig::setRoot(const std::string& newRoot) { root = newRoot; }
 
 const std::string& LocationConfig::getIndex() const { return index; }
 void LocationConfig::setIndex(const std::string& newIndex) { index = newIndex; }
@@ -25,10 +24,10 @@ void LocationConfig::setTryFilesErrorCode(int newErrorCode) {
   try_files_error_code = newErrorCode;
 }
 
-const std::string& LocationConfig::getClientMaxBodySize() const {
+size_t LocationConfig::getClientMaxBodySize() const {
   return client_max_body_size;
 }
-void LocationConfig::setClientMaxBodySize(const std::string& newSize) {
+void LocationConfig::setClientMaxBodySize(size_t newSize) {
   client_max_body_size = newSize;
 }
 
