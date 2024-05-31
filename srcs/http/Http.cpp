@@ -22,7 +22,7 @@ Http::Http(SocketAddress peer_address,
       cgi_request_(NULL),
       cgi_response_(NULL) {}
 
-Http::~Http() {}
+Http::~Http(void) { deleteCgiRequestAndResponseIfNotNull(); }
 
 connection::State Http::httpHandler(connection::State current_state) {
   connection::State next_state;
@@ -45,11 +45,12 @@ connection::State Http::httpHandler(connection::State current_state) {
     prepareToSendResponse(this->response_);
   }
   if (current_state == connection::RECV && next_state == connection::CGI) {
-    this->cgi_request_ = CgiRequest::createCgiRequest(request_, peer_address_);
-    this->cgi_response_ = new CgiResponse;
+    deleteCgiRequestAndResponseIfNotNull();
+    createCgiRequestAndResponse();
   }
   if (current_state == connection::CGI && next_state == connection::SEND) {
     prepareToSendCgiResponse();
+    deleteCgiRequestAndResponseIfNotNull();
   }
   return next_state;
 }
@@ -118,10 +119,6 @@ void Http::prepareToSendCgiResponse(void) {
   if (this->request_.getRequestData()->getMethod() != "DELETE")
     this->cgi_response_->insertContentLengthIfNotSet();
   prepareToSendResponse(static_cast<Response&>(*this->cgi_response_));
-  delete this->cgi_request_;
-  delete this->cgi_response_;
-  this->cgi_request_ = NULL;
-  this->cgi_response_ = NULL;
 }
 
 void Http::setServerConfig(
@@ -134,4 +131,20 @@ void Http::setServerConfig(
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Internal Error");
   request.setServerConfig(*server_conf);
+}
+
+void Http::createCgiRequestAndResponse(void) {
+  this->cgi_request_ = CgiRequest::createCgiRequest(request_, peer_address_);
+  this->cgi_response_ = new CgiResponse;
+}
+
+void Http::deleteCgiRequestAndResponseIfNotNull(void) {
+  if (this->cgi_request_ != NULL) {
+    delete this->cgi_request_;
+    this->cgi_request_ = NULL;
+  }
+  if (this->cgi_response_ != NULL) {
+    delete this->cgi_response_;
+    this->cgi_response_ = NULL;
+  }
 }

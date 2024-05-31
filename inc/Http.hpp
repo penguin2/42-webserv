@@ -47,6 +47,8 @@ class Http {
   void prepareToSendCgiResponse(void);
   static void setServerConfig(
       Request& request, const std::vector<const ServerConfig*>& server_configs);
+  void deleteCgiRequestAndResponseIfNotNull(void);
+  void createCgiRequestAndResponse(void);
 
   Http(void);
   Http(const Http&);
