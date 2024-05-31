@@ -68,6 +68,6 @@ void Response::insertCommonHeaders(bool keep_alive) {
 int Response::getStatusCode(void) const { return this->data_->getStatusCode(); }
 
 bool Response::insertSetCookieHeader(
-    const std::string set_cookie_header_value) {
+    const std::string &set_cookie_header_value) {
   return data_->insertCookie(set_cookie_header_value);
 }
