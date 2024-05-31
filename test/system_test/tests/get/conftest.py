@@ -5,7 +5,7 @@ BASE_URL = "http://127.0.0.1:4242"
 BASE_PATH = "./html/"
 
 
-def request_by_get(path: str, expect_status_code: int, expect_body: str):
+def request_by_get(path: str, expect_status_code: int, expect_body: str = ""):
     """
     基本的なGETメソッドの挙動をテスト
     StatusCode・Body・Content-Lengthのdiffをテスト
@@ -14,8 +14,9 @@ def request_by_get(path: str, expect_status_code: int, expect_body: str):
     url = BASE_URL + path
     res = requests.get(url)
     assert res.status_code == expect_status_code
-    assert res.text == expect_body
-    assert int(res.headers["Content-Length"]) == len(expect_body)
+    if expect_body != "":
+        assert res.text == expect_body
+        assert int(res.headers["Content-Length"]) == len(expect_body)
 
 
 def get_file_without_permission(file: str, expect_status_code: int, expect_body: str):

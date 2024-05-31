@@ -22,3 +22,14 @@ def test_simple_get_error():
 
 def test_no_permission():
     get_file_without_permission("/index.html", 404, "ERROR")
+
+
+def test_autoindex():
+    request_by_get("/is_autoindex/", 200)
+    request_by_get("/is_not_autoindex/", 404)
+    get_file_without_permission("/is_autoindex/", 404, "ERROR")
+    get_file_without_permission("/is_not_autoindex/", 404, "ERROR")
+    get_file_without_permission("/is_autoindex/abc", 404, "ERROR")
+    get_file_without_permission("/is_not_autoindex/def", 404, "ERROR")
+    request_by_get("/is_autoindex/abc", 200, "VALUE=abc")
+    request_by_get("/is_not_autoindex/def", 200, "VALUE=def")
