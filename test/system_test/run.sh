@@ -2,8 +2,9 @@
 
 VENV_DIR="venv"
 WEBSERV="webserv"
-WEBSERV_FROM_CURRENT_DIR="../../"$WEBSERV
-WEBSERV_FROM_DETAIL_TEST_DIR="../../"$WEBSERV_FROM_CURRENT_DIR
+GRANDPARENT_DIR="../../"
+WEBSERV_FROM_CURRENT_DIR=$GRANDPARENT_DIR$WEBSERV
+WEBSERV_FROM_DETAIL_TEST_DIR=$GRANDPARENT_DIR$WEBSERV_FROM_CURRENT_DIR
 
 function main () {
 	init_venv_environment
@@ -26,7 +27,7 @@ function exec_webserv () {
 	for dir in tests/*
 	do
 		cd $dir && $WEBSERV_FROM_DETAIL_TEST_DIR *.conf &
-		pytest -s $dir/
+		cd $dir && pytest -s && cd $GRANDPARENT_DIR
 		SERVER_PID=$(ps aux | grep "$WEBSERV" | grep -v grep | awk '{print $2}')
 		kill $SERVER_PID
 	done
