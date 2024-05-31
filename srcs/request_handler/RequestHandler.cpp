@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "ConnectionState.hpp"
+#include "FileUtils.hpp"
 #include "HttpUtils.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
@@ -83,6 +84,16 @@ connection::State RequestHandler::errorRequestHandler(
 
 connection::State RequestHandler::cgiHandler(Request& request,
                                              const std::string& path) {
+  const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
+      path, request.getServerConfig()->getLocationConfigs());
+  std::string full_path = ConfigAdapter::makeAbsolutePath(*location_conf, path);
+  std::map<std::string, std::string> file_data_map =
+      ConfigAdapter::makeFileDataMap(*location_conf, full_path);
+  std::string cgi_file_path = file_data_map["DIR"] + file_data_map["FILE"];
+
+  if (!FileUtils::hasFilePermission(cgi_file_path, X_OK))
+    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN, "Forbidden");
+
   request.overwritePath(path);
   return connection::CGI;
 }
