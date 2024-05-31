@@ -2,6 +2,8 @@
 
 #include <ctime>
 
+#include "Cookie.hpp"
+#include "CookieManager.hpp"
 #include "HttpUtils.hpp"
 #include "ResponseData.hpp"
 
@@ -10,13 +12,17 @@ Response::~Response(void) { delete this->data_; }
 
 void Response::getResponseRawData(std::stringstream &ss) const {
   const std::map<std::string, std::string> &headers = data_->getHeaders();
+  const std::map<std::string, Cookie> &cookies = data_->getCookies();
 
   ss << "HTTP/1.1 " << data_->getStatusCode() << " " << data_->getPhrase();
   ss << "\r\n";
-  for (typename std::map<std::string, std::string>::const_iterator it =
-           headers.begin();
+  for (std::map<std::string, std::string>::const_iterator it = headers.begin();
        it != headers.end(); ++it) {
     ss << it->first << ": " << it->second << "\r\n";
+  }
+  for (std::map<std::string, Cookie>::const_iterator it = cookies.begin();
+       it != cookies.end(); ++it) {
+    ss << "Set-Cookie: " << it->second << "\r\n";
   }
   ss << "\r\n";
   ss << data_->getBody();
@@ -60,3 +66,8 @@ void Response::insertCommonHeaders(bool keep_alive) {
 }
 
 int Response::getStatusCode(void) const { return this->data_->getStatusCode(); }
+
+bool Response::insertSetCookieHeader(
+    const std::string &set_cookie_header_value) {
+  return data_->insertCookie(set_cookie_header_value);
+}

@@ -1,5 +1,6 @@
 #include "ResponseData.hpp"
 
+#include "Cookie.hpp"
 #include "Utils.hpp"
 
 ResponseData::ResponseData(void) : status_code_(0) {}
@@ -14,6 +15,10 @@ const std::map<std::string, std::string>& ResponseData::getHeaders(void) const {
 }
 
 const std::string& ResponseData::getBody(void) const { return this->body_; }
+
+const std::map<std::string, Cookie>& ResponseData::getCookies(void) const {
+  return this->cookie_manager_.getCookies();
+}
 
 void ResponseData::setStatusCode(int code) { status_code_ = code; }
 
@@ -30,3 +35,7 @@ void ResponseData::insertHeader(const std::string& key,
 }
 
 void ResponseData::eraseHeader(const std::string& key) { headers_.erase(key); }
+
+bool ResponseData::insertCookie(const std::string& set_cookie_header_value) {
+  return cookie_manager_.parseCookie(set_cookie_header_value);
+}

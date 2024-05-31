@@ -245,3 +245,91 @@ int HttpUtils::isHeaderKeyChar(int c) {
 
   return (std::isalnum(c) || Utils::isContain(str, "!#$%&'*+-.^_`"));
 }
+
+int HttpUtils::isCookieValueChar(int c) {
+  if (c == 0x21) return true;
+  if (0x23 <= c && c <= 0x2B) return true;
+  if (0x2D <= c && c <= 0x3A) return true;
+  if (0x3C <= c && c <= 0x5B) return true;
+  if (0x5D <= c && c <= 0x7E) return true;
+  return false;
+}
+
+bool HttpUtils::isFullDateRFC1123(const std::string& date_str) {
+  // RFC1123-date = wkday "," SP date1 SP time SP "GMT"
+  // wkday = ("Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun")
+  // date1 = 2DIGIT(day) SP month SP 4DIGIT(year)
+  // month = ("Jan" | "Feb" | "Mar" | "Apr" | "May" | "Jun"
+  //          "Jul" | "Aug" | "Sep" | "Oct" | "Nov" | "Dec")
+  // time = 2DIGIT ":" 2DIGIT ":" 2DIGIT (00:00:00 - 23:59:59)
+  static const size_t total_date_size = (3 + 1 + 1 + 11 + 1 + 8 + 1 + 3);
+  if (date_str.size() != total_date_size) return false;
+  if (!IsFullDateUtils::isWkDay(date_str.substr(0, 3))) return false;
+  if (date_str.substr(3, 2) != ", ") return false;
+  if (!IsFullDateUtils::isDate1(date_str.substr(5, 11))) return false;
+  if (date_str[16] != ' ') return false;
+  if (!IsFullDateUtils::isTime(date_str.substr(17, 8))) return false;
+  if (date_str.substr(25) != " GMT") return false;
+  return true;
+}
+
+bool HttpUtils::IsFullDateUtils::isWkDay(const std::string& wkday_str) {
+  static const std::vector<std::string> wkdays = makeWkDay();
+
+  return (std::find(wkdays.begin(), wkdays.end(), wkday_str) != wkdays.end());
+}
+
+std::vector<std::string> HttpUtils::IsFullDateUtils::makeWkDay(void) {
+  std::vector<std::string> wkday_vec;
+
+  wkday_vec.push_back("Mon");
+  wkday_vec.push_back("Tue");
+  wkday_vec.push_back("Wed");
+  wkday_vec.push_back("Thu");
+  wkday_vec.push_back("Fri");
+  wkday_vec.push_back("Sat");
+  wkday_vec.push_back("Sun");
+  return wkday_vec;
+}
+
+bool HttpUtils::IsFullDateUtils::isDate1(const std::string& date1_str) {
+  if (!Utils::isContainsOnly(date1_str.substr(0, 2), isdigit)) return false;
+  if (date1_str[2] != ' ') return false;
+  if (!isMonth(date1_str.substr(3, 3))) return false;
+  if (date1_str[6] != ' ') return false;
+  if (!Utils::isContainsOnly(date1_str.substr(7), isdigit)) return false;
+  return true;
+}
+
+bool HttpUtils::IsFullDateUtils::isMonth(const std::string& month_str) {
+  static const std::vector<std::string> months = makeMonth();
+
+  return (std::find(months.begin(), months.end(), month_str) != months.end());
+}
+
+std::vector<std::string> HttpUtils::IsFullDateUtils::makeMonth(void) {
+  std::vector<std::string> months;
+
+  months.push_back("Jan");
+  months.push_back("Feb");
+  months.push_back("Mar");
+  months.push_back("Apr");
+  months.push_back("May");
+  months.push_back("Jun");
+  months.push_back("Jul");
+  months.push_back("Aug");
+  months.push_back("Sep");
+  months.push_back("Oct");
+  months.push_back("Nov");
+  months.push_back("Dec");
+  return months;
+}
+
+bool HttpUtils::IsFullDateUtils::isTime(const std::string& time_str) {
+  if (!Utils::isContainsOnly(time_str.substr(0, 2), isdigit)) return false;
+  if (time_str[2] != ':') return false;
+  if (!Utils::isContainsOnly(time_str.substr(3, 2), isdigit)) return false;
+  if (time_str[5] != ':') return false;
+  if (!Utils::isContainsOnly(time_str.substr(6), isdigit)) return false;
+  return true;
+}

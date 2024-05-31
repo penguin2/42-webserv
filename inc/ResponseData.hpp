@@ -4,6 +4,9 @@
 #include <map>
 #include <string>
 
+#include "Cookie.hpp"
+#include "CookieManager.hpp"
+
 class ResponseData {
  public:
   ResponseData(void);
@@ -13,18 +16,21 @@ class ResponseData {
   const std::string &getPhrase(void) const;
   const std::map<std::string, std::string> &getHeaders(void) const;
   const std::string &getBody(void) const;
+  const std::map<std::string, Cookie> &getCookies(void) const;
 
   void setStatusCode(int code);
   void setPhrase(const std::string &phrase);
   void appendBody(const std::string &str);
   void insertHeader(const std::string &key, const std::string &value);
   void eraseHeader(const std::string &key);
+  bool insertCookie(const std::string &set_cookie_header_value);
 
  private:
   int status_code_;
   std::string phrase_;
   std::map<std::string, std::string> headers_;
   std::string body_;
+  CookieManager cookie_manager_;
 
   ResponseData(const ResponseData &);
   void operator=(const ResponseData &);

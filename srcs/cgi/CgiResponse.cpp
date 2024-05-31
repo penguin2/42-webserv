@@ -85,6 +85,8 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
     insertStatusHeader(value);
   else if (key == "content-type")
     insertContentTypeHeader(value);
+  else if (key == "set-cookie")
+    insertSetCookieHeader(value);
   else
     insertHeader(key, value);
 }
