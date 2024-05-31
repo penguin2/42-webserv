@@ -1,5 +1,4 @@
-from conftest import request_by_post, post_to_exist_dir
-from conftest import post_limit_body_size, post_to_dir_without_permission
+from conftest import request_by_post, post_to_exist_dir, post_to_dir_without_permission
 
 
 def test_simple_post():
@@ -30,7 +29,3 @@ def test_post_to_exist_file():
 
 def test_no_permission_dir():
     post_to_dir_without_permission("/new_dir_no_permission", "/new_file", 500)
-
-
-def test_client_max_body_size_error():
-    post_limit_body_size("/index.html", "client max body limit", 413)

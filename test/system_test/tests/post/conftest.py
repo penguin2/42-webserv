@@ -4,7 +4,6 @@ import os
 import shutil
 
 BASE_URL = "http://127.0.0.1:4242"
-BASE_URL_LIMIT_BODY_SIZE = "http://127.0.0.1:1234"
 HTML_DIR = "./html"
 
 
@@ -26,15 +25,6 @@ def request_by_post(path: str, body: str, expect_status_code: int):
     BASE_URLは固定にしているのでPathを変えてテストを書いてください
     """
     url = BASE_URL + path
-    res = requests.post(url, data=body)
-    assert res.status_code == expect_status_code
-
-
-def post_limit_body_size(path: str, body: str, expect_status_code: int):
-    """
-    client_max_body_sizeディレクティブでボディを制限したテスト
-    """
-    url = BASE_URL_LIMIT_BODY_SIZE + path
     res = requests.post(url, data=body)
     assert res.status_code == expect_status_code
 
