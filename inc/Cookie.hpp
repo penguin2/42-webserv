@@ -8,7 +8,7 @@ class Cookie {
   Cookie(void);
   ~Cookie(void);
   Cookie(const Cookie&);
-  const Cookie& operator=(const Cookie&);
+  Cookie& operator=(const Cookie&);
 
   void setName(const std::string& cookie_name);
   void setValue(const std::string& cookie_value);

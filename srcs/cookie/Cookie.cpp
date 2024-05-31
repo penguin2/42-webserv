@@ -17,7 +17,7 @@ Cookie::Cookie(const Cookie& cookie)
       secure_(cookie.secure_),
       httponly_(cookie.httponly_) {}
 
-const Cookie& Cookie::operator=(const Cookie& cookie) {
+Cookie& Cookie::operator=(const Cookie& cookie) {
   if (this != &cookie) {
     this->name_ = cookie.name_;
     this->value_ = cookie.value_;
