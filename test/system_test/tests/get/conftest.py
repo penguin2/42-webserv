@@ -10,6 +10,7 @@ def request_by_get(path: str, expect_status_code: int, expect_body: str = ""):
     基本的なGETメソッドの挙動をテスト
     StatusCode・Body・Content-Lengthのdiffをテスト
     BASE_URLは固定にしているのでPathを変えてテストを書いてください
+    expect_body引数を省略するとボディの比較は行いません
     """
     url = BASE_URL + path
     res = requests.get(url)
