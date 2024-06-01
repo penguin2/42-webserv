@@ -40,7 +40,8 @@ int Cgi::clearWriteFd() { return SysUtils::clearFd(&write_fd_); }
 
 int Cgi::readMessage() {
   if (isReadDone()) return 0;
-  const int read_size = read(read_fd_, Cgi::read_buffer_, Cgi::kReadBufferSize);
+  const ssize_t read_size =
+      read(read_fd_, Cgi::read_buffer_, Cgi::kReadBufferSize);
   if (read_size < 0) {
     LOG(WARN, "read(cgi): ", std::strerror(errno));
     return -1;
@@ -55,7 +56,7 @@ int Cgi::readMessage() {
 
 int Cgi::writeMessage() {
   if (isWriteDone()) return 0;
-  const int write_size = write(
+  const ssize_t write_size = write(
       write_fd_, cgi_request_message_.c_str() + cgi_request_message_sent_size_,
       cgi_request_message_.size() - cgi_request_message_sent_size_);
   if (write_size <= 0) {
