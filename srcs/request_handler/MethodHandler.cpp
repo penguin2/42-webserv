@@ -8,6 +8,7 @@
 #include "HttpUtils.hpp"
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
+#include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/LocationConfig.hpp"
 
@@ -69,7 +70,8 @@ connection::State RequestHandler::MethodHandler::getMethodDirHandler(
   const std::string& index = ConfigAdapter::searchIndex(*location_conf);
   if (!index.empty()) {
     try {
-      return RequestHandler::dispatch(request, response, path + index);
+      return RequestHandler::dispatch(request, response,
+                                      Utils::concat_with_slash(path, index));
     } catch (ServerException& e) {
       // 内部リダイレクト失敗時の情報は無視, 後工程の処理を続ける
     }

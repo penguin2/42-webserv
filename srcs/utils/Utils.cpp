@@ -163,3 +163,10 @@ bool Utils::hasContentInMap(const std::map<std::string, std::string>& mp,
                             const std::string& key) {
   return (mp.find(key) != mp.end());
 }
+
+std::string Utils::concat_with_slash(const std::string& s1,
+                                    const std::string& s2) {
+  if (isEndsWith(s1, "/") && isStartsWith(s2, "/")) return s1 + s2.substr(1);
+  if (!isEndsWith(s1, "/") && !isStartsWith(s2, "/")) return s1 + "/" + s2;
+  return s1 + s2;
+}
