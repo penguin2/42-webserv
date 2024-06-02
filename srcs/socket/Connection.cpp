@@ -68,7 +68,7 @@ int Connection::handlerRecv() {
     return -1;
   }
   http_.appendClientData(std::string(Connection::recv_buffer_, recv_size));
-  const connection::State next_state = http_.httpHandler(this->state_);
+  const connection::State next_state = http_.httpHandler(state_);
   if (updateState(next_state) < 0) return -1;
   return 0;
 }
@@ -89,7 +89,7 @@ int Connection::handlerSend() {
   if (response_sent_size_ == response_.size()) {
     response_.clear();
     response_sent_size_ = 0;
-    const connection::State next_state = http_.httpHandler(this->state_);
+    const connection::State next_state = http_.httpHandler(state_);
     if (updateState(next_state) < 0) return -1;
   }
   return 0;
@@ -113,7 +113,7 @@ int Connection::handlerCgiRead() {
       return -1;
     http_.setCgiResponseMessage(cgi_->getCgiResponseMessage());
     const connection::State current_state =
-        cgi_->clearProcess() == 0 ? this->state_ : connection::CGI_ERROR;
+        cgi_->clearProcess() == 0 ? state_ : connection::CGI_ERROR;
     const connection::State next_state = http_.httpHandler(current_state);
     if (updateState(next_state) < 0) return -1;
   }
