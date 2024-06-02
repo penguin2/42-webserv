@@ -26,6 +26,7 @@ class Connection : public ASocket {
   ~Connection();
 
   int handler(Server* server);
+  int handlerTimeout();
 
   SocketAddress getPeerAddress() const;
 

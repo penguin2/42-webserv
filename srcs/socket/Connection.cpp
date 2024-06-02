@@ -44,6 +44,18 @@ int Connection::handler(Server* server) {
   return status;
 }
 
+int Connection::handlerTimeout() {
+  if (state_ == connection::SEND) return 0;
+
+  connection::State next_state = connection::CLOSED;
+
+  if (state_ == connection::CGI)
+    next_state = http_.httpHandler(connection::CGI_TIMEOUT);
+
+  if (updateState(next_state) < 0) return -1;
+  return 0;
+}
+
 SocketAddress Connection::getPeerAddress() const { return peer_address_; }
 
 int Connection::handlerRecv() {
