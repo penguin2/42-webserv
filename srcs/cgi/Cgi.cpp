@@ -45,10 +45,7 @@ int Cgi::clearProcess() {
   if (SysUtils::waitNoHang(pid_to_clear, &exit_status) == 0)
     return (exit_status == 0 ? 0 : -1);
 
-  if (kill(pid_to_clear, SIGKILL) < 0)
-    LOG(WARN, "kill(cgi): ", std::strerror(errno));
-  SysUtils::waitNoHang(pid_to_clear, NULL);
-
+  SysUtils::killProcess(pid_to_clear);
   return -1;
 }
 

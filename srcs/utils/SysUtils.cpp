@@ -2,6 +2,7 @@
 
 #include <fcntl.h>
 #include <netdb.h>
+#include <signal.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -141,5 +142,17 @@ int SysUtils::waitNoHang(pid_t pid, int* status) {
       *status = WTERMSIG(stat_loc) + 128;
   }
 
+  return 0;
+}
+
+int SysUtils::killProcess(pid_t pid) {
+  if (kill(pid, SIGTERM) < 0 || kill(pid, SIGKILL) < 0) {
+    LOG(WARN, "kill(cgi): ", std::strerror(errno));
+    return -1;
+  }
+  if (waitpid(pid, NULL, 0) != pid) {
+    LOG(WARN, "waitpid(cgi): after kill: ", std::strerror(errno));
+    return -1;
+  }
   return 0;
 }

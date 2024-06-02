@@ -17,6 +17,7 @@ class SysUtils {
   static void deleteCstringArray(char* const* c_str_array);
   static int clearFd(int* fd);
   static int waitNoHang(pid_t pid, int* status);
+  static int killProcess(pid_t pid);
 
  private:
   SysUtils(void);
