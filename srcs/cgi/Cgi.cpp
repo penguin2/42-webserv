@@ -24,10 +24,7 @@ Cgi::Cgi()
 Cgi::~Cgi() {
   clearReadFd();
   clearWriteFd();
-  if (pid_ != -1 && kill(pid_, SIGKILL) < 0)
-    LOG(WARN, "kill(cgi): ", std::strerror(errno));
-  if (waitpid(pid_, NULL, WNOHANG) < 0)
-    LOG(WARN, "waitpid(cgi): ", std::strerror(errno));
+  clearProcess();
 }
 
 int Cgi::getReadFd() const { return read_fd_; }
@@ -37,6 +34,23 @@ int Cgi::getWriteFd() const { return write_fd_; }
 int Cgi::clearReadFd() { return SysUtils::clearFd(&read_fd_); }
 
 int Cgi::clearWriteFd() { return SysUtils::clearFd(&write_fd_); }
+
+int Cgi::clearProcess() {
+  if (pid_ == -1) return -1;
+
+  pid_t pid_to_clear = pid_;
+  pid_ = -1;
+
+  int exit_status;
+  if (SysUtils::waitNoHang(pid_to_clear, &exit_status) == 0)
+    return (exit_status == 0 ? 0 : -1);
+
+  if (kill(pid_to_clear, SIGKILL) < 0)
+    LOG(WARN, "kill(cgi): ", std::strerror(errno));
+  SysUtils::waitNoHang(pid_to_clear, NULL);
+
+  return -1;
+}
 
 int Cgi::readMessage() {
   if (isReadDone()) return 0;

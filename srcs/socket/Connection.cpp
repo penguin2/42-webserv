@@ -98,7 +98,9 @@ int Connection::handlerCgiRead() {
         cgi_->clearReadFd() < 0)
       return -1;
     http_.setCgiResponseMessage(cgi_->getCgiResponseMessage());
-    const connection::State next_state = http_.httpHandler(this->state_);
+    const connection::State current_state =
+        cgi_->clearProcess() == 0 ? this->state_ : connection::CGI_ERROR;
+    const connection::State next_state = http_.httpHandler(current_state);
     if (updateState(next_state) < 0) return -1;
   }
   return 0;
