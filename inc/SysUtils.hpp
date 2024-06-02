@@ -16,6 +16,7 @@ class SysUtils {
       const std::map<std::string, std::string> envp_map);
   static void deleteCstringArray(char* const* c_str_array);
   static int clearFd(int* fd);
+  static int waitNoHang(pid_t pid, int* status);
 
  private:
   SysUtils(void);
