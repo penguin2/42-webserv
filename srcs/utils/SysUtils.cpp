@@ -2,7 +2,7 @@
 
 #include <fcntl.h>
 #include <netdb.h>
-#include <signal.h>
+#include <csignal>
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <unistd.h>
