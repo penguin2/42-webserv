@@ -6,19 +6,20 @@
 #include <utility>
 
 #include "EventManager.hpp"
-#include "Server.hpp"
 
 char Connection::recv_buffer_[Connection::kRecvBufferSize];
 
 Connection::Connection(int socket_fd, const SocketAddress& local_address,
                        const SocketAddress& peer_address,
                        const std::vector<const ServerConfig*>& server_configs,
-                       EventManager* event_manager)
+                       EventManager* event_manager,
+                       TimeoutManager* timeout_manager)
     : ASocket(socket_fd, local_address),
       peer_address_(peer_address),
       state_(connection::RECV),
       http_(peer_address, server_configs),
       event_manager_(event_manager),
+      timeout_manager_(timeout_manager),
       cgi_(NULL) {}
 
 Connection::~Connection() { clearCgi(); }
@@ -40,8 +41,9 @@ int Connection::handler(Server* server) {
       status = -1;
       break;
   }
-  server->updateTimeout(this);
   return status;
+
+  (void)server;
 }
 
 int Connection::handlerTimeout() {
@@ -177,10 +179,12 @@ int Connection::recvToCgi(Connection* conn) {
       conn->event_manager_->insert(conn->cgi_->getWriteFd(), conn,
                                    EventType::WRITE) < 0)
     return -1;
+  conn->timeout_manager_->update(conn, TimeoutManager::kCgiTimeoutLimit);
   return 0;
 }
 
 int Connection::sendToRecv(Connection* conn) {
+  conn->timeout_manager_->update(conn, TimeoutManager::kDefaultTimeoutLimit);
   return conn->event_manager_->modify(conn->socket_fd_, conn, EventType::READ);
 }
 

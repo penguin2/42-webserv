@@ -18,7 +18,6 @@ class Server {
   ~Server();
 
   int acceptListenSocket(const ListenSocket& listen_socket);
-  int updateTimeout(ASocket* socket);
 
   int start();
   int loop();

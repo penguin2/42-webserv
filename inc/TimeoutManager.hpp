@@ -15,14 +15,15 @@ class TimeoutManager {
 
   std::vector<ASocket*> findTimeouts() const;
 
-  int insert(ASocket* socket);
-  int update(ASocket* socket);
+  int insert(ASocket* socket, const Time& limit);
+  int update(ASocket* socket, const Time& new_limit);
   int erase(ASocket* socket);
+
+  static const Time kDefaultTimeoutLimit;
+  static const Time kCgiTimeoutLimit;
 
  private:
   std::multimap<Time, ASocket*> timeout_logger_;
-
-  static const Time kDefaultTimeoutLimit;
 
   TimeoutManager(const TimeoutManager&);
   TimeoutManager& operator=(const TimeoutManager&);

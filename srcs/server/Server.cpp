@@ -63,10 +63,6 @@ int Server::acceptListenSocket(const ListenSocket& listen_socket) {
   return 0;
 }
 
-int Server::updateTimeout(ASocket* socket) {
-  return timeout_manager_->update(socket);
-}
-
 int Server::start() {
   LOG(INFO, "server: ", "start()");
   LOG(INFO, "server: initial sockets: ", sockets_);
@@ -120,7 +116,7 @@ int Server::addConnection(
 
   Connection* new_connection =
       new Connection(connected_socket_fd, local_address, peer_address,
-                     server_configs, event_manager_);
+                     server_configs, event_manager_, timeout_manager_);
 
   if (event_manager_->insert(connected_socket_fd, new_connection,
                              EventType::READ) < 0) {
@@ -128,7 +124,8 @@ int Server::addConnection(
     return -1;
   }
 
-  if (timeout_manager_->insert(new_connection) < 0) {
+  if (timeout_manager_->insert(new_connection,
+                               TimeoutManager::kDefaultTimeoutLimit) < 0) {
     event_manager_->erase(connected_socket_fd, new_connection, EventType::READ);
     delete new_connection;
     return -1;
