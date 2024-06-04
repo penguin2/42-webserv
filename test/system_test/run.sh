@@ -26,9 +26,11 @@ function clean_up () {
 function exec_webserv () {
 	for dir in tests/*
 	do
-		cd $dir && $WEBSERV_FROM_DETAIL_TEST_DIR *.conf &
-		cd $dir && pytest -s && cd $GRANDPARENT_DIR
-		SERVER_PID=$(ps aux | grep "$WEBSERV" | grep -v grep | awk '{print $2}')
+		cd $dir
+		$WEBSERV_FROM_DETAIL_TEST_DIR *.conf &
+		SERVER_PID=$!
+		pytest -s
+		cd -
 		kill $SERVER_PID
 	done
 }
