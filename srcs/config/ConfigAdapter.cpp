@@ -97,9 +97,7 @@ std::string ConfigAdapter::makeAbsolutePath(const LocationConfig& location_conf,
 
   if (root.empty()) return INTERNAL::DEFAULT_ROOT + path;
   if (root == "/") return path;
-  if (Utils::isEndsWith(root, "/") && Utils::isStartsWith(path, "/"))
-    return root + path.substr(1);
-  return root + path;
+  return Utils::concatWithSlash(root, path);
 }
 
 const std::string* ConfigAdapter::searchRedirectUri(
@@ -136,7 +134,8 @@ bool ConfigAdapter::isAllowMethods(const LocationConfig& location_conf,
                                    const std::string& method) {
   const std::vector<std::string>& methods = location_conf.getAllowMethods();
 
-  return (methods.empty() || Config::isCorrespondingMethod(method));
+  if (methods.empty()) return true;
+  return (std::find(methods.begin(), methods.end(), method) != methods.end());
 }
 
 std::vector<std::string> ConfigAdapter::getAllowMethods(

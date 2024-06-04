@@ -325,3 +325,16 @@ TEST(Utils, UINT_TO_STRING) {
   EXPECT_EQ(Utils::uintToString(12345U), "12345");
   EXPECT_EQ(Utils::uintToString(65535U), "65535");
 }
+
+TEST(Utils, concatWithSlash) {
+  EXPECT_STREQ(Utils::concatWithSlash("abc", "def").c_str(), "abc/def");
+  EXPECT_STREQ(Utils::concatWithSlash("abc/", "def").c_str(), "abc/def");
+  EXPECT_STREQ(Utils::concatWithSlash("abc", "/def").c_str(), "abc/def");
+  EXPECT_STREQ(Utils::concatWithSlash("abc/", "/").c_str(), "abc/");
+  EXPECT_STREQ(Utils::concatWithSlash("abc", "/").c_str(), "abc/");
+  EXPECT_STREQ(Utils::concatWithSlash("abc", "").c_str(), "abc/");
+  EXPECT_STREQ(Utils::concatWithSlash("/", "/def").c_str(), "/def");
+  EXPECT_STREQ(Utils::concatWithSlash("/", "def").c_str(), "/def");
+  EXPECT_STREQ(Utils::concatWithSlash("", "def").c_str(), "/def");
+  EXPECT_STREQ(Utils::concatWithSlash("", "").c_str(), "/");
+}

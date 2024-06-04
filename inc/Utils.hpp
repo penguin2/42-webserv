@@ -40,6 +40,8 @@ class Utils {
   static std::string uintToString(unsigned int val);
   static bool hasContentInMap(const std::map<std::string, std::string>& mp,
                               const std::string& key);
+  static std::string concatWithSlash(const std::string& s1,
+                                      const std::string& s2);
 
  private:
   Utils(void);

@@ -8,6 +8,7 @@
 #include "HttpUtils.hpp"
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
+#include "Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/LocationConfig.hpp"
 
@@ -69,7 +70,8 @@ connection::State RequestHandler::MethodHandler::getMethodDirHandler(
   const std::string& index = ConfigAdapter::searchIndex(*location_conf);
   if (!index.empty()) {
     try {
-      return RequestHandler::dispatch(request, response, path + index);
+      return RequestHandler::dispatch(request, response,
+                                      Utils::concatWithSlash(path, index));
     } catch (ServerException& e) {
       // 内部リダイレクト失敗時の情報は無視, 後工程の処理を続ける
     }
@@ -96,9 +98,9 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
       ConfigAdapter::makeAbsolutePath(*location_conf, path);
   const std::string& body = request.getRequestData()->getBody();
 
-  if (FileUtils::isExistFile(absolute_path)) {
-    throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
-                          "Cannot POST because file exists");
+  if (FileUtils::isExistFile(absolute_path) ||
+      FileUtils::isExistDir(absolute_path)) {
+    throw ServerException(ServerException::SERVER_ERROR_CONFLICT, "Conflict");
   }
   if (ConfigAdapter::getClientMaxBodySize(*location_conf) < body.size()) {
     throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
@@ -126,12 +128,10 @@ connection::State RequestHandler::MethodHandler::deleteMethodHandler(
       ConfigAdapter::makeAbsolutePath(*location_conf, path);
 
   if (!FileUtils::isExistFile(absolute_path)) {
-    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
-                          "File Not Exist");
+    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
   }
   if (!FileUtils::hasFilePermission(absolute_path, W_OK)) {
-    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
-                          "Has not permission");
+    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
   }
   if (std::remove(absolute_path.c_str()) != 0) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
