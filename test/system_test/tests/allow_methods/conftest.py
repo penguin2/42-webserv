@@ -17,6 +17,10 @@ NONE_ALLOW_METHODS_PATH = "/none_allow_methods_directive/"
 
 @pytest.fixture(scope="session", autouse=True)
 def manage_html_directory():
+    """
+    前処理として必要なディレクトリを作成
+    後処理としてディレクトリを削除
+    """
     os.mkdir(BASE_PATH)
     os.mkdir(BASE_PATH + GET_PATH)
     os.mkdir(BASE_PATH + POST_PATH)
@@ -43,6 +47,9 @@ def remove_if_exist(path: str):
 
 
 def request_by_get(path: str, expect_status_code: int):
+    """
+    file作成 -> GET -> file削除
+    """
     url = BASE_URL + path
     full_path = BASE_PATH + path
     touch_if_not_exist(full_path)
@@ -52,6 +59,10 @@ def request_by_get(path: str, expect_status_code: int):
 
 
 def request_by_post(path: str, expect_status_code: int):
+    """
+     file削除 -> POST -> file削除
+
+    """
     url = BASE_URL + path
     full_path = BASE_PATH + path
     remove_if_exist(full_path)
@@ -61,6 +72,9 @@ def request_by_post(path: str, expect_status_code: int):
 
 
 def request_by_delete(path: str, expect_status_code: int):
+    """
+    file作成 -> DELETE -> file削除
+    """
     url = BASE_URL + path
     full_path = BASE_PATH + path
     touch_if_not_exist(full_path)

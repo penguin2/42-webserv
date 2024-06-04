@@ -1,5 +1,6 @@
 from conftest import request_by_get, request_by_post, request_by_delete
-from conftest import GET_PATH, GET_PATH, POST_PATH, DELETE_PATH, GET_DELETE_PATH, GET_POST_PATH, POST_DELETE_PATH, ALL_METHODS_PATH, NONE_ALLOW_METHODS_PATH
+from conftest import GET_PATH, POST_PATH, DELETE_PATH
+from conftest import GET_DELETE_PATH, GET_POST_PATH, POST_DELETE_PATH, ALL_METHODS_PATH, NONE_ALLOW_METHODS_PATH
 
 TARGET_FILE = "index.html"
 
