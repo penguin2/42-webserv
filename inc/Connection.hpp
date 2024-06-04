@@ -9,6 +9,7 @@
 #include "ConnectionState.hpp"
 #include "EventManager.hpp"
 #include "SocketAddress.hpp"
+#include "TimeoutManager.hpp"
 #include "config/ServerConfig.hpp"
 
 #ifdef MOCK
@@ -22,10 +23,11 @@ class Connection : public ASocket {
   Connection(int socket_fd, const SocketAddress& local_address,
              const SocketAddress& peer_address,
              const std::vector<const ServerConfig*>& server_configs,
-             EventManager* event_manager);
+             EventManager* event_manager, TimeoutManager* timeout_manager);
   ~Connection();
 
   int handler(Server* server);
+  int handlerTimeout();
 
   SocketAddress getPeerAddress() const;
 
@@ -36,6 +38,7 @@ class Connection : public ASocket {
   connection::State state_;
   Http http_;
   EventManager* event_manager_;
+  TimeoutManager* timeout_manager_;
 
   std::string response_;
   std::size_t response_sent_size_;

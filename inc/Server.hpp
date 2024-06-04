@@ -18,7 +18,6 @@ class Server {
   ~Server();
 
   int acceptListenSocket(const ListenSocket& listen_socket);
-  int updateTimeout(ASocket* socket);
 
   int start();
   int loop();
@@ -38,6 +37,8 @@ class Server {
                     const SocketAddress& peer_address,
                     const std::vector<const ServerConfig*>& server_configs);
 
+  int handleTimeouts(const std::vector<ASocket*>& timeout_sockets,
+                     std::vector<ASocket*>& closing_sockets);
   int executeEventSockets(const std::vector<ASocket*>& event_sockets,
                           std::vector<ASocket*>& closing_sockets);
   int closeSocket(ASocket* socket);

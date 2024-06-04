@@ -20,6 +20,7 @@ class Cgi {
 
   int clearReadFd();
   int clearWriteFd();
+  int clearProcess();
 
   int readMessage();
   int writeMessage();

@@ -63,10 +63,6 @@ int Server::acceptListenSocket(const ListenSocket& listen_socket) {
   return 0;
 }
 
-int Server::updateTimeout(ASocket* socket) {
-  return timeout_manager_->update(socket);
-}
-
 int Server::start() {
   LOG(INFO, "server: ", "start()");
   LOG(INFO, "server: initial sockets: ", sockets_);
@@ -82,16 +78,17 @@ int Server::loop() {
   LOG(INFO, "server: ", "loop()");
   std::vector<ASocket*> event_sockets, closing_sockets;
   while (true) {
-    closeSockets(timeout_manager_->findTimeouts());
-
+    closeSockets(closing_sockets);
     closing_sockets.clear();
+
+    handleTimeouts(timeout_manager_->findTimeouts(), closing_sockets);
+
     event_sockets.clear();
     const int wait_status =
         event_manager_->wait(event_sockets, closing_sockets);
     if (wait_status < 0) return -1;
     if (wait_status == 0) continue;
     executeEventSockets(event_sockets, closing_sockets);
-    closeSockets(closing_sockets);
   }
   return 0;
 }
@@ -119,7 +116,7 @@ int Server::addConnection(
 
   Connection* new_connection =
       new Connection(connected_socket_fd, local_address, peer_address,
-                     server_configs, event_manager_);
+                     server_configs, event_manager_, timeout_manager_);
 
   if (event_manager_->insert(connected_socket_fd, new_connection,
                              EventType::READ) < 0) {
@@ -127,7 +124,8 @@ int Server::addConnection(
     return -1;
   }
 
-  if (timeout_manager_->insert(new_connection) < 0) {
+  if (timeout_manager_->insert(new_connection,
+                               TimeoutManager::kDefaultTimeoutLimit) < 0) {
     event_manager_->erase(connected_socket_fd, new_connection, EventType::READ);
     delete new_connection;
     return -1;
@@ -136,6 +134,19 @@ int Server::addConnection(
   sockets_[connected_socket_fd] = new_connection;
 
   LOG(INFO, "connection created: ", *new_connection);
+  return 0;
+}
+
+int Server::handleTimeouts(const std::vector<ASocket*>& timeout_sockets,
+                           std::vector<ASocket*>& closing_sockets) {
+  for (std::vector<ASocket*>::const_iterator it = timeout_sockets.begin();
+       it != timeout_sockets.end(); ++it) {
+    ASocket* timeout_socket = *it;
+    if (dynamic_cast<Connection*>(timeout_socket) != NULL &&
+        static_cast<Connection*>(timeout_socket)->handlerTimeout() == 0)
+      continue;
+    closing_sockets.push_back(timeout_socket);
+  }
   return 0;
 }
 

@@ -2,7 +2,9 @@
 
 #include <fcntl.h>
 #include <netdb.h>
+#include <csignal>
 #include <sys/socket.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include <cerrno>
@@ -116,6 +118,41 @@ int SysUtils::clearFd(int* fd) {
   if (*fd != -1) {
     if (close(*fd) < 0) return -1;
     *fd = -1;
+  }
+  return 0;
+}
+
+int SysUtils::waitNoHang(pid_t pid, int* status) {
+  if (pid == -1) return -1;
+
+  int stat_loc;
+  const int wait_ret = waitpid(pid, &stat_loc, WNOHANG);
+  if (wait_ret < 0) {
+    LOG(WARN, "waitpid: ", std::strerror(errno));
+    return -1;
+  } else if (wait_ret == 0) {
+    LOG(WARN, "waitpid(WNOHANG): no_stopped or exited: pid: ", pid);
+    return -1;
+  }
+
+  if (status != NULL) {
+    if (WIFEXITED(stat_loc))
+      *status = WEXITSTATUS(stat_loc);
+    else if (WIFSIGNALED(stat_loc))
+      *status = WTERMSIG(stat_loc) + 128;
+  }
+
+  return 0;
+}
+
+int SysUtils::killProcess(pid_t pid) {
+  if (kill(pid, SIGTERM) < 0 || kill(pid, SIGKILL) < 0) {
+    LOG(WARN, "kill(cgi): ", std::strerror(errno));
+    return -1;
+  }
+  if (waitpid(pid, NULL, 0) != pid) {
+    LOG(WARN, "waitpid(cgi): after kill: ", std::strerror(errno));
+    return -1;
   }
   return 0;
 }

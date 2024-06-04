@@ -22,18 +22,17 @@ std::vector<ASocket*> TimeoutManager::findTimeouts() const {
   return timeout_sockets;
 }
 
-int TimeoutManager::insert(ASocket* socket) {
+int TimeoutManager::insert(ASocket* socket, const Time& limit) {
   const std::pair<Time, ASocket*> new_element(
-      Time::getCurrentClockTime() + TimeoutManager::kDefaultTimeoutLimit,
-      socket);
+      Time::getCurrentClockTime() + limit, socket);
   socket->setTimeout(new_element.first);
   timeout_logger_.insert(new_element);
   return 0;
 }
 
-int TimeoutManager::update(ASocket* socket) {
+int TimeoutManager::update(ASocket* socket, const Time& new_limit) {
   if (erase(socket) < 0) return -1;
-  return insert(socket);
+  return insert(socket, new_limit);
 }
 
 int TimeoutManager::erase(ASocket* socket) {
@@ -50,5 +49,6 @@ int TimeoutManager::erase(ASocket* socket) {
   return -1;
 }
 
-// TODO: set default timeout limit
-const Time TimeoutManager::kDefaultTimeoutLimit = Time(5, 0);
+const Time TimeoutManager::kDefaultTimeoutLimit = Time(30, 0);
+
+const Time TimeoutManager::kCgiTimeoutLimit = Time(60, 0);
