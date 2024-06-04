@@ -100,8 +100,7 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
 
   if (FileUtils::isExistFile(absolute_path) ||
       FileUtils::isExistDir(absolute_path)) {
-    throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
-                          "Cannot POST because file exists");
+    throw ServerException(ServerException::SERVER_ERROR_CONFLICT, "Conflict");
   }
   if (ConfigAdapter::getClientMaxBodySize(*location_conf) < body.size()) {
     throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,

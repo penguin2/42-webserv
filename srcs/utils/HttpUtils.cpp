@@ -131,6 +131,7 @@ std::set<int> HttpUtils::makeDisconnectCodeSet(void) {
   disconnect_status_codes.insert(400);
   disconnect_status_codes.insert(405);
   disconnect_status_codes.insert(408);
+  disconnect_status_codes.insert(409);
   disconnect_status_codes.insert(413);
   disconnect_status_codes.insert(414);
   disconnect_status_codes.insert(421);

@@ -15,7 +15,7 @@ def test_create_file_in_nonexistent_directory():
 
 
 def test_post_to_exist_dir():
-    post_to_exist_dir("/new_dir", 405)
+    post_to_exist_dir("/new_dir", 409)
 
 
 def test_post_to_exist_file():
@@ -24,7 +24,7 @@ def test_post_to_exist_file():
     同じファイルをPOSTした時のテスト
     """
     request_by_post("/new_file", "abc", 201)
-    request_by_post("/new_file", "exist file", 405)
+    request_by_post("/new_file", "exist file", 409)
 
 
 def test_no_permission_dir():
