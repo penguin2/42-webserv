@@ -46,7 +46,6 @@ class Http {
   connection::State httpHandlerCgiTimeout(void);
 
   void prepareToSendResponse(Response& response);
-  void prepareToSendCgiResponse(void);
   static void setServerConfig(
       Request& request, const std::vector<const ServerConfig*>& server_configs);
   void deleteCgiRequestAndResponseIfNotNull(void);

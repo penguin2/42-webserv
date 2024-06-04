@@ -51,7 +51,6 @@ connection::State RequestHandler::MethodHandler::getMethodFileHandler(
                           "Read Error");
   }
   response.appendBody(ss.str());
-  response.insertContentLengthIfNotSet();
   response.insertHeader("Content-Type",
                         HttpUtils::convertPathToContentType(path));
   response.setStatusLine(200, "OK");
@@ -82,7 +81,6 @@ connection::State RequestHandler::MethodHandler::getMethodDirHandler(
                           "Autoindex Error");
   }
   response.appendBody(ss.str());
-  response.insertContentLengthIfNotSet();
   response.insertHeader("Content-Type", "text/html");
   response.setStatusLine(200, "OK");
   return connection::SEND;
@@ -113,7 +111,6 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
   response.appendBody(generatePostSuccessJsonData(absolute_path, absolute_uri));
   response.insertHeader("Content-Type", "application/json");
   response.insertHeader("Location", absolute_uri);
-  response.insertContentLengthIfNotSet();
   response.setStatusLine(201, "Created");
   return connection::SEND;
 }

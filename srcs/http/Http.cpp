@@ -58,7 +58,7 @@ connection::State Http::httpHandler(connection::State current_state) {
        current_state == connection::CGI_ERROR ||
        current_state == connection::CGI_TIMEOUT) &&
       next_state == connection::SEND) {
-    prepareToSendCgiResponse();
+    prepareToSendResponse(*this->cgi_response_);
     deleteCgiRequestAndResponseIfNotNull();
   }
   return next_state;
@@ -132,14 +132,9 @@ void Http::prepareToSendResponse(Response& response) {
   this->keep_alive_flag_ =
       ((request_.haveConnectionCloseHeader() == false) &&
        HttpUtils::isMaintainConnection(response.getStatusCode()));
+  if (response.getStatusCode() == 204) response.clearBody();
   response.insertCommonHeaders(this->keep_alive_flag_);
   response.getResponseRawData(raw_response_data_);
-}
-
-void Http::prepareToSendCgiResponse(void) {
-  if (this->request_.getRequestData()->getMethod() != "DELETE")
-    this->cgi_response_->insertContentLengthIfNotSet();
-  prepareToSendResponse(static_cast<Response&>(*this->cgi_response_));
 }
 
 void Http::setServerConfig(
