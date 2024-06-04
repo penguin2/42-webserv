@@ -58,7 +58,7 @@ TEST(HttpUtils, IS_MAINTAIN_CONNECTION) {
   EXPECT_EQ(HttpUtils::isMaintainConnection(406), true);
   EXPECT_EQ(HttpUtils::isMaintainConnection(407), true);
   EXPECT_EQ(HttpUtils::isMaintainConnection(408), false);
-  EXPECT_EQ(HttpUtils::isMaintainConnection(409), true);
+  EXPECT_EQ(HttpUtils::isMaintainConnection(409), false);
   EXPECT_EQ(HttpUtils::isMaintainConnection(410), true);
   EXPECT_EQ(HttpUtils::isMaintainConnection(411), true);
   EXPECT_EQ(HttpUtils::isMaintainConnection(412), true);
