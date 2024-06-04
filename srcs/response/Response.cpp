@@ -46,10 +46,8 @@ void Response::resetResponseData(void) {
   this->data_ = new ResponseData;
 }
 
-void Response::insertContentLengthIfNotSet(void) {
-  const std::map<std::string, std::string> &headers = data_->getHeaders();
-  if (headers.find("content-length") != headers.end()) return;
-  const size_t body_size = data_->getBody().size();
+void Response::insertContentLength(void) {
+  const size_t body_size = this->data_->getBody().size();
   std::stringstream ss;
   ss << body_size;
   data_->insertHeader("content-length", ss.str());
@@ -58,6 +56,7 @@ void Response::insertContentLengthIfNotSet(void) {
 void Response::insertCommonHeaders(bool keep_alive) {
   this->insertHeader("Connection", (keep_alive ? "Keep-Alive" : "Close"));
   this->insertHeader("Server", "Webserv");
+  this->insertContentLength();
 
   std::time_t raw_time;
   std::time(&raw_time);
@@ -71,3 +70,5 @@ bool Response::insertSetCookieHeader(
     const std::string &set_cookie_header_value) {
   return data_->insertCookie(set_cookie_header_value);
 }
+
+void Response::clearBody(void) { this->data_->clearBody(); }

@@ -24,6 +24,7 @@ class ResponseData {
   void insertHeader(const std::string &key, const std::string &value);
   void eraseHeader(const std::string &key);
   bool insertCookie(const std::string &set_cookie_header_value);
+  void clearBody(void);
 
  private:
   int status_code_;
