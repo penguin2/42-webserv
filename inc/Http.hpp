@@ -42,6 +42,8 @@ class Http {
   connection::State httpHandlerRecv(void);
   connection::State httpHandlerSend(void);
   connection::State httpHandlerCgi(void);
+  connection::State httpHandlerCgiError(void);
+  connection::State httpHandlerCgiTimeout(void);
 
   void prepareToSendResponse(Response& response);
   void prepareToSendCgiResponse(void);

@@ -37,6 +37,12 @@ connection::State Http::httpHandler(connection::State current_state) {
     case (connection::CGI):
       next_state = httpHandlerCgi();
       break;
+    case (connection::CGI_ERROR):
+      next_state = httpHandlerCgiError();
+      break;
+    case (connection::CGI_TIMEOUT):
+      next_state = httpHandlerCgiTimeout();
+      break;
     default:
       next_state = connection::CLOSED;
       break;
@@ -48,7 +54,10 @@ connection::State Http::httpHandler(connection::State current_state) {
     deleteCgiRequestAndResponseIfNotNull();
     createCgiRequestAndResponse();
   }
-  if (current_state == connection::CGI && next_state == connection::SEND) {
+  if ((current_state == connection::CGI ||
+       current_state == connection::CGI_ERROR ||
+       current_state == connection::CGI_TIMEOUT) &&
+      next_state == connection::SEND) {
     prepareToSendCgiResponse();
     deleteCgiRequestAndResponseIfNotNull();
   }
@@ -105,6 +114,18 @@ connection::State Http::httpHandlerCgi(void) {
                                                e.code(), e.what());
   }
   return connection::SEND;
+}
+
+connection::State Http::httpHandlerCgiError(void) {
+  this->cgi_response_->resetResponseData();
+  return RequestHandler::errorRequestHandler(request_, *cgi_response_, 500,
+                                             "Internal Server Error");
+}
+
+connection::State Http::httpHandlerCgiTimeout(void) {
+  this->cgi_response_->resetResponseData();
+  return RequestHandler::errorRequestHandler(request_, *cgi_response_, 504,
+                                             "Gateway Timeout");
 }
 
 void Http::prepareToSendResponse(Response& response) {
