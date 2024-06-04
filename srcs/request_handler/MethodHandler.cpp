@@ -128,12 +128,10 @@ connection::State RequestHandler::MethodHandler::deleteMethodHandler(
       ConfigAdapter::makeAbsolutePath(*location_conf, path);
 
   if (!FileUtils::isExistFile(absolute_path)) {
-    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
-                          "File Not Exist");
+    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
   }
   if (!FileUtils::hasFilePermission(absolute_path, W_OK)) {
-    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN,
-                          "Has not permission");
+    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
   }
   if (std::remove(absolute_path.c_str()) != 0) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
