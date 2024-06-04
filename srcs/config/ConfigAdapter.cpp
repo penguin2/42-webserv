@@ -97,7 +97,7 @@ std::string ConfigAdapter::makeAbsolutePath(const LocationConfig& location_conf,
 
   if (root.empty()) return INTERNAL::DEFAULT_ROOT + path;
   if (root == "/") return path;
-  return Utils::concat_with_slash(root, path);
+  return Utils::concatWithSlash(root, path);
 }
 
 const std::string* ConfigAdapter::searchRedirectUri(

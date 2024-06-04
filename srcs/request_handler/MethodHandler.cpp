@@ -71,7 +71,7 @@ connection::State RequestHandler::MethodHandler::getMethodDirHandler(
   if (!index.empty()) {
     try {
       return RequestHandler::dispatch(request, response,
-                                      Utils::concat_with_slash(path, index));
+                                      Utils::concatWithSlash(path, index));
     } catch (ServerException& e) {
       // 内部リダイレクト失敗時の情報は無視, 後工程の処理を続ける
     }
