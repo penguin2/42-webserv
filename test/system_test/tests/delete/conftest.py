@@ -30,7 +30,7 @@ def request_by_delete(path: str, expect_status_code: int):
     assert res.status_code == expect_status_code
     if res.status_code == 204:
         assert res.text == ""
-        assert "Content-Length" not in res.headers
+        assert res.headers["Content-Length"] == "0"
 
 
 def touch_and_delete(file: str, expect_status_code: int):

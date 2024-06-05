@@ -18,15 +18,17 @@ class Response {
   void insertHeader(const std::string &key, const std::string &value);
   void appendBody(const std::string &str);
   void resetResponseData(void);
-  void insertContentLengthIfNotSet(void);
   void insertCommonHeaders(bool keep_alive);
   int getStatusCode(void) const;
   bool insertSetCookieHeader(const std::string &set_cookie_header_value);
+  void clearBody(void);
 
  protected:
   ResponseData *data_;
 
  private:
+  void insertContentLength(void);
+
   Response(const Response &);
   void operator=(const Response &);
 };

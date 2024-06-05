@@ -39,3 +39,5 @@ void ResponseData::eraseHeader(const std::string& key) { headers_.erase(key); }
 bool ResponseData::insertCookie(const std::string& set_cookie_header_value) {
   return cookie_manager_.parseCookie(set_cookie_header_value);
 }
+
+void ResponseData::clearBody(void) { this->body_.clear(); }

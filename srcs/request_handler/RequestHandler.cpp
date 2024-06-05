@@ -56,7 +56,6 @@ connection::State RequestHandler::redirectHandler(const Request& request,
       generateErrorPageContent(request, redirect_status_code, "Redirect"));
   response.insertHeader("Location", *redirect_uri);
   response.insertHeader("Content-Type", "text/html");
-  response.insertContentLengthIfNotSet();
   response.setStatusLine(redirect_status_code, "Redirect");
   return connection::SEND;
 }
@@ -77,7 +76,6 @@ connection::State RequestHandler::errorRequestHandler(
 
   response.appendBody(generateErrorPageContent(request, status_code, phrase));
   response.insertHeader("Content-Type", "text/html");
-  response.insertContentLengthIfNotSet();
   response.setStatusLine(status_code, phrase);
   return connection::SEND;
 }
