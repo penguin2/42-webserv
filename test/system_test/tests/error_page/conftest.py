@@ -21,7 +21,11 @@ def manage_html_directory():
     touch(HTML_DIR + "/404.html", "404")
     touch(HTML_DIR + "/index.html", "INDEX")
     os.mkdir(HTML_DIR + "/directory")
+    no_permission_file = HTML_DIR + "/permission.html"
+    touch(no_permission_file, "PERMISSION")
+    os.chmod(no_permission_file, 0o000)
     yield
+    os.chmod(no_permission_file, 0o755)
     if os.path.exists(HTML_DIR):
         shutil.rmtree(HTML_DIR)
 
