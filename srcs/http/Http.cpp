@@ -131,7 +131,7 @@ connection::State Http::httpHandlerCgiTimeout(void) {
 void Http::prepareToSendResponse(Response& response) {
   this->keep_alive_flag_ =
       ((request_.haveConnectionCloseHeader() == false) &&
-       HttpUtils::isMaintainConnection(response.getStatusCode()));
+       HttpUtils::isKeepConnection(response.getStatusCode()));
   if (response.getStatusCode() == 204) response.clearBody();
   response.insertCommonHeaders(this->keep_alive_flag_);
   response.getResponseRawData(raw_response_data_);

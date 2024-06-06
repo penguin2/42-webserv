@@ -96,9 +96,10 @@ std::string HttpUtils::convertPathToContentType(const std::string& path) {
   return "text/plain";
 }
 
-bool HttpUtils::isMaintainConnection(int code) {
-  static const std::set<int> disconn_codes = HttpUtils::makeDisconnectCodeSet();
-  return (disconn_codes.find(code) == disconn_codes.end());
+bool HttpUtils::isKeepConnection(size_t code) {
+  static const std::set<size_t> keep_conn_codes =
+      HttpUtils::makeKeepConnectionCodeSet();
+  return (keep_conn_codes.find(code) != keep_conn_codes.end());
 }
 
 bool HttpUtils::isRedirectStatusCode(size_t code) {
@@ -125,20 +126,13 @@ std::map<std::string, std::string> HttpUtils::makeContentTypeMap(void) {
   return content_type_map;
 }
 
-// TODO KeepAliveをCloseするStatusCodeを調べる
-std::set<int> HttpUtils::makeDisconnectCodeSet(void) {
-  std::set<int> disconnect_status_codes;
-  disconnect_status_codes.insert(400);
-  disconnect_status_codes.insert(405);
-  disconnect_status_codes.insert(408);
-  disconnect_status_codes.insert(409);
-  disconnect_status_codes.insert(413);
-  disconnect_status_codes.insert(414);
-  disconnect_status_codes.insert(421);
-  disconnect_status_codes.insert(431);
-  disconnect_status_codes.insert(501);
-  disconnect_status_codes.insert(505);
-  return disconnect_status_codes;
+// リダイレクトと静的ファイルの正常系ステータスコードのみKeepAlive
+std::set<size_t> HttpUtils::makeKeepConnectionCodeSet(void) {
+  std::set<size_t> keep_connection_codes = makeRedirectCodeSet();
+  keep_connection_codes.insert(200);
+  keep_connection_codes.insert(201);
+  keep_connection_codes.insert(204);
+  return keep_connection_codes;
 }
 
 // リダイレクトは301,302,303,307,308のみ対応
