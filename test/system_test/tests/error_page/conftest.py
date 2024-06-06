@@ -18,12 +18,17 @@ def manage_html_directory():
     テスト終了後にディレクトリを削除
     """
     os.mkdir(HTML_DIR)
-    touch(HTML_DIR + "/404.html", "404")
-    touch(HTML_DIR + "/index.html", "INDEX")
     os.mkdir(HTML_DIR + "/directory")
+    touch(HTML_DIR + "/index.html", "INDEX")
+    touch(HTML_DIR + "/4xx.html", "4xx")
+    touch(HTML_DIR + "/404.html", "404")
+    touch(HTML_DIR + "/405.html", "405")
+    touch(HTML_DIR + "/403.py", "403.py")
+
     no_permission_file = HTML_DIR + "/permission.html"
     touch(no_permission_file, "PERMISSION")
     os.chmod(no_permission_file, 0o000)
+
     yield
     os.chmod(no_permission_file, 0o755)
     if os.path.exists(HTML_DIR):
