@@ -51,6 +51,7 @@ class Connection : public ASocket {
   int handlerRecv();
   int handlerSend();
   int handlerCgi();
+  int handlerCgiDone();
   int handlerCgiRead();
   int handlerCgiWrite();
 
