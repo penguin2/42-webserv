@@ -92,13 +92,13 @@ const LocationConfig* ConfigAdapter::searchLocationConfig(
   return NULL;
 }
 
-std::string ConfigAdapter::makeAbsolutePath(const LocationConfig& location_conf,
-                                            const std::string& path) {
+std::string ConfigAdapter::makeFilePath(const LocationConfig& location_conf,
+                                        const std::string& http_path) {
   const std::string& root = location_conf.getRoot();
 
-  if (root.empty()) return INTERNAL::DEFAULT_ROOT + path;
-  if (root == "/") return path;
-  return Utils::concatWithSlash(root, path);
+  if (root.empty()) return INTERNAL::DEFAULT_ROOT + http_path;
+  if (root == "/") return http_path;
+  return Utils::concatWithSlash(root, http_path);
 }
 
 const std::string* ConfigAdapter::searchRedirectUri(

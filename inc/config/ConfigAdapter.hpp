@@ -25,9 +25,8 @@ const LocationConfig* searchLocationConfig(
     const std::string& path,
     const std::map<std::string, LocationConfig>& location_configs);
 
-// root付きの絶対パスをmake
-std::string makeAbsolutePath(const LocationConfig& location_conf,
-                             const std::string& path);
+std::string makeFilePath(const LocationConfig& location_conf,
+                         const std::string& http_path);
 
 // (リダイレクト対象のRequest) ? redirect_URI : NULL
 const std::string* searchRedirectUri(const LocationConfig& location_conf);
