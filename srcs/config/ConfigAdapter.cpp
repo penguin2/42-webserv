@@ -4,6 +4,7 @@
 #include <cstdlib>
 
 #include "CgiRequest.hpp"
+#include "FileUtils.hpp"
 #include "ListenSocket.hpp"
 #include "SysUtils.hpp"
 #include "Utils.hpp"
@@ -115,11 +116,13 @@ int ConfigAdapter::searchRedirectStatusCode(
 
 bool ConfigAdapter::isCgiPath(const LocationConfig& location_conf,
                               const std::string& path) {
+  std::string file_path = makeAbsolutePath(location_conf, path);
   std::map<std::string, std::string> file_data_map =
-      makeFileDataMap(location_conf, path);
+      makeFileDataMap(location_conf, file_path);
+  std::string path_to_cgi_script = file_data_map["DIR"] + file_data_map["FILE"];
 
   if (file_data_map["FILE"].empty()) return false;
-  return true;
+  return FileUtils::isExistFile(path_to_cgi_script);
 }
 
 const std::string* ConfigAdapter::searchErrorPage(
