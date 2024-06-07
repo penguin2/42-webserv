@@ -43,11 +43,16 @@ connection::State Http::httpHandler(connection::State current_state) {
     case (connection::CGI_TIMEOUT):
       next_state = httpHandlerCgiTimeout();
       break;
+    case (connection::HTTP_TIMEOUT):
+      next_state = httpHandlerHttpTimeout();
+      break;
     default:
       next_state = connection::CLOSED;
       break;
   }
-  if (current_state == connection::RECV && next_state == connection::SEND) {
+  if ((current_state == connection::RECV ||
+       current_state == connection::HTTP_TIMEOUT) &&
+      next_state == connection::SEND) {
     prepareToSendResponse(this->response_);
   }
   if (current_state == connection::RECV && next_state == connection::CGI) {
@@ -126,6 +131,14 @@ connection::State Http::httpHandlerCgiTimeout(void) {
   this->cgi_response_->resetResponseData();
   return RequestHandler::errorRequestHandler(request_, *cgi_response_, 504,
                                              "Gateway Timeout");
+}
+
+connection::State Http::httpHandlerHttpTimeout(void) {
+  // errorRequestHandler内でrequest_メンバ変数はほぼ使用されない
+  // status_code != 405
+  // request_.getServerConfig() == NULL
+  return RequestHandler::errorRequestHandler(request_, response_, 408,
+                                             "Request Timeout");
 }
 
 void Http::prepareToSendResponse(Response& response) {
