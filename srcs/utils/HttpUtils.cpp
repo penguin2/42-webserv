@@ -334,3 +334,23 @@ bool HttpUtils::IsFullDateUtils::isTime(const std::string& time_str) {
   if (!Utils::isContainsOnly(time_str.substr(6), isdigit)) return false;
   return true;
 }
+
+std::string HttpUtils::generateRedirectContent(const std::string& uri,
+                                               size_t status_code,
+                                               const std::string& phrase) {
+  std::stringstream ss;
+
+  ss << "<!DOCTYPE html>\r\n"
+     << "<html lang=\"en\">\r\n\r\n"
+     << "<head>\r\n"
+     << "	<meta charset=\"UTF-8\">\r\n"
+     << "	<title>" << status_code << " " << phrase << "</title>\r\n"
+     << "</head>\r\n\r\n"
+     << "<body>\r\n"
+     << "	<h1>" << status_code << " " << phrase << "</h1>\r\n"
+     << "	<h2><a href=\"" << uri << "\">" << uri << "</a></h2>\r\n"
+     << "</body>\r\n\r\n"
+     << "</html>\r\n";
+  std::cout << ss.str() << std::endl;
+  return ss.str();
+}
