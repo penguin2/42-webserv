@@ -17,7 +17,8 @@
 #include "Utils.hpp"
 
 // デフォルトのエラーページHTMLをプログラムで生成
-std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
+std::string HttpUtils::generateErrorPage(size_t status_code,
+                                         const std::string& phrase) {
   std::stringstream ss;
 
   ss << "<!DOCTYPE html>\r\n"
@@ -26,7 +27,7 @@ std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
      << "	<meta charset=\"UTF-8\">\r\n"
      << "	<meta name=\"viewport\" content=\"width=device-width, "
         "initial-scale=1.0\">\r\n"
-     << "	<title>" << code << " " << phrase << "</title>\r\n"
+     << "	<title>" << status_code << " " << phrase << "</title>\r\n"
      << "	<style>\r\n"
      << "		body {\r\n"
      << "			font-family: Arial, sans-serif;\r\n"
@@ -55,7 +56,7 @@ std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
      << "</head>\r\n\r\n"
      << "<body>\r\n"
      << "	<div class=\"container\">\r\n"
-     << "		<h1>" << code << " " << phrase << "</h1>\r\n"
+     << "		<h1>" << status_code << " " << phrase << "</h1>\r\n"
      << "		<h2><a href=\"/\">Webserv</a></h2>\r\n"
      << "	</div>\r\n"
      << "</body>\r\n\r\n"
@@ -65,13 +66,14 @@ std::string HttpUtils::generateErrorPage(int code, const std::string& phrase) {
 
 // デフォルトのエラーページHTMLをファイルから読み取り生成
 // ファイルがなかったり読み取りエラーとなった場合はプログラムで生成
-std::string HttpUtils::generateErrorPage(const std::string* file, int code,
+std::string HttpUtils::generateErrorPage(const std::string* file,
+                                         size_t status_code,
                                          const std::string& phrase) {
   std::stringstream ss;
   if (file == NULL || !FileUtils::isExistFile(*file) ||
       !FileUtils::hasFilePermission(*file, R_OK) ||
       FileUtils::readAllDataFromFile(file->c_str(), ss) == false)
-    return HttpUtils::generateErrorPage(code, phrase);
+    return HttpUtils::generateErrorPage(status_code, phrase);
   return ss.str();
 }
 
@@ -230,8 +232,8 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
   return true;
 }
 
-bool HttpUtils::isStatusCode(size_t code) {
-  return (100 <= code && code < 1000);
+bool HttpUtils::isStatusCode(size_t status_code) {
+  return (100 <= status_code && status_code < 1000);
 }
 
 int HttpUtils::isHeaderKeyChar(int c) {

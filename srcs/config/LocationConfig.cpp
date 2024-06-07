@@ -1,7 +1,10 @@
 #include "./config/LocationConfig.hpp"
 
 LocationConfig::LocationConfig()
-    : try_files_error_code(0), client_max_body_size(0), autoindex(false), return_status_code(0) {}
+    : try_files_error_code(0),
+      client_max_body_size(0),
+      autoindex(false),
+      return_status_code(0) {}
 
 const std::string& LocationConfig::getRoot() const { return root; }
 
@@ -17,10 +20,10 @@ void LocationConfig::addTryFilesPath(const std::string& newPath) {
   try_files_path.push_back(newPath);
 }
 
-int LocationConfig::getTryFilesErrorCode() const {
+size_t LocationConfig::getTryFilesErrorCode() const {
   return try_files_error_code;
 }
-void LocationConfig::setTryFilesErrorCode(int newErrorCode) {
+void LocationConfig::setTryFilesErrorCode(size_t newErrorCode) {
   try_files_error_code = newErrorCode;
 }
 
@@ -44,8 +47,11 @@ void LocationConfig::setAllowMethods(
   this->allow_methods = new_methods;
 }
 
-int LocationConfig::getReturnStatusCode() const { return return_status_code; }
-void LocationConfig::setReturnStatusCode(int newStatusCode) {
+size_t LocationConfig::getReturnStatusCode() const {
+  return return_status_code;
+}
+
+void LocationConfig::setReturnStatusCode(size_t newStatusCode) {
   return_status_code = newStatusCode;
 }
 

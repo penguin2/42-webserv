@@ -108,7 +108,7 @@ const std::string* ConfigAdapter::searchRedirectUri(
   return &redirect_uri;
 }
 
-int ConfigAdapter::searchRedirectStatusCode(
+size_t ConfigAdapter::searchRedirectStatusCode(
     const LocationConfig& location_conf) {
   return location_conf.getReturnStatusCode();
 }
@@ -123,8 +123,8 @@ bool ConfigAdapter::isCgiPath(const LocationConfig& location_conf,
 }
 
 const std::string* ConfigAdapter::searchErrorPage(
-    const ServerConfig& server_conf, int code) {
-  const std::string& error_page = server_conf.getErrorPage(code);
+    const ServerConfig& server_conf, size_t status_code) {
+  const std::string& error_page = server_conf.getErrorPage(status_code);
 
   if (error_page.empty()) return NULL;
   return &error_page;

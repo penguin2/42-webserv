@@ -3,6 +3,7 @@
 #include <set>
 #include <stdexcept>
 
+#include "HttpUtils.hpp"
 #include "UriUtils.hpp"
 #include "Utils.hpp"
 
@@ -39,18 +40,18 @@ std::vector<std::string> ErrorPageDirectiveHandler::tokensToUniqueCodeStrings(
   return std::vector<std::string>(code_set.begin(), code_set.end());
 }
 
-std::vector<int> ErrorPageDirectiveHandler::codeStringsToStatusCodes(
+std::vector<size_t> ErrorPageDirectiveHandler::codeStringsToStatusCodes(
     const std::vector<std::string>& code_strings) {
-  std::vector<int> status_codes;
+  std::vector<size_t> status_codes;
 
   for (std::vector<std::string>::const_iterator code_str = code_strings.begin();
        code_str != code_strings.end(); ++code_str) {
-    size_t code;
-    if (Utils::strToSize_t(*code_str, code, 10) == false ||
-        (code < 100 || 999 < code)) {
+    size_t status_code;
+    if (Utils::strToSize_t(*code_str, status_code, 10) == false ||
+        !HttpUtils::isStatusCode(status_code)) {
       throw std::out_of_range("Not Status Code");
     }
-    status_codes.push_back(code);
+    status_codes.push_back(status_code);
   }
   return status_codes;
 }
@@ -62,9 +63,9 @@ void ErrorPageDirectiveHandler::setConfig() {
   const std::string& page = tokens_[page_index];
 
   std::vector<std::string> code_strings = tokensToUniqueCodeStrings(tokens_);
-  std::vector<int> codes = codeStringsToStatusCodes(code_strings);
+  std::vector<size_t> codes = codeStringsToStatusCodes(code_strings);
 
-  for (std::vector<int>::const_iterator code = codes.begin();
+  for (std::vector<size_t>::const_iterator code = codes.begin();
        code != codes.end(); ++code) {
     serverConfig.addErrorPage(*code, page);
   }

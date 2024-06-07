@@ -30,8 +30,8 @@ void Response::getResponseRawData(std::stringstream &ss) const {
 
 ResponseData &Response::getResponseData(void) { return *data_; }
 
-void Response::setStatusLine(int code, const std::string &phrase) {
-  data_->setStatusCode(code);
+void Response::setStatusLine(size_t status_code, const std::string &phrase) {
+  data_->setStatusCode(status_code);
   data_->setPhrase(phrase);
 }
 
@@ -64,7 +64,9 @@ void Response::insertCommonHeaders(bool keep_alive) {
                                  raw_time, "%a, %d %b %Y %H:%M:%S GMT"));
 }
 
-int Response::getStatusCode(void) const { return this->data_->getStatusCode(); }
+size_t Response::getStatusCode(void) const {
+  return this->data_->getStatusCode();
+}
 
 bool Response::insertSetCookieHeader(
     const std::string &set_cookie_header_value) {

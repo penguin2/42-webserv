@@ -12,13 +12,13 @@ class ResponseData {
   ResponseData(void);
   ~ResponseData(void);
 
-  int getStatusCode(void) const;
+  size_t getStatusCode(void) const;
   const std::string &getPhrase(void) const;
   const std::map<std::string, std::string> &getHeaders(void) const;
   const std::string &getBody(void) const;
   const std::map<std::string, Cookie> &getCookies(void) const;
 
-  void setStatusCode(int code);
+  void setStatusCode(size_t code);
   void setPhrase(const std::string &phrase);
   void appendBody(const std::string &str);
   void insertHeader(const std::string &key, const std::string &value);
@@ -27,7 +27,7 @@ class ResponseData {
   void clearBody(void);
 
  private:
-  int status_code_;
+  size_t status_code_;
   std::string phrase_;
   std::map<std::string, std::string> headers_;
   std::string body_;

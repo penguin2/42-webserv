@@ -98,9 +98,9 @@ void CgiResponse::insertStatusHeader(const std::string& value) {
                           "Status Header Value is invalid");
 
   const std::string code_str = value.substr(0, pos_first_space);
-  size_t code;
-  if (Utils::strToSize_t(code_str, code, 10) == false ||
-      !HttpUtils::isStatusCode(code))
+  size_t status_code;
+  if (Utils::strToSize_t(code_str, status_code, 10) == false ||
+      !HttpUtils::isStatusCode(status_code))
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Status Header is invalid");
 
@@ -110,7 +110,7 @@ void CgiResponse::insertStatusHeader(const std::string& value) {
                           "Phrase contain non-printable character");
   Utils::strTrim(phrase, " ");
 
-  insertHeader("status", Utils::uintToString(code) + " " + phrase);
+  insertHeader("status", Utils::uintToString(status_code) + " " + phrase);
 }
 
 void CgiResponse::insertLocationHeader(const std::string& value) {

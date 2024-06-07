@@ -11,8 +11,8 @@
 #include "FileUtils.hpp"
 
 namespace HttpUtils {
-std::string generateErrorPage(int code, const std::string& phrase);
-std::string generateErrorPage(const std::string* file, int code,
+std::string generateErrorPage(size_t status_code, const std::string& phrase);
+std::string generateErrorPage(const std::string* file, size_t status_code,
                               const std::string& phrase);
 std::string generateDateAsFormat(std::time_t t, const std::string& fmt);
 std::string convertPathToContentType(const std::string& path);

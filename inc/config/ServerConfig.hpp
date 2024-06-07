@@ -14,7 +14,7 @@ class ServerConfig {
   std::string server_name;
   std::string listen_address;
   std::string listen_port;
-  std::map<int, std::string> error_pages;
+  std::map<size_t, std::string> error_pages;
   std::map<std::string, LocationConfig> location_configs;
 
  public:
@@ -28,7 +28,7 @@ class ServerConfig {
 
   void setListenPort(const std::string& listen_port);
 
-  void addErrorPage(int error_code, const std::string& error_page);
+  void addErrorPage(size_t status_code, const std::string& error_page);
 
   void addLocationConfig(const std::string& location_path);
 
@@ -38,7 +38,7 @@ class ServerConfig {
 
   const std::string& getListenPort() const;
 
-  const std::string& getErrorPage(int error_code) const;
+  const std::string& getErrorPage(size_t status_code) const;
 
   LocationConfig& getLocationConfig(const std::string& location_path);
 
@@ -57,7 +57,7 @@ class ServerConfig {
 //   os << "Error Pages:" << std::endl;
 //   for (std::map<int, std::string>::iterator it = this->error_pages.begin();
 //        it != this->error_pages.end(); ++it) {
-//     os << "error_code: " << it->first << ", error_page: " << it->second
+//     os << "status_code: " << it->first << ", error_page: " << it->second
 //        << std::endl;
 //   }
 

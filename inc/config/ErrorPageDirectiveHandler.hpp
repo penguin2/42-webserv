@@ -11,7 +11,7 @@ class ErrorPageDirectiveHandler : public ADirectiveHandler {
 
   static std::vector<std::string> tokensToUniqueCodeStrings(
       const std::vector<std::string>& tokens);
-  static std::vector<int> codeStringsToStatusCodes(
+  static std::vector<size_t> codeStringsToStatusCodes(
       const std::vector<std::string>& code_stirngs);
 };
 
