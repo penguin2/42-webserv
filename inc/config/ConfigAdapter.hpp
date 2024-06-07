@@ -61,8 +61,8 @@ std::vector<std::string> getCgiExts(const LocationConfig& location_conf);
 // if (FileDataMap["FILE"] == "") -> Not CGI Pattern
 std::map<std::string, std::string> makeFileDataMap(
     const LocationConfig& location_conf, const std::string& path);
-std::map<std::string, std::string> makeFileDataMapFromAbsolutePath(
-    const std::string& absolute_path, const std::string& ext);
+std::map<std::string, std::string> makeFileDataMapFromFilePath(
+    const std::string& file_path, const std::string& ext);
 
 size_t getClientMaxBodySize(const LocationConfig& location_conf);
 

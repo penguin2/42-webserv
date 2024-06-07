@@ -191,12 +191,11 @@ std::map<std::string, std::string> ConfigAdapter::makeFileDataMap(
   return file_data_map;
 }
 
-std::map<std::string, std::string>
-ConfigAdapter::makeFileDataMapFromAbsolutePath(const std::string& path,
-                                               const std::string& ext) {
-  std::vector<std::string> path_elements = Utils::split(path, '/');
+std::map<std::string, std::string> ConfigAdapter::makeFileDataMapFromFilePath(
+    const std::string& file_path, const std::string& ext) {
+  std::vector<std::string> path_elements = Utils::split(file_path, '/');
   std::map<std::string, std::string> file_data_map;
-  file_data_map["DIR"] = Utils::isStartsWith(path, "/") ? "/" : "";
+  file_data_map["DIR"] = Utils::isStartsWith(file_path, "/") ? "/" : "";
   file_data_map["FILE"] = "";
   file_data_map["PATH_INFO"] = "";
 
@@ -213,7 +212,7 @@ ConfigAdapter::makeFileDataMapFromAbsolutePath(const std::string& path,
   for (; it != path_elements.end(); ++it) {
     file_data_map["PATH_INFO"].append("/").append(*it);
   }
-  if (Utils::isEndsWith(path, "/")) file_data_map["PATH_INFO"].append("/");
+  if (Utils::isEndsWith(file_path, "/")) file_data_map["PATH_INFO"].append("/");
   return file_data_map;
 }
 
