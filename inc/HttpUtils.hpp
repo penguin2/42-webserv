@@ -11,15 +11,15 @@
 #include "FileUtils.hpp"
 
 namespace HttpUtils {
-std::string generateErrorPage(int code, const std::string& phrase);
-std::string generateErrorPage(const std::string* file, int code,
+std::string generateErrorPage(size_t status_code, const std::string& phrase);
+std::string generateErrorPage(const std::string* file, size_t status_code,
                               const std::string& phrase);
 std::string generateDateAsFormat(std::time_t t, const std::string& fmt);
 std::string convertPathToContentType(const std::string& path);
-bool isMaintainConnection(int code);
+bool isKeepConnection(size_t code);
 bool isRedirectStatusCode(size_t code);
 std::map<std::string, std::string> makeContentTypeMap(void);
-std::set<int> makeDisconnectCodeSet(void);
+std::set<size_t> makeKeepConnectionCodeSet(void);
 std::set<size_t> makeRedirectCodeSet(void);
 bool generateAutoindexPage(const std::string& path_component,
                            const std::string& absolute_dir_path,

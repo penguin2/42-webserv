@@ -34,13 +34,14 @@ const std::string* searchRedirectUri(const LocationConfig& location_conf);
 
 // (リダイレクト対象のRequest) ? redirect_status_code : 0
 // searchRedirectUri関数後に実行される想定のため、0が返ることは基本ない
-int searchRedirectStatusCode(const LocationConfig& location_conf);
+size_t searchRedirectStatusCode(const LocationConfig& location_conf);
 
 // (Locationにcgi_path&cgi_extがあり、PathがCGIファイル) ? true : false
 bool isCgiPath(const LocationConfig& location_conf, const std::string& path);
 
 // (error_pageに該当するStatusCodeが含まれる) ? error_page_path : NULL
-const std::string* searchErrorPage(const ServerConfig& server_conf, int code);
+const std::string* searchErrorPage(const ServerConfig& server_conf,
+                                   size_t status_code);
 
 // allow_methodsディレクティブが存在しない場合、全てのMethodが許容される
 bool isAllowMethods(const LocationConfig& location_conf,
