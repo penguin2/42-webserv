@@ -31,6 +31,9 @@ connection::State Http::httpHandler(connection::State current_state) {
     case (connection::RECV):
       next_state = httpHandlerRecv();
       break;
+    case (connection::RECV_TIMEOUT):
+      next_state = httpHandlerRecvTimeout();
+      break;
     case (connection::SEND):
       next_state = httpHandlerSend();
       break;
@@ -47,7 +50,9 @@ connection::State Http::httpHandler(connection::State current_state) {
       next_state = connection::CLOSED;
       break;
   }
-  if (current_state == connection::RECV && next_state == connection::SEND) {
+  if ((current_state == connection::RECV ||
+       current_state == connection::RECV_TIMEOUT) &&
+      next_state == connection::SEND) {
     prepareToSendResponse(this->response_);
   }
   if (current_state == connection::RECV && next_state == connection::CGI) {
@@ -126,6 +131,12 @@ connection::State Http::httpHandlerCgiTimeout(void) {
   this->cgi_response_->resetResponseData();
   return RequestHandler::errorRequestHandler(request_, *cgi_response_, 504,
                                              "Gateway Timeout");
+}
+
+connection::State Http::httpHandlerRecvTimeout(void) {
+  // errorRequestHandler内でrequest_が不完全な状態にあることによる不都合は無い
+  return RequestHandler::errorRequestHandler(request_, response_, 408,
+                                             "Request Timeout");
 }
 
 void Http::prepareToSendResponse(Response& response) {
