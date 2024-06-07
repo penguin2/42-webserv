@@ -14,12 +14,12 @@ class Response {
   void getResponseRawData(std::stringstream &ss) const;
   ResponseData &getResponseData(void);
 
-  void setStatusLine(int code, const std::string &phrase);
+  void setStatusLine(size_t status_code, const std::string &phrase);
   void insertHeader(const std::string &key, const std::string &value);
   void appendBody(const std::string &str);
   void resetResponseData(void);
   void insertCommonHeaders(bool keep_alive);
-  int getStatusCode(void) const;
+  size_t getStatusCode(void) const;
   bool insertSetCookieHeader(const std::string &set_cookie_header_value);
   void clearBody(void);
 

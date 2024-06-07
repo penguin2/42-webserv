@@ -5,18 +5,18 @@
 #include <string>
 #include <vector>
 
-enum HttpMethod { GET, POST, DELETE};
+enum HttpMethod { GET, POST, DELETE };
 
 class LocationConfig {
  private:
   std::string root;
   std::string index;
   std::vector<std::string> try_files_path;
-  int try_files_error_code;
+  size_t try_files_error_code;
   size_t client_max_body_size;
   bool autoindex;
   std::vector<std::string> allow_methods;
-  int return_status_code;
+  size_t return_status_code;
   std::string return_uri;
   std::vector<std::string> cgi_path;
   std::vector<std::string> cgi_ext;
@@ -33,8 +33,8 @@ class LocationConfig {
   const std::vector<std::string>& getTryFilesPath() const;
   void addTryFilesPath(const std::string& newPath);
 
-  int getTryFilesErrorCode() const;
-  void setTryFilesErrorCode(int newErrorCode);
+  size_t getTryFilesErrorCode() const;
+  void setTryFilesErrorCode(size_t newErrorCode);
 
   size_t getClientMaxBodySize() const;
   void setClientMaxBodySize(size_t newSize);
@@ -45,8 +45,8 @@ class LocationConfig {
   const std::vector<std::string>& getAllowMethods() const;
   void setAllowMethods(const std::vector<std::string> new_methods);
 
-  int getReturnStatusCode() const;
-  void setReturnStatusCode(int newStatusCode);
+  size_t getReturnStatusCode() const;
+  void setReturnStatusCode(size_t newStatusCode);
 
   const std::string& getReturnUri() const;
   void setReturnUri(const std::string& newUri);

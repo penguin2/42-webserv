@@ -10,11 +10,11 @@ namespace RequestHandler {
 connection::State dispatch(Request& request, Response& response,
                            std::string http_path);
 connection::State errorRequestHandler(const Request& request,
-                                      Response& response, int status_code,
+                                      Response& response, size_t status_code,
                                       const std::string& phrase);
 connection::State redirectHandler(const Request& request, Response& response,
                                   std::string http_path);
-std::string generateErrorPageContent(const Request& request, int status_code,
+std::string generateErrorPageContent(const Request& request, size_t status_code,
                                      const std::string& phrase);
 connection::State cgiHandler(Request& request, const std::string& http_path);
 

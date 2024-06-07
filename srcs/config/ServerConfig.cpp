@@ -24,8 +24,9 @@ void ServerConfig::setListenPort(const std::string& listen_port) {
   this->listen_port = listen_port;
 }
 
-void ServerConfig::addErrorPage(int error_code, const std::string& error_page) {
-  this->error_pages[error_code] = error_page;
+void ServerConfig::addErrorPage(size_t status_code,
+                                const std::string& error_page) {
+  this->error_pages[status_code] = error_page;
 }
 
 void ServerConfig::addLocationConfig(const std::string& location_path) {
@@ -40,8 +41,9 @@ const std::string& ServerConfig::getListenAddress() const {
 
 const std::string& ServerConfig::getListenPort() const { return listen_port; }
 
-const std::string& ServerConfig::getErrorPage(int error_code) const {
-  std::map<int, std::string>::const_iterator it = error_pages.find(error_code);
+const std::string& ServerConfig::getErrorPage(size_t error_code) const {
+  std::map<size_t, std::string>::const_iterator it =
+      error_pages.find(error_code);
   if (it != error_pages.end()) {
     return it->second;
   }
@@ -77,7 +79,7 @@ void ServerConfig::print() {
   std::cout << "server_name: " << this->server_name << std::endl;
   std::cout << "listen_address: " << this->listen_address << std::endl;
 
-  for (std::map<int, std::string>::iterator it = this->error_pages.begin();
+  for (std::map<size_t, std::string>::iterator it = this->error_pages.begin();
        it != this->error_pages.end(); ++it) {
     std::cout << "error_code: " << it->first << ", error_page: " << it->second
               << std::endl;

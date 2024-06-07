@@ -3,7 +3,15 @@
 
 namespace connection {
 
-typedef enum eState { RECV, SEND, CGI, CGI_TIMEOUT, CGI_ERROR, CLOSED } State;
+typedef enum eState {
+  RECV,
+  RECV_TIMEOUT,
+  SEND,
+  CGI,
+  CGI_TIMEOUT,
+  CGI_ERROR,
+  CLOSED
+} State;
 
 }
 

@@ -50,7 +50,7 @@ connection::State RequestHandler::redirectHandler(const Request& request,
       http_path, request.getServerConfig()->getLocationConfigs());
   const std::string* redirect_uri =
       ConfigAdapter::searchRedirectUri(*location_conf);
-  int redirect_status_code =
+  size_t redirect_status_code =
       ConfigAdapter::searchRedirectStatusCode(*location_conf);
 
   response.appendBody(
@@ -62,7 +62,7 @@ connection::State RequestHandler::redirectHandler(const Request& request,
 }
 
 connection::State RequestHandler::errorRequestHandler(
-    const Request& request, Response& response, int status_code,
+    const Request& request, Response& response, size_t status_code,
     const std::string& phrase) {
   // status_code == 405 になるのはdispatch関数のsearchLocationConfig関数実行後
   if (status_code == 405) {
@@ -99,7 +99,7 @@ connection::State RequestHandler::cgiHandler(Request& request,
 }
 
 std::string RequestHandler::generateErrorPageContent(
-    const Request& request, int status_code, const std::string& phrase) {
+    const Request& request, size_t status_code, const std::string& phrase) {
   // requestのParseError時はServerConfigが特定できていないためNULL
   const ServerConfig* server_conf = request.getServerConfig();
 

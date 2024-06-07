@@ -31,6 +31,9 @@ connection::State Http::httpHandler(connection::State current_state) {
     case (connection::RECV):
       next_state = httpHandlerRecv();
       break;
+    case (connection::RECV_TIMEOUT):
+      next_state = httpHandlerRecvTimeout();
+      break;
     case (connection::SEND):
       next_state = httpHandlerSend();
       break;
@@ -47,7 +50,9 @@ connection::State Http::httpHandler(connection::State current_state) {
       next_state = connection::CLOSED;
       break;
   }
-  if (current_state == connection::RECV && next_state == connection::SEND) {
+  if ((current_state == connection::RECV ||
+       current_state == connection::RECV_TIMEOUT) &&
+      next_state == connection::SEND) {
     prepareToSendResponse(this->response_);
   }
   if (current_state == connection::RECV && next_state == connection::CGI) {
@@ -128,10 +133,16 @@ connection::State Http::httpHandlerCgiTimeout(void) {
                                              "Gateway Timeout");
 }
 
+connection::State Http::httpHandlerRecvTimeout(void) {
+  // errorRequestHandler内でrequest_が不完全な状態にあることによる不都合は無い
+  return RequestHandler::errorRequestHandler(request_, response_, 408,
+                                             "Request Timeout");
+}
+
 void Http::prepareToSendResponse(Response& response) {
   this->keep_alive_flag_ =
       ((request_.haveConnectionCloseHeader() == false) &&
-       HttpUtils::isMaintainConnection(response.getStatusCode()));
+       HttpUtils::isKeepConnection(response.getStatusCode()));
   if (response.getStatusCode() == 204) response.clearBody();
   response.insertCommonHeaders(this->keep_alive_flag_);
   response.getResponseRawData(raw_response_data_);

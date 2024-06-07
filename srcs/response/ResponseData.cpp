@@ -6,7 +6,7 @@
 ResponseData::ResponseData(void) : status_code_(0) {}
 ResponseData::~ResponseData(void) {}
 
-int ResponseData::getStatusCode(void) const { return this->status_code_; }
+size_t ResponseData::getStatusCode(void) const { return this->status_code_; }
 
 const std::string& ResponseData::getPhrase(void) const { return this->phrase_; }
 
@@ -20,7 +20,9 @@ const std::map<std::string, Cookie>& ResponseData::getCookies(void) const {
   return this->cookie_manager_.getCookies();
 }
 
-void ResponseData::setStatusCode(int code) { status_code_ = code; }
+void ResponseData::setStatusCode(size_t status_code) {
+  this->status_code_ = status_code;
+}
 
 void ResponseData::setPhrase(const std::string& phrase) { phrase_ = phrase; }
 

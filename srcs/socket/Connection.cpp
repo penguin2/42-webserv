@@ -49,10 +49,19 @@ int Connection::handler(Server* server) {
 int Connection::handlerTimeout() {
   if (state_ == connection::SEND) return 0;
 
-  connection::State next_state = connection::CLOSED;
+  connection::State next_state;
 
-  if (state_ == connection::CGI)
-    next_state = http_.httpHandler(connection::CGI_TIMEOUT);
+  switch (state_) {
+    case connection::RECV:
+      next_state = http_.httpHandler(connection::RECV_TIMEOUT);
+      break;
+    case connection::CGI:
+      next_state = http_.httpHandler(connection::CGI_TIMEOUT);
+      break;
+    default:
+      next_state = connection::CLOSED;
+      break;
+  }
 
   if (updateState(next_state) < 0) return -1;
   return 0;
