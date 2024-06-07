@@ -22,8 +22,7 @@ std::map<std::string, std::string> makeContentTypeMap(void);
 std::set<int> makeDisconnectCodeSet(void);
 std::set<size_t> makeRedirectCodeSet(void);
 bool generateAutoindexPage(const std::string& path_component,
-                           const std::string& absolute_dir_path,
-                           std::stringstream& ss);
+                           const std::string& dir_path, std::stringstream& ss);
 bool isStatusCode(size_t code);
 int isHeaderKeyChar(int c);
 int isCookieValueChar(int c);
@@ -35,7 +34,7 @@ bool generateFileRecord(const FileUtils::Entry& entry, const std::string& dir,
 void generateFileLink(const std::string& file_name, std::stringstream& ss);
 bool generateFileDetail(const std::string& file_path, bool is_dir,
                         std::stringstream& ss);
-bool generateFileDetailTimestamp(const std::string& path,
+bool generateFileDetailTimestamp(const std::string& file_path,
                                  std::stringstream& ss);
 
 }  // namespace AutoindexUtils

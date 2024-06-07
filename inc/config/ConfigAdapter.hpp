@@ -22,7 +22,7 @@ const ServerConfig* searchServerConfig(
     const std::vector<const ServerConfig*>& server_configs);
 
 const LocationConfig* searchLocationConfig(
-    const std::string& path,
+    const std::string& http_path,
     const std::map<std::string, LocationConfig>& location_configs);
 
 std::string makeFilePath(const LocationConfig& location_conf,
@@ -60,7 +60,7 @@ std::vector<std::string> getCgiExts(const LocationConfig& location_conf);
 // FileDataMap contains the elements DIR, FILE, and PATH_INFO
 // if (FileDataMap["FILE"] == "") -> Not CGI Pattern
 std::map<std::string, std::string> makeFileDataMap(
-    const LocationConfig& location_conf, const std::string& path);
+    const LocationConfig& location_conf, const std::string& file_path);
 std::map<std::string, std::string> makeFileDataMapFromFilePath(
     const std::string& file_path, const std::string& ext);
 

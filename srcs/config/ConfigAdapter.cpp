@@ -75,7 +75,7 @@ const ServerConfig* ConfigAdapter::searchServerConfig(
 // checking keys in reverse order assures
 // that the first prefix found is the longest prefix matching
 const LocationConfig* ConfigAdapter::searchLocationConfig(
-    const std::string& path,
+    const std::string& http_path,
     const std::map<std::string, LocationConfig>& location_configs) {
   for (std::map<std::string, LocationConfig>::const_reverse_iterator it =
            location_configs.rbegin();
@@ -83,10 +83,10 @@ const LocationConfig* ConfigAdapter::searchLocationConfig(
     const std::string& location_path = it->first;
     const LocationConfig* location_config = &(it->second);
 #if defined(__MACH__)
-    if (Utils::isStartsWithCaseInsensitive(path, location_path))
+    if (Utils::isStartsWithCaseInsensitive(http_path, location_path))
       return location_config;
 #elif defined(__linux__)
-    if (Utils::isStartsWith(path, location_path)) return location_config;
+    if (Utils::isStartsWith(http_path, location_path)) return location_config;
 #endif
   }
   return NULL;
@@ -115,8 +115,8 @@ int ConfigAdapter::searchRedirectStatusCode(
 }
 
 bool ConfigAdapter::isCgiPath(const LocationConfig& location_conf,
-                              const std::string& path) {
-  std::string file_path = makeAbsolutePath(location_conf, path);
+                              const std::string& http_path) {
+  std::string file_path = makeFilePath(location_conf, http_path);
   std::map<std::string, std::string> file_data_map =
       makeFileDataMap(location_conf, file_path);
   std::string path_to_cgi_script = file_data_map["DIR"] + file_data_map["FILE"];
@@ -179,13 +179,13 @@ std::vector<std::string> ConfigAdapter::getCgiExts(
 }
 
 std::map<std::string, std::string> ConfigAdapter::makeFileDataMap(
-    const LocationConfig& location_conf, const std::string& path) {
+    const LocationConfig& location_conf, const std::string& file_path) {
   const std::vector<std::string>& exts = getCgiExts(location_conf);
   std::map<std::string, std::string> file_data_map;
 
   for (std::vector<std::string>::const_iterator it_ext = exts.begin();
        it_ext != exts.end(); ++it_ext) {
-    file_data_map = makeFileDataMapFromAbsolutePath(path, *it_ext);
+    file_data_map = makeFileDataMapFromFilePath(file_path, *it_ext);
     if (!file_data_map["FILE"].empty()) return file_data_map;
   }
   return file_data_map;

@@ -41,14 +41,14 @@ CgiRequest* CgiRequest::createCgiRequest(const Request& request,
 
   const RequestData* data = request.getRequestData();
   const Uri& uri = data->getUri();
-  const std::string& path = uri.getPath();
+  const std::string& http_path = uri.getPath();
   const ServerConfig* server_conf = request.getServerConfig();
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
-      path, server_conf->getLocationConfigs());
-  const std::string absolute_path =
-      ConfigAdapter::makeAbsolutePath(*location_conf, path);
+      http_path, server_conf->getLocationConfigs());
+  const std::string file_path =
+      ConfigAdapter::makeFilePath(*location_conf, http_path);
   std::map<std::string, std::string> file_data_map =
-      ConfigAdapter::makeFileDataMap(*location_conf, absolute_path);
+      ConfigAdapter::makeFileDataMap(*location_conf, file_path);
 
   new_cgi_request->insertContentLengthAndBodyIfHasHeader(request);
   new_cgi_request->insertContentTypeIfHasHeader(request);
@@ -56,7 +56,7 @@ CgiRequest* CgiRequest::createCgiRequest(const Request& request,
   if (!file_data_map["PATH_INFO"].empty()) {
     const std::string path_info = file_data_map["PATH_INFO"];
     const std::string path_translated =
-        ConfigAdapter::makeAbsolutePath(*location_conf, path_info);
+        ConfigAdapter::makeFilePath(*location_conf, path_info);
     new_cgi_request->addEnvVar("PATH_INFO", path_info);
     new_cgi_request->addEnvVar("PATH_TRANSLATED", path_translated);
   }
@@ -117,11 +117,11 @@ void CgiRequest::insertServerName(const Request& request) {
 }
 
 void CgiRequest::insertScriptName(const Request& request) {
-  const std::string& path = request.getRequestData()->getUri().getPath();
+  const std::string& http_path = request.getRequestData()->getUri().getPath();
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
-      path, request.getServerConfig()->getLocationConfigs());
+      http_path, request.getServerConfig()->getLocationConfigs());
   std::map<std::string, std::string> file_data_map =
-      ConfigAdapter::makeFileDataMap(*location_conf, path);
+      ConfigAdapter::makeFileDataMap(*location_conf, http_path);
 
   addEnvVar("SCRIPT_NAME", file_data_map["DIR"] + file_data_map["FILE"]);
 }
