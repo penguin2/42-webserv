@@ -40,11 +40,11 @@ class Http {
   std::string cgi_response_message_;
 
   connection::State httpHandlerRecv(void);
+  connection::State httpHandlerRecvTimeout(void);
   connection::State httpHandlerSend(void);
   connection::State httpHandlerCgi(void);
   connection::State httpHandlerCgiError(void);
   connection::State httpHandlerCgiTimeout(void);
-  connection::State httpHandlerHttpTimeout(void);
 
   void prepareToSendResponse(Response& response);
   static void setServerConfig(

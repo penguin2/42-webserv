@@ -5,11 +5,11 @@ namespace connection {
 
 typedef enum eState {
   RECV,
+  RECV_TIMEOUT,
   SEND,
   CGI,
   CGI_TIMEOUT,
   CGI_ERROR,
-  HTTP_TIMEOUT,
   CLOSED
 } State;
 
