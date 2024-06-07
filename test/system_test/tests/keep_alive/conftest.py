@@ -91,7 +91,6 @@ def request_by_xxx(method: str, path: str, headers: dict[str, str], expect_statu
                 assert conn_value.lower() == "keep-alive"
 
     # Connectionが切れる場合はKeepAliveが無効なはず
-    except ConnectionResetError as e:
-        print(e)
+    except ConnectionResetError:
         assert not expect_keep_alive
         assert conn_value.lower() == "close"
