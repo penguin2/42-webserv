@@ -15,6 +15,7 @@ class LocationConfig {
   size_t try_files_error_code;
   size_t client_max_body_size;
   bool autoindex;
+  bool allow_upload;
   std::vector<std::string> allow_methods;
   size_t return_status_code;
   std::string return_uri;
@@ -41,6 +42,9 @@ class LocationConfig {
 
   bool getAutoindex() const;
   void setAutoindex(bool newAutoindex);
+
+  bool getAllowUpload() const;
+  void setAllowUpload(bool new_allow_upload);
 
   const std::vector<std::string>& getAllowMethods() const;
   void setAllowMethods(const std::vector<std::string> new_methods);

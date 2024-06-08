@@ -39,6 +39,11 @@ void LocationConfig::setAutoindex(bool newAutoindex) {
   autoindex = newAutoindex;
 }
 
+bool LocationConfig::getAllowUpload() const { return allow_upload; }
+void LocationConfig::setAllowUpload(bool new_allow_upload) {
+  this->allow_upload = new_allow_upload;
+}
+
 const std::vector<std::string>& LocationConfig::getAllowMethods() const {
   return allow_methods;
 }
