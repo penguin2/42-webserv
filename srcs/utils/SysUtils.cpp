@@ -2,12 +2,12 @@
 
 #include <fcntl.h>
 #include <netdb.h>
-#include <csignal>
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include <cerrno>
+#include <csignal>
 #include <cstring>
 
 #include "Logger.hpp"
@@ -122,30 +122,23 @@ int SysUtils::clearFd(int* fd) {
   return 0;
 }
 
-int SysUtils::waitNoHang(pid_t pid, int* status) {
+pid_t SysUtils::waitNoHang(pid_t pid, int* status) {
   if (pid == -1) return -1;
 
   int stat_loc;
-  const int wait_ret = waitpid(pid, &stat_loc, WNOHANG);
-  if (wait_ret < 0) {
+  const pid_t exited_pid = waitpid(pid, &stat_loc, WNOHANG);
+  if (exited_pid < 0)
     LOG(WARN, "waitpid: ", std::strerror(errno));
-    return -1;
-  } else if (wait_ret == 0) {
-    LOG(WARN, "waitpid(WNOHANG): no_stopped or exited: pid: ", pid);
-    return -1;
-  }
-
-  if (status != NULL) {
+  else if (exited_pid > 0 && status != NULL) {
     if (WIFEXITED(stat_loc))
       *status = WEXITSTATUS(stat_loc);
     else if (WIFSIGNALED(stat_loc))
       *status = WTERMSIG(stat_loc) + 128;
   }
-
-  return 0;
+  return exited_pid;
 }
 
-int SysUtils::killProcess(pid_t pid) {
+int SysUtils::killAndWaitProcess(pid_t pid) {
   if (kill(pid, SIGTERM) < 0 || kill(pid, SIGKILL) < 0) {
     LOG(WARN, "kill(cgi): ", std::strerror(errno));
     return -1;

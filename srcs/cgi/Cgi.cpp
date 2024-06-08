@@ -1,6 +1,5 @@
 #include "Cgi.hpp"
 
-#include <sys/wait.h>
 #include <unistd.h>
 
 #include <cerrno>
@@ -18,6 +17,7 @@ Cgi::Cgi()
       write_fd_(-1),
       pid_(-1),
       is_receiving_(false),
+      wait_count_(0),
       cgi_request_message_sent_size_(0) {}
 
 Cgi::~Cgi() {
@@ -34,18 +34,27 @@ int Cgi::clearReadFd() { return SysUtils::clearFd(&read_fd_); }
 
 int Cgi::clearWriteFd() { return SysUtils::clearFd(&write_fd_); }
 
-int Cgi::clearProcess() {
+pid_t Cgi::tryWaitNoHang(int* exit_status) {
   if (pid_ == -1) return -1;
+  if (wait_count_ >= Cgi::kWaitCountLimit) {
+    LOG(WARN, "Cgi::tryWaitNoHang: limit reached: pid: ", pid_);
+    return -1;
+  }
+  ++wait_count_;
 
-  pid_t pid_to_clear = pid_;
+  const pid_t exited_pid = SysUtils::waitNoHang(pid_, exit_status);
+  if (exited_pid > 0) {
+    pid_ = -1;
+    wait_count_ = 0;
+  }
+  return exited_pid;
+}
+
+int Cgi::clearProcess() {
+  if (pid_ == -1) return 0;
+  if (SysUtils::killAndWaitProcess(pid_) < 0) return -1;
   pid_ = -1;
-
-  int exit_status;
-  if (SysUtils::waitNoHang(pid_to_clear, &exit_status) == 0)
-    return (exit_status == 0 ? 0 : -1);
-
-  SysUtils::killProcess(pid_to_clear);
-  return -1;
+  return 0;
 }
 
 int Cgi::readMessage() {
@@ -117,7 +126,7 @@ Cgi* Cgi::createCgi(const CgiRequest* cgi_request) {
   int write_pipe[2];
   if (Cgi::makePipes(read_pipe, write_pipe) < 0) return NULL;
 
-  const int cgi_pid = fork();
+  const pid_t cgi_pid = fork();
   if (cgi_pid < 0) {
     clearPipes(read_pipe, write_pipe);
     LOG(WARN, "fork(cgi): ", std::strerror(errno));

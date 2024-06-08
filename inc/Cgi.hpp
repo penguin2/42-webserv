@@ -2,6 +2,7 @@
 #define WEBSERV_CGI_H
 
 #include <sys/types.h>
+#include <sys/wait.h>
 
 #include <string>
 
@@ -21,6 +22,7 @@ class Cgi {
   int clearReadFd();
   int clearWriteFd();
   int clearProcess();
+  pid_t tryWaitNoHang(int* exit_status);
 
   int readMessage();
   int writeMessage();
@@ -37,6 +39,7 @@ class Cgi {
   int write_fd_;
   pid_t pid_;
   bool is_receiving_;
+  size_t wait_count_;
   std::string cgi_request_message_;
   std::string cgi_response_message_;
   std::size_t cgi_request_message_sent_size_;
@@ -48,6 +51,7 @@ class Cgi {
 
   static const int kReadBufferSize = 1024;
   static char read_buffer_[kReadBufferSize];
+  static const size_t kWaitCountLimit = 10;
 
   Cgi();
   Cgi(const Cgi&);

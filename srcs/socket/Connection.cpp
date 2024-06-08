@@ -70,8 +70,8 @@ int Connection::handlerTimeout() {
 SocketAddress Connection::getPeerAddress() const { return peer_address_; }
 
 int Connection::handlerRecv() {
-  const int recv_size = recv(socket_fd_, Connection::recv_buffer_,
-                             Connection::kRecvBufferSize, 0);
+  const ssize_t recv_size = recv(socket_fd_, Connection::recv_buffer_,
+                                 Connection::kRecvBufferSize, 0);
   if (recv_size <= 0) {
     updateState(connection::CLOSED);
     return -1;
@@ -87,7 +87,7 @@ int Connection::handlerSend() {
     response_ = http_.getResponse();
     response_sent_size_ = 0;
   }
-  const int send_size =
+  const ssize_t send_size =
       send(socket_fd_, response_.c_str() + response_sent_size_,
            response_.size() - response_sent_size_, 0);
   if (send_size <= 0) {
@@ -114,18 +114,31 @@ int Connection::handlerCgi() {
   return 0;
 }
 
-int Connection::handlerCgiRead() {
-  if (cgi_->readMessage() < 0) return -1;
-  if (cgi_->isReadDone()) {
-    if (event_manager_->erase(cgi_->getReadFd(), this, EventType::READ) < 0 ||
-        cgi_->clearReadFd() < 0)
-      return -1;
+int Connection::handlerCgiDone() {
+  int exit_status;
+  const pid_t exited_pid = cgi_->tryWaitNoHang(&exit_status);
+  if (exited_pid == 0) return 0;
+
+  if (event_manager_->erase(cgi_->getReadFd(), this, EventType::READ) < 0 ||
+      cgi_->clearReadFd() < 0)
+    return -1;
+
+  const bool is_good_exit_status = (exited_pid > 0 && exit_status == 0);
+
+  const connection::State current_state =
+      is_good_exit_status ? state_ : connection::CGI_ERROR;
+  if (is_good_exit_status)
     http_.setCgiResponseMessage(cgi_->getCgiResponseMessage());
-    const connection::State current_state =
-        cgi_->clearProcess() == 0 ? state_ : connection::CGI_ERROR;
-    const connection::State next_state = http_.httpHandler(current_state);
-    if (updateState(next_state) < 0) return -1;
-  }
+
+  const connection::State next_state = http_.httpHandler(current_state);
+  if (updateState(next_state) < 0) return -1;
+
+  return 0;
+}
+
+int Connection::handlerCgiRead() {
+  if (cgi_->isReadDone()) return handlerCgiDone();
+  if (cgi_->readMessage() < 0) return -1;
   return 0;
 }
 
