@@ -61,8 +61,8 @@ int Connection::handlerTimeout() {
 SocketAddress Connection::getPeerAddress() const { return peer_address_; }
 
 int Connection::handlerRecv() {
-  const int recv_size = recv(socket_fd_, Connection::recv_buffer_,
-                             Connection::kRecvBufferSize, 0);
+  const ssize_t recv_size = recv(socket_fd_, Connection::recv_buffer_,
+                                 Connection::kRecvBufferSize, 0);
   if (recv_size <= 0) {
     updateState(connection::CLOSED);
     return -1;
@@ -78,7 +78,7 @@ int Connection::handlerSend() {
     response_ = http_.getResponse();
     response_sent_size_ = 0;
   }
-  const int send_size =
+  const ssize_t send_size =
       send(socket_fd_, response_.c_str() + response_sent_size_,
            response_.size() - response_sent_size_, 0);
   if (send_size <= 0) {
