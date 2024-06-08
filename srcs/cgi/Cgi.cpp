@@ -126,7 +126,7 @@ Cgi* Cgi::createCgi(const CgiRequest* cgi_request) {
   int write_pipe[2];
   if (Cgi::makePipes(read_pipe, write_pipe) < 0) return NULL;
 
-  const int cgi_pid = fork();
+  const pid_t cgi_pid = fork();
   if (cgi_pid < 0) {
     clearPipes(read_pipe, write_pipe);
     LOG(WARN, "fork(cgi): ", std::strerror(errno));
