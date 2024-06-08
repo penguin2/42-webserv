@@ -22,7 +22,7 @@ Http::Http(SocketAddress peer_address,
       cgi_request_(NULL),
       cgi_response_(NULL) {}
 
-Http::~Http(void) { deleteCgiRequestAndResponseIfNotNull(); }
+Http::~Http(void) { cleanupCgiResources(); }
 
 connection::State Http::httpHandler(connection::State current_state) {
   connection::State next_state;
@@ -51,7 +51,7 @@ connection::State Http::httpHandler(connection::State current_state) {
     prepareToSendResponse(this->response_);
   }
   if (current_state == connection::RECV && next_state == connection::CGI) {
-    deleteCgiRequestAndResponseIfNotNull();
+    cleanupCgiResources();
     createCgiRequestAndResponse();
   }
   if ((current_state == connection::CGI ||
@@ -59,7 +59,7 @@ connection::State Http::httpHandler(connection::State current_state) {
        current_state == connection::CGI_TIMEOUT) &&
       next_state == connection::SEND) {
     prepareToSendResponse(*this->cgi_response_);
-    deleteCgiRequestAndResponseIfNotNull();
+    cleanupCgiResources();
   }
   return next_state;
 }
@@ -154,7 +154,10 @@ void Http::createCgiRequestAndResponse(void) {
   this->cgi_response_ = new CgiResponse;
 }
 
-void Http::deleteCgiRequestAndResponseIfNotNull(void) {
+void Http::cleanupCgiResources(void) {
+  if (!this->cgi_response_message_.empty()) {
+    this->cgi_response_message_.clear();
+  }
   if (this->cgi_request_ != NULL) {
     delete this->cgi_request_;
     this->cgi_request_ = NULL;
