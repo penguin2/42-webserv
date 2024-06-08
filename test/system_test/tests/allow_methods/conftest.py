@@ -35,10 +35,9 @@ def manage_html_directory():
         shutil.rmtree(BASE_PATH)
 
 
-def touch_if_not_exist(path: str):
-    if not os.path.isfile(path):
-        with open(path, "w"):
-            pass
+def touch(path: str):
+    with open(path, "w"):
+        pass
 
 
 def remove_if_exist(path: str):
@@ -52,7 +51,7 @@ def request_by_get(path: str, expect_status_code: int):
     """
     url = BASE_URL + path
     full_path = BASE_PATH + path
-    touch_if_not_exist(full_path)
+    touch(full_path)
     res = requests.get(url)
     remove_if_exist(full_path)
     assert res.status_code == expect_status_code
@@ -77,7 +76,7 @@ def request_by_delete(path: str, expect_status_code: int):
     """
     url = BASE_URL + path
     full_path = BASE_PATH + path
-    touch_if_not_exist(full_path)
+    touch(full_path)
     res = requests.delete(url)
     remove_if_exist(full_path)
     assert res.status_code == expect_status_code
