@@ -87,10 +87,10 @@ std::string HttpUtils::generateDateAsFormat(std::time_t t,
 }
 
 // ファイルの拡張子に基づいてContent-Typeを決定
-std::string HttpUtils::convertPathToContentType(const std::string& path) {
+std::string HttpUtils::convertPathToContentType(const std::string& file_path) {
   static const std::map<std::string, std::string> content_type_map =
       makeContentTypeMap();
-  const std::string extension(Utils::getExtension(path));
+  const std::string extension(Utils::getExtension(file_path));
   const std::map<std::string, std::string>::const_iterator it =
       content_type_map.find(extension);
 
@@ -149,10 +149,10 @@ std::set<size_t> HttpUtils::makeRedirectCodeSet(void) {
 }
 
 bool HttpUtils::generateAutoindexPage(const std::string& path_component,
-                                      const std::string& absolute_dir_path,
+                                      const std::string& dir_path,
                                       std::stringstream& ss) {
   std::vector<FileUtils::Entry> dir_data =
-      FileUtils::Entry::readDirData(absolute_dir_path);
+      FileUtils::Entry::readDirData(dir_path);
   if (dir_data.size() == 0) return false;
   std::sort(dir_data.begin(), dir_data.end());
 
@@ -170,7 +170,7 @@ bool HttpUtils::generateAutoindexPage(const std::string& path_component,
     if (it->startWithDot() == true ||
         it->getFileType() == FileUtils::Entry::UNKNOWN)
       continue;
-    if (AutoindexUtils::generateFileRecord(*it, absolute_dir_path, ss) == false)
+    if (AutoindexUtils::generateFileRecord(*it, dir_path, ss) == false)
       return false;
     ss << "\r\n";
   }
@@ -184,14 +184,13 @@ bool HttpUtils::generateAutoindexPage(const std::string& path_component,
 bool HttpUtils::AutoindexUtils::generateFileRecord(
     const FileUtils::Entry& entry, const std::string& dir,
     std::stringstream& ss) {
-  const std::string absolute_path(dir + "/" + entry.getFileName());
+  const std::string file_path(dir + "/" + entry.getFileName());
 
   std::string file_name(entry.getFileName());
   const bool is_dir_type = (entry.getFileType() == FileUtils::Entry::DIRECTORY);
   if (is_dir_type) file_name.push_back('/');
   AutoindexUtils::generateFileLink(file_name, ss);
-  if (AutoindexUtils::generateFileDetail(absolute_path, is_dir_type, ss) ==
-      false)
+  if (AutoindexUtils::generateFileDetail(file_path, is_dir_type, ss) == false)
     return false;
   return true;
 }

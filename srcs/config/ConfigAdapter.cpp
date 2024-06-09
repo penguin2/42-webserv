@@ -4,6 +4,7 @@
 #include <cstdlib>
 
 #include "CgiRequest.hpp"
+#include "FileUtils.hpp"
 #include "ListenSocket.hpp"
 #include "SysUtils.hpp"
 #include "Utils.hpp"
@@ -74,7 +75,7 @@ const ServerConfig* ConfigAdapter::searchServerConfig(
 // checking keys in reverse order assures
 // that the first prefix found is the longest prefix matching
 const LocationConfig* ConfigAdapter::searchLocationConfig(
-    const std::string& path,
+    const std::string& http_path,
     const std::map<std::string, LocationConfig>& location_configs) {
   for (std::map<std::string, LocationConfig>::const_reverse_iterator it =
            location_configs.rbegin();
@@ -82,22 +83,22 @@ const LocationConfig* ConfigAdapter::searchLocationConfig(
     const std::string& location_path = it->first;
     const LocationConfig* location_config = &(it->second);
 #if defined(__MACH__)
-    if (Utils::isStartsWithCaseInsensitive(path, location_path))
+    if (Utils::isStartsWithCaseInsensitive(http_path, location_path))
       return location_config;
 #elif defined(__linux__)
-    if (Utils::isStartsWith(path, location_path)) return location_config;
+    if (Utils::isStartsWith(http_path, location_path)) return location_config;
 #endif
   }
   return NULL;
 }
 
-std::string ConfigAdapter::makeAbsolutePath(const LocationConfig& location_conf,
-                                            const std::string& path) {
+std::string ConfigAdapter::makeFilePath(const LocationConfig& location_conf,
+                                        const std::string& http_path) {
   const std::string& root = location_conf.getRoot();
 
-  if (root.empty()) return INTERNAL::DEFAULT_ROOT + path;
-  if (root == "/") return path;
-  return Utils::concatWithSlash(root, path);
+  if (root.empty()) return INTERNAL::DEFAULT_ROOT + http_path;
+  if (root == "/") return http_path;
+  return Utils::concatWithSlash(root, http_path);
 }
 
 const std::string* ConfigAdapter::searchRedirectUri(
@@ -114,12 +115,14 @@ size_t ConfigAdapter::searchRedirectStatusCode(
 }
 
 bool ConfigAdapter::isCgiPath(const LocationConfig& location_conf,
-                              const std::string& path) {
+                              const std::string& http_path) {
+  std::string file_path = makeFilePath(location_conf, http_path);
   std::map<std::string, std::string> file_data_map =
-      makeFileDataMap(location_conf, path);
+      makeFileDataMap(location_conf, file_path);
+  std::string path_to_cgi_script = file_data_map["DIR"] + file_data_map["FILE"];
 
   if (file_data_map["FILE"].empty()) return false;
-  return true;
+  return FileUtils::isExistFile(path_to_cgi_script);
 }
 
 const std::string* ConfigAdapter::searchErrorPage(
@@ -176,24 +179,23 @@ std::vector<std::string> ConfigAdapter::getCgiExts(
 }
 
 std::map<std::string, std::string> ConfigAdapter::makeFileDataMap(
-    const LocationConfig& location_conf, const std::string& path) {
+    const LocationConfig& location_conf, const std::string& file_path) {
   const std::vector<std::string>& exts = getCgiExts(location_conf);
   std::map<std::string, std::string> file_data_map;
 
   for (std::vector<std::string>::const_iterator it_ext = exts.begin();
        it_ext != exts.end(); ++it_ext) {
-    file_data_map = makeFileDataMapFromAbsolutePath(path, *it_ext);
+    file_data_map = makeFileDataMapFromFilePath(file_path, *it_ext);
     if (!file_data_map["FILE"].empty()) return file_data_map;
   }
   return file_data_map;
 }
 
-std::map<std::string, std::string>
-ConfigAdapter::makeFileDataMapFromAbsolutePath(const std::string& path,
-                                               const std::string& ext) {
-  std::vector<std::string> path_elements = Utils::split(path, '/');
+std::map<std::string, std::string> ConfigAdapter::makeFileDataMapFromFilePath(
+    const std::string& file_path, const std::string& ext) {
+  std::vector<std::string> path_elements = Utils::split(file_path, '/');
   std::map<std::string, std::string> file_data_map;
-  file_data_map["DIR"] = Utils::isStartsWith(path, "/") ? "/" : "";
+  file_data_map["DIR"] = Utils::isStartsWith(file_path, "/") ? "/" : "";
   file_data_map["FILE"] = "";
   file_data_map["PATH_INFO"] = "";
 
@@ -210,7 +212,7 @@ ConfigAdapter::makeFileDataMapFromAbsolutePath(const std::string& path,
   for (; it != path_elements.end(); ++it) {
     file_data_map["PATH_INFO"].append("/").append(*it);
   }
-  if (Utils::isEndsWith(path, "/")) file_data_map["PATH_INFO"].append("/");
+  if (Utils::isEndsWith(file_path, "/")) file_data_map["PATH_INFO"].append("/");
   return file_data_map;
 }
 

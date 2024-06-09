@@ -22,12 +22,11 @@ const ServerConfig* searchServerConfig(
     const std::vector<const ServerConfig*>& server_configs);
 
 const LocationConfig* searchLocationConfig(
-    const std::string& path,
+    const std::string& http_path,
     const std::map<std::string, LocationConfig>& location_configs);
 
-// root付きの絶対パスをmake
-std::string makeAbsolutePath(const LocationConfig& location_conf,
-                             const std::string& path);
+std::string makeFilePath(const LocationConfig& location_conf,
+                         const std::string& http_path);
 
 // (リダイレクト対象のRequest) ? redirect_URI : NULL
 const std::string* searchRedirectUri(const LocationConfig& location_conf);
@@ -62,9 +61,9 @@ std::vector<std::string> getCgiExts(const LocationConfig& location_conf);
 // FileDataMap contains the elements DIR, FILE, and PATH_INFO
 // if (FileDataMap["FILE"] == "") -> Not CGI Pattern
 std::map<std::string, std::string> makeFileDataMap(
-    const LocationConfig& location_conf, const std::string& path);
-std::map<std::string, std::string> makeFileDataMapFromAbsolutePath(
-    const std::string& absolute_path, const std::string& ext);
+    const LocationConfig& location_conf, const std::string& file_path);
+std::map<std::string, std::string> makeFileDataMapFromFilePath(
+    const std::string& file_path, const std::string& ext);
 
 size_t getClientMaxBodySize(const LocationConfig& location_conf);
 

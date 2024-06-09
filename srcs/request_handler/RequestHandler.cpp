@@ -13,11 +13,11 @@
 #include "config/LocationConfig.hpp"
 
 connection::State RequestHandler::dispatch(Request& request, Response& response,
-                                           std::string path) {
+                                           const std::string& http_path) {
   static const std::map<std::string, MethodHandler::method_handler>
       method_handler_map = MethodHandler::makeMethodHandlerMap();
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
-      path, request.getServerConfig()->getLocationConfigs());
+      http_path, request.getServerConfig()->getLocationConfigs());
 
   // ここでNULLcheckをするので以降searchLocationConfig実行時,NULLが返ることは絶対にない
   if (location_conf == NULL) {
@@ -29,24 +29,24 @@ connection::State RequestHandler::dispatch(Request& request, Response& response,
                           "Method not allowed");
   }
   if (ConfigAdapter::searchRedirectUri(*location_conf) != NULL) {
-    return RequestHandler::redirectHandler(request, response, path);
+    return RequestHandler::redirectHandler(request, response, http_path);
   }
-  if (ConfigAdapter::isCgiPath(*location_conf, path)) {
-    return cgiHandler(request, path);
+  if (ConfigAdapter::isCgiPath(*location_conf, http_path)) {
+    return cgiHandler(request, http_path);
   }
   const std::string& method = request.getRequestData()->getMethod();
   if (method_handler_map.find(method) != method_handler_map.end()) {
-    return method_handler_map.find(method)->second(request, response, path);
+    return method_handler_map.find(method)->second(request, response,
+                                                   http_path);
   }
   throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                         "Unknown Method");
 }
 
-connection::State RequestHandler::redirectHandler(const Request& request,
-                                                  Response& response,
-                                                  std::string path) {
+connection::State RequestHandler::redirectHandler(
+    const Request& request, Response& response, const std::string& http_path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
-      path, request.getServerConfig()->getLocationConfigs());
+      http_path, request.getServerConfig()->getLocationConfigs());
   const std::string* redirect_uri =
       ConfigAdapter::searchRedirectUri(*location_conf);
   size_t redirect_status_code =
@@ -65,11 +65,11 @@ connection::State RequestHandler::errorRequestHandler(
     const std::string& phrase) {
   // status_code == 405 になるのはdispatch関数のsearchLocationConfig関数実行後
   if (status_code == 405) {
-    const std::string& path = request.getRequestData()->getUri().getPath();
+    const std::string& http_path = request.getRequestData()->getUri().getPath();
     // 制御フロー的に必ず (location_conf != NULL) になります
     const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
-        path, request.getServerConfig()->getLocationConfigs());
-    std::vector<std::string> allow_methods =
+        http_path, request.getServerConfig()->getLocationConfigs());
+    const std::vector<std::string> allow_methods =
         ConfigAdapter::getAllowMethods(*location_conf);
     response.insertHeader("Allow", Utils::joinStrings(allow_methods, ", "));
   }
@@ -81,18 +81,20 @@ connection::State RequestHandler::errorRequestHandler(
 }
 
 connection::State RequestHandler::cgiHandler(Request& request,
-                                             const std::string& path) {
+                                             const std::string& http_path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
-      path, request.getServerConfig()->getLocationConfigs());
-  std::string full_path = ConfigAdapter::makeAbsolutePath(*location_conf, path);
+      http_path, request.getServerConfig()->getLocationConfigs());
+  const std::string file_path =
+      ConfigAdapter::makeFilePath(*location_conf, http_path);
   std::map<std::string, std::string> file_data_map =
-      ConfigAdapter::makeFileDataMap(*location_conf, full_path);
-  std::string cgi_file_path = file_data_map["DIR"] + file_data_map["FILE"];
+      ConfigAdapter::makeFileDataMap(*location_conf, file_path);
+  const std::string cgi_file_path =
+      file_data_map["DIR"] + file_data_map["FILE"];
 
   if (!FileUtils::hasFilePermission(cgi_file_path, X_OK))
     throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN, "Forbidden");
 
-  request.overwritePath(path);
+  request.overwritePath(http_path);
   return connection::CGI;
 }
 
