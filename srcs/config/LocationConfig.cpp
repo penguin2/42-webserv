@@ -4,6 +4,7 @@ LocationConfig::LocationConfig()
     : try_files_error_code(0),
       client_max_body_size(0),
       autoindex(false),
+      allow_upload(false),
       return_status_code(0) {}
 
 const std::string& LocationConfig::getRoot() const { return root; }
