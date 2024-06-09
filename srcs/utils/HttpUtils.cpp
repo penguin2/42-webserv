@@ -351,6 +351,5 @@ std::string HttpUtils::generateRedirectContent(const std::string& uri,
      << "	<h2><a href=\"" << uri << "\">" << uri << "</a></h2>\r\n"
      << "</body>\r\n\r\n"
      << "</html>\r\n";
-  std::cout << ss.str() << std::endl;
   return ss.str();
 }
