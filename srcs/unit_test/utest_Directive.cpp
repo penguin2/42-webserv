@@ -2,6 +2,7 @@
 
 #include "config/AllowMethodsDirectiveHandler.hpp"
 #include "config/AutoIndexDirectiveHandler.hpp"
+#include "config/UploadDirectiveHandler.hpp"
 #include "config/CgiExtDirectiveHandler.hpp"
 #include "config/ClientMaxBodySizeDirectiveHandler.hpp"
 #include "config/ConfigParser.hpp"
@@ -99,6 +100,21 @@ TEST(Directive, AutoIndexDirectiveHandler) {
   testIsValid<DirectiveHandler>("autoindex of;", false);
   testIsValid<DirectiveHandler>("autoindex on off;", false);
   testIsValid<DirectiveHandler>("autoindex half;", false);
+}
+
+TEST(Directive, UploadDirectiveHandler) {
+  typedef UploadDirectiveHandler DirectiveHandler;
+
+  testIsValid<DirectiveHandler>("upload oN;", true);
+  testIsValid<DirectiveHandler>("upload ON;", true);
+  testIsValid<DirectiveHandler>("upload off;", true);
+  testIsValid<DirectiveHandler>("upload Off;", true);
+
+  testIsValid<DirectiveHandler>("upload ", false);
+  testIsValid<DirectiveHandler>("upload ;", false);
+  testIsValid<DirectiveHandler>("upload of;", false);
+  testIsValid<DirectiveHandler>("upload on off;", false);
+  testIsValid<DirectiveHandler>("upload half;", false);
 }
 
 TEST(Directive, CgiExtDirectiveHandler) {
