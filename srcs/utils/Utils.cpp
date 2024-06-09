@@ -170,3 +170,15 @@ std::string Utils::concatWithSlash(const std::string& s1,
   if (!isEndsWith(s1, "/") && !isStartsWith(s2, "/")) return s1 + "/" + s2;
   return s1 + s2;
 }
+
+std::string Utils::findLongestString(const std::vector<std::string>& strings) {
+  std::vector<std::string>::const_iterator longest_string_it = strings.begin();
+
+  if (strings.empty()) return "";
+
+  for (std::vector<std::string>::const_iterator it = strings.begin();
+       it != strings.end(); ++it) {
+    if (longest_string_it->size() < it->size()) longest_string_it = it;
+  }
+  return *longest_string_it;
+}

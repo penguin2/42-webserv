@@ -229,7 +229,9 @@ size_t ConfigAdapter::getMaxNumberOfCrlfBeforeMethod(void) {
 }
 
 size_t ConfigAdapter::getMaxMethodSize(void) {
-  return INTERNAL::DEFAULT_MAX_METHOD_SIZE;
+  static const std::string longest_method =
+      Utils::findLongestString(Config::makeCorrespondingMethods());
+  return longest_method.size();
 }
 
 size_t ConfigAdapter::getMaxUriSize(void) {
