@@ -179,18 +179,10 @@ void Request::parseChunkedSize(std::string& buffer) {
   size_t chunk_size;
 
   if (pos_crlf == std::string::npos) {
-    if (buffer.empty()) return;
-    std::string chunk_size_str = buffer;
-    // chunk_size_str 内の最後の文字がCRなら、CRを除外する
-    if (Utils::isEndsWith(chunk_size_str, "\r"))
-      chunk_size_str.erase(chunk_size_str.size() - 1);
-
-    // chunk_size_str がsize_tであるかを判定
-    if (Utils::strToSize_t(chunk_size_str, chunk_size, 16) == false) {
-      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                            "Bad chunk size");
-    }
-    return;
+    if (buffer.size() <= 20) return;
+    // チャンクサイズが20桁以上の場合はBad Request
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Bad chunk size");
   }
 
   if (pos_crlf == 0)
