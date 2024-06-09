@@ -11,10 +11,6 @@ RequestData::RequestData(void) : server_config(NULL) {}
 RequestData::~RequestData(void) {}
 
 void RequestData::setMethod(const std::string &method) {
-  if (ConfigAdapter::getMaxMethodSize() < method.size()) {
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Bad Method");
-  }
   this->method_ = method;
 }
 
