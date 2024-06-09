@@ -24,6 +24,8 @@ endif
 
 ifeq ($(MAKECMDGOALS), request_parse_test)
 	SRCS += ./test_main/main_request_parse.cpp
+else ifeq ($(MAKECMDGOALS), request_parse_status_code_test)
+	SRCS += ./test_main/main_request_parse_status_code.cpp
 else ifeq ($(MAKECMDGOALS), unit_test)
 	CXXFLAGS	= -std=c++11
 	INCLUDE		+= -I$(gtestdir)
@@ -59,6 +61,15 @@ REQUEST_PARSE_TEST_SH	=	"./run.sh"
 
 request_parse_test: $(NAME)
 	cd $(REQUEST_PARSE_TEST_DIR) && $(REQUEST_PARSE_TEST_SH) $(OK_OR_KO)
+###
+
+### REQUEST PARSE STATUS CODE TEST by shellscript
+OK_OR_KO				=	"KO"
+REQUEST_PARSE_STATUS_CODE_TEST_DIR	=	"./test/request_parse_test"
+REQUEST_PARSE_STATUS_CODE_TEST_SH	=	"./run_status_code_test.sh"
+
+request_parse_status_code_test: $(NAME)
+	cd $(REQUEST_PARSE_STATUS_CODE_TEST_DIR) && $(REQUEST_PARSE_STATUS_CODE_TEST_SH) $(OK_OR_KO)
 ###
 
 ### UNIT TEST by GoogleTest
