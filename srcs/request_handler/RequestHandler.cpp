@@ -52,8 +52,8 @@ connection::State RequestHandler::redirectHandler(const Request& request,
   size_t redirect_status_code =
       ConfigAdapter::searchRedirectStatusCode(*location_conf);
 
-  response.appendBody(
-      generateErrorPageContent(request, redirect_status_code, "Redirect"));
+  response.appendBody(HttpUtils::generateRedirectContent(
+      *redirect_uri, redirect_status_code, "Redirect"));
   response.insertHeader("Location", *redirect_uri);
   response.insertHeader("Content-Type", "text/html");
   response.setStatusLine(redirect_status_code, "Redirect");

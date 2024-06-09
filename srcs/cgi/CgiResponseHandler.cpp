@@ -17,7 +17,7 @@ void CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
   else if (INTERNAL::isLocalRedirectResponse(data))
     localRedirectResponseHandler(data, request);
   else if (INTERNAL::isClientRedirectResponse(data))
-    clientRedirectResponseHandler(data, request);
+    clientRedirectResponseHandler(data);
   else if (INTERNAL::isClientRedirectResponseWithDocument(data))
     clientRedirectResponseWithDocumentHandler(data);
   else
@@ -43,23 +43,20 @@ void CgiResponseHandler::localRedirectResponseHandler(ResponseData& data,
   const std::string absolute_location =
       INTERNAL::convertLocalLocationToAbsoluteLocation(data, request);
 
-  const std::string* error_page = ConfigAdapter::searchErrorPage(
-      *request.getServerConfig(), redirect_status_code);
-  data.appendBody(HttpUtils::generateErrorPage(error_page, redirect_status_code,
-                                               "Redirect"));
+  data.appendBody(HttpUtils::generateRedirectContent(
+      absolute_location, redirect_status_code, "Found"));
   data.insertHeader("location", absolute_location);
   data.setStatusCode(redirect_status_code);
   data.setPhrase("Found");
 }
 
-void CgiResponseHandler::clientRedirectResponseHandler(ResponseData& data,
-                                                       const Request& request) {
+void CgiResponseHandler::clientRedirectResponseHandler(ResponseData& data) {
   const size_t redirect_status_code = 302;
+  const std::map<std::string, std::string>& headers = data.getHeaders();
+  const std::string& absolute_location = headers.find("location")->second;
 
-  const std::string* error_page = ConfigAdapter::searchErrorPage(
-      *request.getServerConfig(), redirect_status_code);
-  data.appendBody(HttpUtils::generateErrorPage(error_page, redirect_status_code,
-                                               "Redirect"));
+  data.appendBody(HttpUtils::generateRedirectContent(
+      absolute_location, redirect_status_code, "Found"));
   data.setStatusCode(redirect_status_code);
   data.setPhrase("Found");
 }

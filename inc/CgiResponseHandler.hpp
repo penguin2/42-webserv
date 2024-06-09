@@ -10,7 +10,7 @@ void convertCgiResponseDataToHttpResponseData(const Request& request,
                                               ResponseData& data);
 void documentResponseHandler(ResponseData& data);
 void localRedirectResponseHandler(ResponseData& data, const Request& request);
-void clientRedirectResponseHandler(ResponseData& data, const Request& request);
+void clientRedirectResponseHandler(ResponseData& data);
 void clientRedirectResponseWithDocumentHandler(ResponseData& data);
 
 namespace INTERNAL {

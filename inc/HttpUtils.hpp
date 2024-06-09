@@ -28,6 +28,8 @@ bool isStatusCode(size_t code);
 int isHeaderKeyChar(int c);
 int isCookieValueChar(int c);
 bool isFullDateRFC1123(const std::string& date_str);
+std::string generateRedirectContent(const std::string& uri, size_t status_code,
+                                    const std::string& phrase);
 
 namespace AutoindexUtils {
 bool generateFileRecord(const FileUtils::Entry& entry, const std::string& dir,
