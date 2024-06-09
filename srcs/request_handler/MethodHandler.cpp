@@ -22,7 +22,7 @@ RequestHandler::MethodHandler::makeMethodHandlerMap(void) {
 }
 
 connection::State RequestHandler::MethodHandler::getMethodHandler(
-    Request& request, Response& response, std::string http_path) {
+    Request& request, Response& response, const std::string& http_path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       http_path, request.getServerConfig()->getLocationConfigs());
   const std::string file_path =
@@ -40,7 +40,7 @@ connection::State RequestHandler::MethodHandler::getMethodHandler(
 }
 
 connection::State RequestHandler::MethodHandler::getMethodFileHandler(
-    Request& request, Response& response, std::string http_path) {
+    Request& request, Response& response, const std::string& http_path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       http_path, request.getServerConfig()->getLocationConfigs());
   const std::string file_path =
@@ -59,7 +59,7 @@ connection::State RequestHandler::MethodHandler::getMethodFileHandler(
 }
 
 connection::State RequestHandler::MethodHandler::getMethodDirHandler(
-    Request& request, Response& response, std::string http_path) {
+    Request& request, Response& response, const std::string& http_path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       http_path, request.getServerConfig()->getLocationConfigs());
   const std::string file_path =
@@ -89,7 +89,7 @@ connection::State RequestHandler::MethodHandler::getMethodDirHandler(
 }
 
 connection::State RequestHandler::MethodHandler::postMethodHandler(
-    Request& request, Response& response, std::string http_path) {
+    Request& request, Response& response, const std::string& http_path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       http_path, request.getServerConfig()->getLocationConfigs());
   const std::string file_path =
@@ -117,7 +117,7 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
 }
 
 connection::State RequestHandler::MethodHandler::deleteMethodHandler(
-    Request& request, Response& response, std::string http_path) {
+    Request& request, Response& response, const std::string& http_path) {
   const LocationConfig* location_conf = ConfigAdapter::searchLocationConfig(
       http_path, request.getServerConfig()->getLocationConfigs());
   const std::string file_path =
