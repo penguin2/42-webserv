@@ -153,6 +153,9 @@ void Request::parseHeader(std::string& buffer) {
     data_->insertHeader(line);
     buffer.erase(0, pos_crlf + 2);
   }
+  if (ConfigAdapter::getMaxHeaderSize() < buffer.size())
+    throw ServerException(ServerException::SERVER_ERROR_HEADER_TOO_LARGE,
+                          "Header too large");
 }
 
 void Request::parseBody(std::string& buffer) {
