@@ -175,15 +175,14 @@ void Request::parseChunkedBody(std::string& buffer) {
 }
 
 void Request::parseChunkedSize(std::string& buffer) {
+  static const size_t CHUNK_SIZE_LIMIT_DIGITS = 20;
   const size_t pos_crlf = buffer.find("\r\n");
   size_t chunk_size;
 
-  if (pos_crlf == std::string::npos) {
-    if (buffer.size() <= 20) return;
-    // チャンクサイズが20桁以上の場合はBad Request
+  if (pos_crlf == std::string::npos && CHUNK_SIZE_LIMIT_DIGITS < buffer.size())
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad chunk size");
-  }
+  if (pos_crlf == std::string::npos) return;
 
   if (pos_crlf == 0)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
