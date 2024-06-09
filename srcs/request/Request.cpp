@@ -99,6 +99,10 @@ void Request::parseUri(std::string& buffer) {
     throw ServerException(ServerException::SERVER_ERROR_URI_TOO_LONG,
                           "Too long URI");
   if (pos_first_space == std::string::npos) return;
+  // メソッド後に2つスペースがある場合はURIが存在しない
+  if (pos_first_space == 0)
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "URI is None");
   // uriが不正な場合、RequestData内で例外をthrowする
   data_->setUri(buffer.substr(0, pos_first_space));
   // SP分の+1
