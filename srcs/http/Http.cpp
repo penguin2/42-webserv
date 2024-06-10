@@ -101,7 +101,7 @@ connection::State Http::httpHandlerSend(void) {
   raw_response_data_.str("");
   response_.resetResponseData();
   if (this->client_data_.empty()) return connection::RECV;
-  return Http::httpHandlerRecv();
+  return Http::httpHandler(connection::RECV);
 }
 
 connection::State Http::httpHandlerCgi(void) {
