@@ -5,6 +5,7 @@ namespace ConfigEnums {
   enum Context { DEFAULT, HTTP, SERVER, LOCATION };
   enum Delimiter {
     SPACE = ' ',
+    TAB = '\t',
     LEFT_BRACE = '{',
     RIGHT_BRACE = '}',
     SEMICOLON = ';',
