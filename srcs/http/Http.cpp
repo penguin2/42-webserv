@@ -51,7 +51,8 @@ connection::State Http::httpHandler(connection::State current_state) {
       break;
   }
   if ((current_state == connection::RECV ||
-       current_state == connection::RECV_TIMEOUT) &&
+       current_state == connection::RECV_TIMEOUT ||
+       current_state == connection::SEND) &&
       next_state == connection::SEND) {
     prepareToSendResponse(this->response_);
   }
@@ -101,7 +102,7 @@ connection::State Http::httpHandlerSend(void) {
   raw_response_data_.str("");
   response_.resetResponseData();
   if (this->client_data_.empty()) return connection::RECV;
-  return Http::httpHandler(connection::RECV);
+  return Http::httpHandlerRecv();
 }
 
 connection::State Http::httpHandlerCgi(void) {
