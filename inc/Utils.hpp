@@ -24,6 +24,7 @@ class Utils {
                                           const std::string& prefix);
   static std::string popFrontSubstr(std::string& str, std::size_t n);
   static std::string getExtension(const std::string& file);
+  static std::string findLongestString(const std::vector<std::string>& strings);
 
   template <typename T>
   static bool parseValue(const std::string& str, T& value) {
@@ -41,7 +42,7 @@ class Utils {
   static bool hasContentInMap(const std::map<std::string, std::string>& mp,
                               const std::string& key);
   static std::string concatWithSlash(const std::string& s1,
-                                      const std::string& s2);
+                                     const std::string& s2);
 
  private:
   Utils(void);

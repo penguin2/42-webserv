@@ -149,6 +149,9 @@ void Request::parseHeader(std::string& buffer) {
     data_->insertHeader(line);
     buffer.erase(0, pos_crlf + 2);
   }
+  if (ConfigAdapter::getMaxHeaderSize() < buffer.size())
+    throw ServerException(ServerException::SERVER_ERROR_HEADER_TOO_LARGE,
+                          "Header too large");
 }
 
 void Request::parseBody(std::string& buffer) {
@@ -172,21 +175,29 @@ void Request::parseChunkedBody(std::string& buffer) {
 }
 
 void Request::parseChunkedSize(std::string& buffer) {
+  static const size_t CHUNK_SIZE_LIMIT_DIGITS = 20;
   const size_t pos_crlf = buffer.find("\r\n");
+  size_t chunk_size;
+
+  if (pos_crlf == std::string::npos && CHUNK_SIZE_LIMIT_DIGITS < buffer.size())
+    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+                          "Bad chunk size");
   if (pos_crlf == std::string::npos) return;
+
   if (pos_crlf == 0)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad chunk size is CRLF");
   // 行頭からCRLFまでが符号なし16進数でない場合
-  if (Utils::strToSize_t(buffer.substr(0, pos_crlf), body_size_, 16) == false)
+  if (Utils::strToSize_t(buffer.substr(0, pos_crlf), chunk_size, 16) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad chunk size");
 
-  // body_size_ or 合計のbodyのサイズが正常な数値であるが大き過ぎる場合
-  if (ConfigAdapter::getMaxBodySize() < (body_size_ + data_->getBody().size()))
+  // chunk_size or 合計のbodyのサイズが正常な数値であるが大き過ぎる場合
+  if (ConfigAdapter::getMaxBodySize() < (chunk_size + data_->getBody().size()))
     throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                           "Body size too large");
 
+  this->body_size_ = chunk_size;
   buffer.erase(0, pos_crlf + 2);
   if (this->body_size_ != 0) {
     this->state_ = CHUNKED_BODY;
