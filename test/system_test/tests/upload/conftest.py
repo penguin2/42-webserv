@@ -42,7 +42,7 @@ def manage_html_directory():
         shutil.rmtree(HTML_DIR)
 
 
-def request_by_post(path: str, expect_status_code: int):
+def check_post_response_code(path: str, expect_status_code: int):
     url = BASE_URL + path
     res = requests.post(url, data="INDEX")
     assert res.status_code == expect_status_code

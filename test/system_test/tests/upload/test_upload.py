@@ -1,10 +1,10 @@
-from conftest import request_by_post
+from conftest import check_post_response_code
 
 
 def test_upload():
-    request_by_post("/upload_on/index.html", 201)
-    request_by_post("/upload_off/index.html", 403)
-    request_by_post("/upload_none/index.html", 403)
+    check_post_response_code("/upload_on/index.html", 201)
+    check_post_response_code("/upload_off/index.html", 403)
+    check_post_response_code("/upload_none/index.html", 403)
 
 
 def test_upload_on_with_cgi_ext():
@@ -16,9 +16,9 @@ def test_upload_on_with_cgi_ext():
     2. upload成功(201)
     3. 2で作成されたファイルがあり、CGI失敗(403)
     """
-    request_by_post("/upload_on_with_cgi_ext/sample.py", 200)
-    request_by_post("/upload_on_with_cgi_ext/NONO.py", 201)
-    request_by_post("/upload_on_with_cgi_ext/NONO.py", 403)
+    check_post_response_code("/upload_on_with_cgi_ext/sample.py", 200)
+    check_post_response_code("/upload_on_with_cgi_ext/NONO.py", 201)
+    check_post_response_code("/upload_on_with_cgi_ext/NONO.py", 403)
 
 
 def test_upload_off_with_cgi_ext():
@@ -30,6 +30,6 @@ def test_upload_off_with_cgi_ext():
     2. uploadがoffなのでupload失敗(403)
     3. 2と同様
     """
-    request_by_post("/upload_off_with_cgi_ext/sample.py", 200)
-    request_by_post("/upload_off_with_cgi_ext/NONO.py", 403)
-    request_by_post("/upload_off_with_cgi_ext/NONO.py", 403)
+    check_post_response_code("/upload_off_with_cgi_ext/sample.py", 200)
+    check_post_response_code("/upload_off_with_cgi_ext/NONO.py", 403)
+    check_post_response_code("/upload_off_with_cgi_ext/NONO.py", 403)
