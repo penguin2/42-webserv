@@ -160,6 +160,7 @@ void ConfigParser::tokenize(const std::string& line,
   while (iss.get(c)) {
     switch (c) {
       case static_cast<char>(ConfigEnums::SPACE):
+      case static_cast<char>(ConfigEnums::TAB):
         if (!token.empty()) {
           tokens.push_back(token);
           token.clear();
