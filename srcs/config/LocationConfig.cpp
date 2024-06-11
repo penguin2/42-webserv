@@ -66,13 +66,6 @@ void LocationConfig::setReturnUri(const std::string& newUri) {
   return_uri = newUri;
 }
 
-const std::vector<std::string>& LocationConfig::getCgiPath() const {
-  return cgi_path;
-}
-void LocationConfig::addCgiPath(const std::string& newPath) {
-  cgi_path.push_back(newPath);
-}
-
 const std::vector<std::string>& LocationConfig::getCgiExt() const {
   return cgi_ext;
 }
@@ -92,9 +85,6 @@ void LocationConfig::print() {
   std::cout << "return status_code: " << this->return_status_code << std::endl;
   std::cout << "return uri: " << this->return_uri << std::endl;
 
-  for (size_t i = 0; i < this->cgi_path.size(); i++) {
-    std::cout << "cgi_path: " << this->cgi_path[i] << std::endl;
-  }
   for (size_t i = 0; i < this->cgi_ext.size(); i++) {
     std::cout << "cgi_ext: " << this->cgi_ext[i] << std::endl;
   }
