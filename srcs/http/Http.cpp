@@ -81,6 +81,14 @@ void Http::setCgiResponseMessage(const std::string& message) {
   cgi_response_message_ = message;
 }
 
+std::string Http::makeResponseLog() const {
+  const Response& current_response =
+      cgi_response_ != NULL ? *cgi_response_ : response_;
+  return Utils::uintToString(current_response.getStatusCode()) + " " +
+         request_.getRequestData()->getMethod() + " " +
+         request_.getRequestData()->getUri().buildAbsoluteUri();
+}
+
 connection::State Http::httpHandlerRecv(void) {
   try {
     if (request_.parse(this->client_data_) == true) {
