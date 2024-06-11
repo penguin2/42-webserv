@@ -28,11 +28,18 @@ function exec_webserv () {
 	for dir in tests/*
 	do
 		cd $dir
-		$WEBSERV_FROM_DETAIL_TEST_DIR *.conf &
+		$WEBSERV_FROM_DETAIL_TEST_DIR *.conf 2>/dev/null &
 		SERVER_PID=$!
 		pytest -s
+		EXIT_STATUS=$?
 		cd -
 		kill $SERVER_PID
+
+		if [ $EXIT_STATUS -ne 0 ]
+		then
+			exit $EXIT_STATUS
+		fi
+
 	done
 }
 
