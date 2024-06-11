@@ -1,6 +1,6 @@
-from utils.shebang import write_shebang_to_files
-from utils.shebang import remove_shebang_from_files
-from utils.retry_on_exception import retry_on_exception
+from system_test_utils.shebang import write_shebang_to_files
+from system_test_utils.shebang import remove_shebang_from_files
+from system_test_utils.retry_on_exception import retry_on_exception
 
 import requests
 import pytest
