@@ -24,7 +24,7 @@ def manage_html_directory():
         shutil.rmtree(HTML_DIR)
 
 
-def __generate_random_string(string_len: int = 8) -> str:
+def _generate_random_string(string_len: int = 8) -> str:
     alnum = string.ascii_letters + string.digits
     return ''.join(random.choices(alnum, k=string_len))
 
@@ -32,7 +32,7 @@ def __generate_random_string(string_len: int = 8) -> str:
 def generate_random_dict(dict_size: int) -> dict[str, str]:
     random_dict = {}
     while len(random_dict) != dict_size:
-        random_dict[__generate_random_string()] = __generate_random_string()
+        random_dict[_generate_random_string()] = _generate_random_string()
     return random_dict
 
 
