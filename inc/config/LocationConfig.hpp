@@ -11,8 +11,6 @@ class LocationConfig {
  private:
   std::string root;
   std::string index;
-  std::vector<std::string> try_files_path;
-  size_t try_files_error_code;
   size_t client_max_body_size;
   bool autoindex;
   bool allow_upload;
@@ -29,12 +27,6 @@ class LocationConfig {
 
   const std::string& getIndex() const;
   void setIndex(const std::string& newIndex);
-
-  const std::vector<std::string>& getTryFilesPath() const;
-  void addTryFilesPath(const std::string& newPath);
-
-  size_t getTryFilesErrorCode() const;
-  void setTryFilesErrorCode(size_t newErrorCode);
 
   size_t getClientMaxBodySize() const;
   void setClientMaxBodySize(size_t newSize);
