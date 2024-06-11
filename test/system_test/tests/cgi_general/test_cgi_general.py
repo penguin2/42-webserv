@@ -40,3 +40,14 @@ def test_current_dir():
 def test_internal_redirect():
     headers = {"Content-length": "4", "content-TYPE": "text/html"}
     check_cgi_meta_data("get", "/", "BODY", headers)
+
+
+def test_http_headers():
+    headers = {
+        "my-header1": "ABC",
+        "My_headeR2": "DEF",
+        "HTTP_MY_HEADER3": ""
+    }
+    check_cgi_meta_data("get", "/http_headers.py", headers=headers)
+    check_cgi_meta_data("post", "/http_headers.py", headers=headers)
+    check_cgi_meta_data("delete", "/http_headers.py", headers=headers)
