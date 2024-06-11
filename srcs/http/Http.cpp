@@ -65,7 +65,6 @@ connection::State Http::httpHandler(connection::State current_state) {
        current_state == connection::CGI_TIMEOUT) &&
       next_state == connection::SEND) {
     prepareToSendResponse(*this->cgi_response_);
-    cleanupCgiResources();
   }
   return next_state;
 }
