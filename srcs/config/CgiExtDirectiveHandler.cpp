@@ -16,10 +16,6 @@ bool CgiExtDirectiveHandler::isDirectiveValid() const {
 
   std::vector<std::string> unique_cgi_exts = tokensToUniqueCgiExts(tokens_);
 
-#if !defined(BONUS)
-  if (unique_cgi_exts.size() != 1) return false;
-#endif
-
   for (std::vector<std::string>::const_iterator ext = unique_cgi_exts.begin();
        ext != unique_cgi_exts.end(); ++ext) {
     if (!Utils::isStartsWith(*ext, ".") || *ext == ".") return false;

@@ -30,10 +30,6 @@ else ifeq ($(MAKECMDGOALS), unit_test)
 	CXXFLAGS	= -std=c++11
 	INCLUDE		+= -I$(gtestdir)
 	SRCS		= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp")
-else ifeq ($(MAKECMDGOALS), unit_test_bonus)
-	CXXFLAGS	= -std=c++11 -DBONUS
-	INCLUDE		+= -I$(gtestdir)
-	SRCS		= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp")
 else
 	SRCS += main.cpp
 endif
@@ -87,8 +83,6 @@ $(gtest):
 unit_test: $(gtest) $(OBJ_SUBDIRS) $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) $(gtestdir)/googletest-release-1.11.0/googletest/src/gtest_main.cc $(gtestdir)/gtest/gtest-all.cc -I$(gtestdir) $(INCLUDE) -lpthread -pthread -owebserv
 	./webserv
-
-unit_test_bonus: unit_test
 ###
 
 ### SYSTEM TEST by pytest
