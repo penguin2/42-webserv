@@ -19,10 +19,8 @@
 #include "IndexDirectiveHandler.hpp"
 #include "AutoIndexDirectiveHandler.hpp"
 #include "UploadDirectiveHandler.hpp"
-#include "TryFilesDirectiveHandler.hpp"
 #include "ReturnDirectiveHandler.hpp"
 #include "ClientMaxBodySizeDirectiveHandler.hpp"
-#include "CgiPathDirectiveHandler.hpp"
 #include "CgiExtDirectiveHandler.hpp"
 #include "ConfigEnums.hpp"
 

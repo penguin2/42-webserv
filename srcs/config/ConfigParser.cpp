@@ -14,11 +14,9 @@ ConfigParser::ConfigParser()
   this->handlers["index"] = new IndexDirectiveHandler();
   this->handlers["autoindex"] = new AutoIndexDirectiveHandler();
   this->handlers["upload"] = new UploadDirectiveHandler();
-  this->handlers["try_files"] = new TryFilesDirectiveHandler();
   this->handlers["return"] = new ReturnDirectiveHandler();
   this->handlers["client_max_body_size"] =
       new ClientMaxBodySizeDirectiveHandler();
-  this->handlers["cgi_path"] = new CgiPathDirectiveHandler();
   this->handlers["cgi_ext"] = new CgiExtDirectiveHandler();
 }
 
