@@ -51,7 +51,7 @@ class Cgi {
 
   static const int kReadBufferSize = 1024;
   static char read_buffer_[kReadBufferSize];
-  static const size_t kWaitCountLimit = 10;
+  static const size_t kWaitCountLimit = 10000;
 
   Cgi();
   Cgi(const Cgi&);
