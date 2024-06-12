@@ -50,4 +50,4 @@ int TimeoutManager::erase(ASocket* socket) {
 
 const Time TimeoutManager::kDefaultTimeoutLimit = Time(5, 0);
 
-const Time TimeoutManager::kCgiTimeoutLimit = Time(10, 0);
+const Time TimeoutManager::kCgiTimeoutLimit = Time(5, 0);
