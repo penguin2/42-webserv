@@ -56,7 +56,9 @@ connection::State Http::httpHandler(connection::State current_state) {
       next_state == connection::SEND) {
     prepareToSendResponse(this->response_);
   }
-  if (current_state == connection::RECV && next_state == connection::CGI) {
+  if ((current_state == connection::RECV ||
+       current_state == connection::SEND) &&
+      next_state == connection::CGI) {
     cleanupCgiResources();
     createCgiRequestAndResponse();
   }
