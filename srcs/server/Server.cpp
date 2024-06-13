@@ -65,6 +65,12 @@ int Server::acceptListenSocket(const ListenSocket& listen_socket) {
 
 int Server::start() {
   LOG(INFO, "server: ", "start()");
+
+  if (sockets_.empty()) {
+    LOG(ERROR, "server: ", "no listening sockets available");
+    return -1;
+  }
+
   LOG(INFO, "server: initial sockets: ", sockets_);
 
   Connection::initTransitHandlers();
