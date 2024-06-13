@@ -2,7 +2,6 @@
 
 #include "config/AllowMethodsDirectiveHandler.hpp"
 #include "config/AutoIndexDirectiveHandler.hpp"
-#include "config/UploadDirectiveHandler.hpp"
 #include "config/CgiExtDirectiveHandler.hpp"
 #include "config/ClientMaxBodySizeDirectiveHandler.hpp"
 #include "config/ConfigParser.hpp"
@@ -12,6 +11,7 @@
 #include "config/ReturnDirectiveHandler.hpp"
 #include "config/RootDirectiveHandler.hpp"
 #include "config/ServerNameDirectiveHandler.hpp"
+#include "config/UploadDirectiveHandler.hpp"
 
 static std::vector<std::string> tempTokenize(const std::string& line) {
   std::vector<std::string> tokens;
@@ -126,11 +126,9 @@ TEST(Directive, CgiExtDirectiveHandler) {
   testIsValid<DirectiveHandler>("cgi_ext .c;", true);
   testIsValid<DirectiveHandler>("cgi_ext .abcdefg;", true);
 
-#if defined(BONUS)
   testIsValid<DirectiveHandler>("cgi_ext .py .php .c;", true);
   testIsValid<DirectiveHandler>("cgi_ext .php .py .py .php;", true);
   testIsValid<DirectiveHandler>("cgi_ext .php .py .py .;", false);
-#endif
 
   testIsValid<DirectiveHandler>("cgi_ext ", false);
   testIsValid<DirectiveHandler>("cgi_ext ;", false);
