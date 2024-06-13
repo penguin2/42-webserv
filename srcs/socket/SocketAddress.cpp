@@ -39,6 +39,8 @@ bool SocketAddress::operator<(const SocketAddress& other) const {
   return this->port_.compare(other.port_) < 0;
 }
 
+std::string SocketAddress::toString() const { return ip_addr_ + ":" + port_; }
+
 SocketAddress SocketAddress::createFromSockaddrIn(
     const struct sockaddr_in* addr, socklen_t addr_len) {
   const std::string ip_addr =
@@ -60,5 +62,5 @@ std::string SocketAddress::ipv4ToString(unsigned long ip_long) {
 
 std::ostream& operator<<(std::ostream& os,
                          const SocketAddress& socket_address) {
-  return os << socket_address.getIpAddr() << ":" << socket_address.getPort();
+  return os << socket_address.toString();
 }

@@ -75,7 +75,6 @@ int Server::start() {
 }
 
 int Server::loop() {
-  LOG(INFO, "server: ", "loop()");
   std::vector<ASocket*> event_sockets, closing_sockets;
   while (true) {
     closeSockets(closing_sockets);
@@ -132,8 +131,6 @@ int Server::addConnection(
   }
 
   sockets_[connected_socket_fd] = new_connection;
-
-  LOG(INFO, "connection created: ", *new_connection);
   return 0;
 }
 
@@ -170,7 +167,6 @@ int Server::closeSocket(ASocket* socket) {
   sockets_.erase(closing_socket_fd);
   close(closing_socket_fd);
 
-  LOG(INFO, "closed: ", *socket);
   delete socket;
 
   return 0;

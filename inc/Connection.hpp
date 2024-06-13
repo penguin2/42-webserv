@@ -59,6 +59,8 @@ class Connection : public ASocket {
 
   int updateState(connection::State new_state);
 
+  std::string makeLog() const;
+
   Connection();
   Connection(const Connection&);
   Connection& operator=(const Connection&);

@@ -25,6 +25,8 @@ class Http {
   CgiRequest* getCgiRequest() const;
   void setCgiResponseMessage(const std::string& message);
 
+  std::string makeResponseLog() const;
+
  private:
   SocketAddress peer_address_;
   std::vector<const ServerConfig*> server_configs_;

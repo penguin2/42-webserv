@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "EventManager.hpp"
+#include "Logger.hpp"
 
 char Connection::recv_buffer_[Connection::kRecvBufferSize];
 
@@ -98,6 +99,7 @@ int Connection::handlerSend() {
   if (response_sent_size_ == response_.size()) {
     response_.clear();
     response_sent_size_ = 0;
+    Logger::getInstance().log(Logger::INFO, Connection::makeLog());
     const connection::State next_state = http_.httpHandler(state_);
     if (updateState(next_state) < 0) return -1;
   }
@@ -172,6 +174,11 @@ int Connection::updateState(connection::State new_state) {
       Connection::transitHandlers.find(std::make_pair(prev_state, new_state));
   if (it == Connection::transitHandlers.end()) return -1;
   return it->second(this);
+}
+
+std::string Connection::makeLog() const {
+  return getLocalAddress().toString() + " -> " + getPeerAddress().toString() +
+         " " + http_.makeResponseLog();
 }
 
 Connection::TransitHandlerMap Connection::transitHandlers;

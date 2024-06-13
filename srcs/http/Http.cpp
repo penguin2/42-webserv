@@ -65,7 +65,6 @@ connection::State Http::httpHandler(connection::State current_state) {
        current_state == connection::CGI_TIMEOUT) &&
       next_state == connection::SEND) {
     prepareToSendResponse(*this->cgi_response_);
-    cleanupCgiResources();
   }
   return next_state;
 }
@@ -80,6 +79,18 @@ CgiRequest* Http::getCgiRequest() const { return cgi_request_; }
 
 void Http::setCgiResponseMessage(const std::string& message) {
   cgi_response_message_ = message;
+}
+
+std::string Http::makeResponseLog() const {
+  const Response& current_response =
+      cgi_response_ != NULL ? *cgi_response_ : response_;
+  const std::string& method = request_.getRequestData()->getMethod();
+  const std::string& uri =
+      request_.getRequestData()->getUri().getHost().empty()
+          ? ""
+          : request_.getRequestData()->getUri().buildAbsoluteUri();
+  return Utils::uintToString(current_response.getStatusCode()) + " \"" +
+         method + "\" \"" + uri + "\"";
 }
 
 connection::State Http::httpHandlerRecv(void) {

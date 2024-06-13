@@ -19,6 +19,8 @@ class SocketAddress {
   bool operator==(const SocketAddress& other) const;
   bool operator<(const SocketAddress& other) const;
 
+  std::string toString() const;
+
   static SocketAddress createFromSockaddrIn(const struct sockaddr_in* addr,
                                             socklen_t addr_len);
   static std::string ipv4ToString(unsigned long ip_long);
