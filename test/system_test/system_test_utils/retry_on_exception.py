@@ -7,9 +7,10 @@ def retry_on_exception(my_func):
     """
     def _wrapper(*args, **kwargs):
         retry_count = 0
+        ret = None
         while True:
             try:
-                my_func(*args, **kwargs)
+                ret = my_func(*args, **kwargs)
                 break
             except Exception as e:
                 if MAX_RETRY <= retry_count:
@@ -17,4 +18,5 @@ def retry_on_exception(my_func):
                     raise e
                 retry_count += 1
                 print("RETRY[", retry_count, "]")
+        return ret
     return _wrapper
