@@ -189,6 +189,8 @@ void Connection::initTransitHandlers() {
   Connection::transitHandlers[std::make_pair(
       connection::RECV, connection::CGI)] = Connection::recvToCgi;
   Connection::transitHandlers[std::make_pair(
+      connection::SEND, connection::CGI)] = Connection::sendToCgi;
+  Connection::transitHandlers[std::make_pair(
       connection::SEND, connection::RECV)] = Connection::sendToRecv;
   Connection::transitHandlers[std::make_pair(
       connection::CGI, connection::SEND)] = Connection::cgiToSend;
@@ -202,6 +204,20 @@ int Connection::recvToCgi(Connection* conn) {
   conn->cgi_ = Cgi::createCgi(conn->http_.getCgiRequest());
   if (conn->cgi_ == NULL ||
       conn->event_manager_->erase(conn->socket_fd_, conn, EventType::READ) <
+          0 ||
+      conn->event_manager_->insert(conn->cgi_->getReadFd(), conn,
+                                   EventType::READ) < 0 ||
+      conn->event_manager_->insert(conn->cgi_->getWriteFd(), conn,
+                                   EventType::WRITE) < 0)
+    return -1;
+  conn->timeout_manager_->update(conn, TimeoutManager::kCgiTimeoutLimit);
+  return 0;
+}
+
+int Connection::sendToCgi(Connection* conn) {
+  conn->cgi_ = Cgi::createCgi(conn->http_.getCgiRequest());
+  if (conn->cgi_ == NULL ||
+      conn->event_manager_->erase(conn->socket_fd_, conn, EventType::WRITE) <
           0 ||
       conn->event_manager_->insert(conn->cgi_->getReadFd(), conn,
                                    EventType::READ) < 0 ||
