@@ -16,9 +16,8 @@ print("IS CGI")
 """
 
 
-def create_cgi_script(directory: str, file: str, command: str, text: str):
+def create_cgi_script(cgi_script: str, command: str, text: str):
     shebang = make_shebang_from_environment(command)
-    cgi_script = directory + file
     with open(cgi_script, "w") as f:
         f.write(shebang + "\n")
         f.write(text)
@@ -28,7 +27,9 @@ def create_cgi_script(directory: str, file: str, command: str, text: str):
 @pytest.fixture(scope="session", autouse=True)
 def manage_html_directory():
     os.mkdir(CGI_BIN_DIR)
-    create_cgi_script(CGI_BIN_DIR, "index.py", PYTHON, CGI_SCRIPT_TEXT)
+    with open(CGI_BIN_DIR + "index.html", "w") as f:
+        f.write("INDEX")
+    create_cgi_script(CGI_BIN_DIR + "index.py", PYTHON, CGI_SCRIPT_TEXT)
     yield
     if os.path.exists(CGI_BIN_DIR):
         shutil.rmtree(CGI_BIN_DIR)

@@ -2,6 +2,7 @@ from system_test_utils.check_multiple_requests import check_multiple_requests
 from system_test_utils.check_multiple_requests import check_multiple_incomplete_requests
 
 REQUEST_CGI_200 = "GET /index.py HTTP/1.1\r\nHost: localhost\r\n\r\n"
+REQUEST200 = "GET /index.html HTTP/1.1\r\nHost: localhost\r\n\r\n"
 REQUEST404 = "GET /NONO HTTP/1.1\r\nHost: localhost\r\n\r\n"
 
 
@@ -149,4 +150,49 @@ def test_multiple_cgi_incomplete_request():
         (REQUEST_CGI_200, None),
         (REQUEST_CGI_200, None),
         (REQUEST404, None)
+    )
+
+
+def test_multiple_cgi_and_normal_request():
+    check_multiple_requests((REQUEST200, 200), (REQUEST_CGI_200, 200))
+    check_multiple_requests((REQUEST_CGI_200, 200), (REQUEST200, 200))
+
+
+def test_multiple_cgi_and_normal_incomplete_request():
+    # Number Of Requests == 3
+    check_multiple_incomplete_requests(
+        1,
+        (REQUEST200, 200),
+        (REQUEST200, 200),
+        (REQUEST_CGI_200, 200)
+    )
+    check_multiple_incomplete_requests(
+        1,
+        (REQUEST200, 200),
+        (REQUEST_CGI_200, 200),
+        (REQUEST_CGI_200, 200)
+    )
+    check_multiple_incomplete_requests(
+        1,
+        (REQUEST200, 200),
+        (REQUEST_CGI_200, 200),
+        (REQUEST200, 200)
+    )
+    check_multiple_incomplete_requests(
+        1,
+        (REQUEST_CGI_200, 200),
+        (REQUEST_CGI_200, 200),
+        (REQUEST200, 200)
+    )
+    check_multiple_incomplete_requests(
+        1,
+        (REQUEST_CGI_200, 200),
+        (REQUEST200, 200),
+        (REQUEST200, 200)
+    )
+    check_multiple_incomplete_requests(
+        1,
+        (REQUEST_CGI_200, 200),
+        (REQUEST200, 200),
+        (REQUEST_CGI_200, 200)
     )
