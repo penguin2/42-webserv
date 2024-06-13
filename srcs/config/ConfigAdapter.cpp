@@ -216,6 +216,10 @@ std::map<std::string, std::string> ConfigAdapter::makeFileDataMapFromFilePath(
   return file_data_map;
 }
 
+bool ConfigAdapter::canUpload(const LocationConfig& location_conf) {
+  return location_conf.getAllowUpload();
+}
+
 size_t ConfigAdapter::getClientMaxBodySize(
     const LocationConfig& location_conf) {
   size_t max_body_size = location_conf.getClientMaxBodySize();

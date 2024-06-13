@@ -96,6 +96,9 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
       ConfigAdapter::makeFilePath(*location_conf, http_path);
   const std::string& body = request.getRequestData()->getBody();
 
+  if (!ConfigAdapter::canUpload(*location_conf)) {
+    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN, "Forbidden");
+  }
   if (FileUtils::isExistFile(file_path) || FileUtils::isExistDir(file_path)) {
     throw ServerException(ServerException::SERVER_ERROR_CONFLICT, "Conflict");
   }

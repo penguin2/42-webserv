@@ -65,6 +65,8 @@ std::map<std::string, std::string> makeFileDataMap(
 std::map<std::string, std::string> makeFileDataMapFromFilePath(
     const std::string& file_path, const std::string& ext);
 
+bool canUpload(const LocationConfig& location_conf);
+
 size_t getClientMaxBodySize(const LocationConfig& location_conf);
 
 size_t getMaxNumberOfCrlfBeforeMethod(void);
