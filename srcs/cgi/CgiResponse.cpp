@@ -51,7 +51,7 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
 
   // ':'が無い or keyが無い(": value"のような場合)
   if (pos_colon == std::string::npos || Utils::isStartsWith(line, ":"))
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Bad header");
 
   // Headerのkeyは大文字小文字を区別しないため、内部は全て小文字で処理
