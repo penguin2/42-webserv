@@ -71,6 +71,7 @@ class Connection : public ASocket {
 
   static int recvToSend(Connection* conn);
   static int recvToCgi(Connection* conn);
+  static int sendToCgi(Connection* conn);
   static int sendToRecv(Connection* conn);
   static int cgiToSend(Connection* conn);
 };
