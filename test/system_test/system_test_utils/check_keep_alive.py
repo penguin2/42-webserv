@@ -1,6 +1,7 @@
 from typing import Union
 from system_test_utils.get_status_code import get_status_code_and_connection_from_response
 import socket
+from concurrent.futures import ThreadPoolExecutor
 
 # "connection: close" があると必ずConnectionを切断
 CONN_HEADERS = [
@@ -45,14 +46,10 @@ def send_same_request_twice(request: str,
     return responses
 
 
-def check_keep_alive(request: str,
+def check_keep_alive(first_response: str,
+                     second_response: str,
                      expect_status_code: int,
-                     expect_keep_alive: bool,
-                     host: str = "localhost",
-                     port: int = 4242):
-    responses: list[str] = send_same_request_twice(request, host, port)
-    first_response = responses[0]
-    second_response = responses[1]
+                     expect_keep_alive: bool):
     code, conn = get_status_code_and_connection_from_response(first_response)
     assert code == expect_status_code
     # 2回目のResponseがempty == Connectionが切れている
@@ -69,9 +66,11 @@ def check_keep_alive_with_various_conn_headers(method: str,
                                                expect_code: int,
                                                expect_keepalive_pattern: bool):
     """
-    引数path_or_pathsにstr型(path)とlist[str]型(paths)を受け付ける
-    if (str型(path)) -> paths = [path, path, path, path]
-    elif (list[str]型(path_list))-> paths = path_list
+    引数 path_or_path_list にstr型(path)とlist[str]型(path_list)を受け付ける
+    if (str型(path)):
+        paths = [path, path, path, path]
+    elif (list[str]型(path_list)):
+        paths = path_list
     """
     if isinstance(path_or_path_list, str):
         paths = [path_or_path_list for _ in range(len(CONN_HEADERS))]
@@ -83,7 +82,12 @@ def check_keep_alive_with_various_conn_headers(method: str,
         for path, conn_header in zip(paths, CONN_HEADERS)
     ]
 
+    with ThreadPoolExecutor(max_workers=len(CONN_HEADERS)) as executer:
+        responses_list = executer.map(send_same_request_twice, requests)
+
     expect_keepalives = KEEP_ALIVE_PATTERN if expect_keepalive_pattern else CLOSE_PATTERN
 
-    for request, expect_keepalive_pattern in zip(requests, expect_keepalives):
-        check_keep_alive(request, expect_code, expect_keepalive_pattern)
+    for responses, expect_keepalive in zip(responses_list, expect_keepalives):
+        first_res = responses[0]
+        second_res = responses[1]
+        check_keep_alive(first_res, second_res, expect_code, expect_keepalive)
