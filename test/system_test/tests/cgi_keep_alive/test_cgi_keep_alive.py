@@ -32,3 +32,10 @@ def test_cgi_keep_alive_redirect():
         "GET", "/redirect_307.py", 307, True)
     check_keep_alive_with_various_conn_headers(
         "GET", "/redirect_308.py", 308, True)
+
+
+def test_cgi_keep_alive_error_case():
+    check_keep_alive_with_various_conn_headers(
+        "GET", "/raise_except_500.py", 500, False)
+    check_keep_alive_with_various_conn_headers(
+        "GET", "/loop_504.py", 504, False)
