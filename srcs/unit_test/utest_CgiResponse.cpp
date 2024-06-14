@@ -22,6 +22,8 @@ TEST(CgiResponse, PARSE) {
   testParse("Location: http://localhost\n\n");
   testParse("Location: http://localhost/?q=50#fragment\n\n");
   testParse("Status: 200 OK\n\n");
+  testParse("Status: 200 \n\n");
+  testParse("Status: 200 \n\nBODY");
   testParse("Status: 999 OKOK\n\n");
   testParse("Status: 444 Four Four Four\n\n");
   testParse("MY-Header: MyValue\n\n");
@@ -64,8 +66,6 @@ TEST(CgiResponse, ParseThrowServerException) {
   testParseError("Status: 33 ERROR\n\n");
   testParseError("Status: ERROR\n\n");
   testParseError("Status: 200\n\n");
-  testParseError("Status: 200 \n\n");
-  testParseError("Status: 200 \n\nBODY");
   // Content-Typeのフォーマットは正しくなくてはならない
   testParseError("Content-Type: text \n\n");
   testParseError("Content-Type: text/ \n\n");

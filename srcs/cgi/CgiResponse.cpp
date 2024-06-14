@@ -82,7 +82,7 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
   if (key == "location")
     insertLocationHeader(value);
   else if (key == "status")
-    insertStatusHeader(value);
+    insertStatusHeader(line);
   else if (key == "content-type")
     insertContentTypeHeader(value);
   else if (key == "set-cookie")
@@ -91,7 +91,9 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
     insertHeader(key, value);
 }
 
-void CgiResponse::insertStatusHeader(const std::string& value) {
+void CgiResponse::insertStatusHeader(const std::string& line) {
+  std::string value = line.substr(line.find(':') + 1);
+  Utils::strLTrim(value, " ");
   size_t pos_first_space = value.find(' ');
   if (pos_first_space == std::string::npos)
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
@@ -104,7 +106,7 @@ void CgiResponse::insertStatusHeader(const std::string& value) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Status Header is invalid");
 
-  std::string phrase = value.substr(pos_first_space);
+  std::string phrase = value.substr(pos_first_space + 1);
   if (!Utils::isContainsOnly(phrase, std::isprint))
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Phrase contain non-printable character");

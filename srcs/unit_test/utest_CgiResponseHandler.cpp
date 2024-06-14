@@ -52,6 +52,8 @@ TEST(CgiResponseHandler, ConvertCgi2Http) {
   testConvertCgi2Http("Content-Type: text/html\n\nabc");
   testConvertCgi2Http("Content-Type: text/html\nStatus: 200 FFFF\n\nabc");
   testConvertCgi2Http("Content-Type: text/html\nStatus: 999 QQQQ\n\nabc");
+  testConvertCgi2Http("Content-Type: text/html\nStatus: 200 \n\nabc");
+  testConvertCgi2Http("Content-Type: text/html\nStatus: 999 \n\nabc");
   testConvertCgi2Http("MyHeader:1\nContent-Type: text/html\n\nabc");
   // LocalRedirectResponse
   testConvertCgi2Http("Location: /\n\n");
