@@ -1,0 +1,5 @@
+print("Status: 200 OK")
+print("Content-Type: text/html")
+print("Connection: Close")
+print("")
+print("200")

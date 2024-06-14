@@ -1,0 +1,5 @@
+print("Location: http://localhost:4242/")
+print("Status: 308 redirect")
+print("Content-Type: text/html")
+print("")
+print("308")
