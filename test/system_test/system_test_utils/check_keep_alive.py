@@ -82,8 +82,8 @@ def check_keep_alive_with_various_conn_headers(method: str,
         for path, conn_header in zip(paths, CONN_HEADERS)
     ]
 
-    with ThreadPoolExecutor(max_workers=len(CONN_HEADERS)) as executer:
-        responses_list = executer.map(send_same_request_twice, requests)
+    with ThreadPoolExecutor(max_workers=len(CONN_HEADERS)) as executor:
+        responses_list = executor.map(send_same_request_twice, requests)
 
     expect_keepalives = KEEP_ALIVE_PATTERN if expect_keepalive_pattern else CLOSE_PATTERN
 
