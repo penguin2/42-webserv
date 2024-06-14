@@ -13,6 +13,14 @@ void Utils::strTrim(std::string& str, const char* charset) {
   }
 }
 
+void Utils::strLTrim(std::string& str, const char* charset) {
+  const size_t left = str.find_first_not_of(charset);
+  if (left == std::string::npos)
+    str = "";
+  else
+    str = str.substr(left);
+}
+
 bool Utils::isContain(const std::string& str, int (*is_func)(int)) {
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
     if (is_func(*it)) return true;

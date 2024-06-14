@@ -9,6 +9,7 @@
 class Utils {
  public:
   static void strTrim(std::string& str, const char* charset);
+  static void strLTrim(std::string& str, const char* charset);
   static bool isContain(const std::string& str, int (*is_func)(int));
   static bool isContain(const std::string& str, const std::string charset);
   static bool isContainsOnly(const std::string& str, int (*is_func)(int));
