@@ -1,0 +1,6 @@
+print("Location: http://localhost:4242/index")
+print("Status: 303  ")
+print("Content-Type: text/html")
+print("My-Header: my")
+print("")
+print("CLIENT REDIRECT RESPONSE WITH DOCUMENT 303")
