@@ -79,7 +79,7 @@ void CgiResponseHandler::INTERNAL::convertStatusHeaderToStatusLine(
 
   Utils::strToSize_t(code_str, code, 10);
   data.setStatusCode(code);
-  data.setPhrase(status->second.substr(pos_space));
+  data.setPhrase(status->second.substr(pos_space + 1));
   data.eraseHeader("status");
 }
 
