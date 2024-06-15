@@ -54,6 +54,11 @@ void LocationConfig::setReturnUri(const std::string& newUri) {
 const std::vector<std::string>& LocationConfig::getCgiExt() const {
   return cgi_ext;
 }
+
+void LocationConfig::setCgiExts(const std::vector<std::string> new_cgi_ext) {
+  this->cgi_ext = new_cgi_ext;
+}
+
 void LocationConfig::addCgiExt(const std::string& newExt) {
   cgi_ext.push_back(newExt);
 }

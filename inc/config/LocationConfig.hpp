@@ -48,6 +48,7 @@ class LocationConfig {
 
   const std::vector<std::string>& getCgiExt() const;
   void addCgiExt(const std::string& newExt);
+  void setCgiExts(const std::vector<std::string> new_cgi_ext);
 
   void print();
 };
