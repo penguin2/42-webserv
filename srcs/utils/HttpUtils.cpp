@@ -1,4 +1,4 @@
-#include "HttpUtils.hpp"
+#include "utils/HttpUtils.hpp"
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -110,7 +110,6 @@ bool http_utils::isRedirectStatusCode(size_t code) {
   return (redirect_codes.find(code) != redirect_codes.end());
 }
 
-// TODO Content-Typeの仕様を調べる
 std::map<std::string, std::string> http_utils::makeContentTypeMap(void) {
   std::map<std::string, std::string> content_type_map;
   content_type_map.insert(std::make_pair("csv", "text/csv"));
