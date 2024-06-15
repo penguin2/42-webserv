@@ -10,8 +10,9 @@ PWD=$(pwd)
 export PYTHONPATH="$PWD:$PYTHONPATH"
 
 function main () {
+    GREP_STR=$1
 	init_venv_environment
-	exec_webserv
+	exec_webserv $GREP_STR
 	clean_up
 }
 
@@ -27,7 +28,7 @@ function clean_up () {
 }
 
 function exec_webserv () {
-	for dir in tests/*
+	for dir in tests/*$1*
 	do
 		cd $dir
 		$WEBSERV_FROM_DETAIL_TEST_DIR *.conf 2>/dev/null &
@@ -46,4 +47,4 @@ function exec_webserv () {
 }
 
 # call main function
-main
+main $1
