@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-namespace FileUtils {
+namespace file_utils {
 bool isExistDir(const std::string& file_path);
 bool isExistFile(const std::string& file_path);
 bool hasFilePermission(const std::string& file_path, int type);
@@ -41,6 +41,6 @@ class Entry {
 
   Entry(void);
 };
-}  // namespace FileUtils
+}  // namespace file_utils
 
 #endif
