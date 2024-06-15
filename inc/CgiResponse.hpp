@@ -17,7 +17,7 @@ class CgiResponse : public Response {
   void parseHeader(std::string& buffer);
   void parseBody(std::string& buffer);
   void insertHeaderLine(const std::string& line);
-  void insertStatusHeader(const std::string& value);
+  void insertStatusHeader(const std::string& line);
   void insertLocationHeader(const std::string& value);
   void insertContentTypeHeader(const std::string& value);
 

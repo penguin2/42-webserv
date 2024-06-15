@@ -12,6 +12,13 @@ void testStrTrim(const char* target, const char* charset,
   EXPECT_STREQ(target_string.c_str(), expect_str);
 }
 
+void testStrLTrim(const char* target, const char* charset,
+                  const char* expect_str) {
+  std::string target_string(target);
+  Utils::strLTrim(target_string, charset);
+  EXPECT_STREQ(target_string.c_str(), expect_str);
+}
+
 void testToLowerString(std::string str, const char* expect) {
   Utils::toLowerString(str);
   EXPECT_STREQ(str.c_str(), expect);
@@ -56,6 +63,20 @@ TEST(Utils, STR_TRIM) {
   testStrTrim("TEST8", "T", "EST8");
   testStrTrim("TEST9T", "T", "EST9");
   testStrTrim("", "T", "");
+}
+
+TEST(Utils, STR_LTRIM) {
+  // target_string, charset, expect(string)
+  testStrLTrim("TEST1 ", " ", "TEST1 ");
+  testStrLTrim(" TEST2 ", " ", "TEST2 ");
+  testStrLTrim(" TEST3", " ", "TEST3");
+  testStrLTrim("		TEST4	", "	", "TEST4	");
+  testStrLTrim("bcaTEST5abc", "abc", "TEST5abc");
+  testStrLTrim("TEST6", "EST", "6");
+  testStrLTrim("TEST7", "test", "TEST7");
+  testStrLTrim("TEST8", "T", "EST8");
+  testStrLTrim("TEST9T", "T", "EST9T");
+  testStrLTrim("", "T", "");
 }
 
 TEST(Utils, IS_CONTAIN_FPTR) {
