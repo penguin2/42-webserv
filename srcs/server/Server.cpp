@@ -13,8 +13,12 @@
 #include "config/ConfigAdapter.hpp"
 #include "config/ConfigParser.hpp"
 
-Server::Server(const char* config_file) {
-  ConfigParser().parseConfig(config_file);
+Server::Server(const char* config_filename) {
+  const std::string config_filename_str = config_filename != NULL
+                                              ? std::string(config_filename)
+                                              : Server::kDefaultConfigFilename;
+
+  ConfigParser().parseConfig(config_filename_str);
 
   setSockets(ConfigAdapter::makeInitialListenSockets());
   event_manager_ = new EventManager(sockets_);
@@ -185,6 +189,8 @@ int Server::closeSockets(const std::vector<ASocket*>& closing_sockets) {
   }
   return 0;
 }
+
+const std::string Server::kDefaultConfigFilename = "webserv.conf";
 
 std::ostream& operator<<(std::ostream& os,
                          const std::map<int, ASocket*>& sockets) {

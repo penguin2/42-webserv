@@ -7,9 +7,8 @@
 #include "Logger.hpp"
 #include "Server.hpp"
 
-static void printUsage(char** argv) {
-  if (argv != NULL && argv[0] != NULL)
-    std::cerr << "usage: " << argv[0] << " <config_file>" << std::endl;
+static void printUsage(const char* exec_filename) {
+  std::cerr << "usage: " << exec_filename << " <config_file>" << std::endl;
 }
 
 static int setSignalHandlers() {
@@ -21,8 +20,8 @@ static int setSignalHandlers() {
 }
 
 int main(int argc, char** argv) {
-  if (argc != 2) {
-    printUsage(argv);
+  if (!(argc == 1 || argc == 2)) {
+    if (argv != NULL && argv[0] != NULL) printUsage(argv[0]);
     return EXIT_FAILURE;
   }
 
