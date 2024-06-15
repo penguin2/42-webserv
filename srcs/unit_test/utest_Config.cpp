@@ -26,4 +26,7 @@ TEST(Config, MultiDirectiveParse) {
   EXPECT_EQ(location.getReturnUri(), "/new2-location");
 
   EXPECT_EQ(location.getClientMaxBodySize(), 1000000);
+
+  EXPECT_EQ(location.getCgiExt().size(), 1);
+  EXPECT_EQ(location.getCgiExt()[0], ".py");
 }

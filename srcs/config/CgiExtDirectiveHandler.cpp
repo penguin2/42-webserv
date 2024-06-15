@@ -39,7 +39,5 @@ void CgiExtDirectiveHandler::setConfig() {
   LocationConfig& locationConfig = getLocationConfig();
   std::vector<std::string> unique_cgi_exts = tokensToUniqueCgiExts(tokens_);
 
-  for (std::vector<std::string>::const_iterator ext = unique_cgi_exts.begin();
-       ext != unique_cgi_exts.end(); ++ext)
-    locationConfig.addCgiExt(*ext);
+  locationConfig.setCgiExts(unique_cgi_exts);
 }
