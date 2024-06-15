@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 
 #include "ServerException.hpp"
-#include "UriUtils.hpp"
+#include "utils/UriUtils.hpp"
 
 void testDecodeUrlEncoding(const char* target, const char* expect_str,
                            bool expect) {
   std::string target_string(target);
-  bool ret = UriUtils::decodeUrlEncoding(target_string);
+  bool ret = uri_utils::decodeUrlEncoding(target_string);
   EXPECT_EQ(ret, expect);
   if (ret == true) EXPECT_STREQ(target_string.c_str(), expect_str);
 }
@@ -15,10 +15,10 @@ void testRemoveDotSegments(const char* target, const char* expect_str,
                            bool expect_no_throw) {
   if (expect_no_throw) {
     std::string result_str;
-    ASSERT_NO_THROW((result_str = UriUtils::removeDotSegments(target)));
+    ASSERT_NO_THROW((result_str = uri_utils::removeDotSegments(target)));
     EXPECT_STREQ(result_str.c_str(), expect_str);
   } else
-    ASSERT_THROW(UriUtils::removeDotSegments(target), ServerException);
+    ASSERT_THROW(uri_utils::removeDotSegments(target), ServerException);
 }
 
 TEST(UriUtils, DECODE_URL_ENCODING_SUCCESS) {
@@ -56,18 +56,18 @@ TEST(UriUtils, DECODE_URL_ENCODING_ERROR) {
 }
 
 TEST(UriUtils, IS_IPV4_ADDRESS) {
-  EXPECT_EQ(UriUtils::isIPv4Address("0.0.0.0"), true);
-  EXPECT_EQ(UriUtils::isIPv4Address("127.0.0.1"), true);
-  EXPECT_EQ(UriUtils::isIPv4Address("255.255.255.255"), true);
-  EXPECT_EQ(UriUtils::isIPv4Address(""), false);
-  EXPECT_EQ(UriUtils::isIPv4Address("..."), false);
-  EXPECT_EQ(UriUtils::isIPv4Address(".0.0."), false);
-  EXPECT_EQ(UriUtils::isIPv4Address(".0.0.0"), false);
-  EXPECT_EQ(UriUtils::isIPv4Address("0.0.0."), false);
-  EXPECT_EQ(UriUtils::isIPv4Address("00.0.0.0"), false);
-  EXPECT_EQ(UriUtils::isIPv4Address("001.0.0.0"), false);
-  EXPECT_EQ(UriUtils::isIPv4Address("255.255.255.256"), false);
-  EXPECT_EQ(UriUtils::isIPv4Address("localhost"), false);
+  EXPECT_EQ(uri_utils::isIPv4Address("0.0.0.0"), true);
+  EXPECT_EQ(uri_utils::isIPv4Address("127.0.0.1"), true);
+  EXPECT_EQ(uri_utils::isIPv4Address("255.255.255.255"), true);
+  EXPECT_EQ(uri_utils::isIPv4Address(""), false);
+  EXPECT_EQ(uri_utils::isIPv4Address("..."), false);
+  EXPECT_EQ(uri_utils::isIPv4Address(".0.0."), false);
+  EXPECT_EQ(uri_utils::isIPv4Address(".0.0.0"), false);
+  EXPECT_EQ(uri_utils::isIPv4Address("0.0.0."), false);
+  EXPECT_EQ(uri_utils::isIPv4Address("00.0.0.0"), false);
+  EXPECT_EQ(uri_utils::isIPv4Address("001.0.0.0"), false);
+  EXPECT_EQ(uri_utils::isIPv4Address("255.255.255.256"), false);
+  EXPECT_EQ(uri_utils::isIPv4Address("localhost"), false);
 }
 
 TEST(UriUtils, REMOVE_DOT_SEGMENTS) {

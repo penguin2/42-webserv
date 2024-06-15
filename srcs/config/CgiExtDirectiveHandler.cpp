@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <set>
 
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 
 CgiExtDirectiveHandler::CgiExtDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
@@ -18,8 +18,8 @@ bool CgiExtDirectiveHandler::isDirectiveValid() const {
 
   for (std::vector<std::string>::const_iterator ext = unique_cgi_exts.begin();
        ext != unique_cgi_exts.end(); ++ext) {
-    if (!Utils::isStartsWith(*ext, ".") || *ext == ".") return false;
-    if (Utils::isContain(*ext, "/")) return false;
+    if (!utils::isStartsWith(*ext, ".") || *ext == ".") return false;
+    if (utils::isContain(*ext, "/")) return false;
     if (std::count(ext->begin(), ext->end(), '.') != 1) return false;
   }
   return true;

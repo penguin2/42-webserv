@@ -5,7 +5,7 @@
 
 #include "RequestData.hpp"
 #include "ServerException.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
 
@@ -84,7 +84,7 @@ void Request::parseMethod(std::string& buffer) {
   // SP分の+1
   buffer.erase(0, pos_first_space + 1);
   // メソッドが大文字でない
-  if (!Utils::isContainsOnly(data_->getMethod(), std::isupper))
+  if (!utils::isContainsOnly(data_->getMethod(), std::isupper))
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad Method");
   this->state_ = URI;
@@ -188,7 +188,7 @@ void Request::parseChunkedSize(std::string& buffer) {
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad chunk size is CRLF");
   // 行頭からCRLFまでが符号なし16進数でない場合
-  if (Utils::strToSize_t(buffer.substr(0, pos_crlf), chunk_size, 16) == false)
+  if (utils::strToSize_t(buffer.substr(0, pos_crlf), chunk_size, 16) == false)
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad chunk size");
 
@@ -239,7 +239,7 @@ void Request::determineParseBody(std::string& buffer) {
     return parseChunkedSize(buffer);
   } else if (content_length != headers.end()) {
     // 符号なし10進数でない
-    if (Utils::strToSize_t(content_length->second, body_size_, 10) == false)
+    if (utils::strToSize_t(content_length->second, body_size_, 10) == false)
       throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                             "Bad Content-Length");
 
@@ -264,7 +264,7 @@ void Request::insertContentLength(void) {
 }
 
 bool Request::haveConnectionCloseHeader(void) const {
-  return Utils::isSameValueCaseInsensitive(this->data_->getHeaders(),
+  return utils::isSameValueCaseInsensitive(this->data_->getHeaders(),
                                            "connection", "close");
 }
 

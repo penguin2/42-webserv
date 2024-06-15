@@ -3,12 +3,12 @@
 #include <unistd.h>
 
 #include "ConnectionState.hpp"
-#include "FileUtils.hpp"
-#include "HttpUtils.hpp"
+#include "utils/FileUtils.hpp"
+#include "utils/HttpUtils.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "ServerException.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/LocationConfig.hpp"
 
@@ -52,7 +52,7 @@ connection::State RequestHandler::redirectHandler(
   size_t redirect_status_code =
       ConfigAdapter::searchRedirectStatusCode(*location_conf);
 
-  response.appendBody(HttpUtils::generateRedirectContent(
+  response.appendBody(http_utils::generateRedirectContent(
       *redirect_uri, redirect_status_code, "Redirect"));
   response.insertHeader("Location", *redirect_uri);
   response.insertHeader("Content-Type", "text/html");
@@ -71,7 +71,7 @@ connection::State RequestHandler::errorRequestHandler(
         http_path, request.getServerConfig()->getLocationConfigs());
     const std::vector<std::string> allow_methods =
         ConfigAdapter::getAllowMethods(*location_conf);
-    response.insertHeader("Allow", Utils::joinStrings(allow_methods, ", "));
+    response.insertHeader("Allow", utils::joinStrings(allow_methods, ", "));
   }
 
   response.appendBody(generateErrorPageContent(request, status_code, phrase));
@@ -91,7 +91,7 @@ connection::State RequestHandler::cgiHandler(Request& request,
   const std::string cgi_file_path =
       file_data_map["DIR"] + file_data_map["FILE"];
 
-  if (!FileUtils::hasFilePermission(cgi_file_path, X_OK))
+  if (!file_utils::hasFilePermission(cgi_file_path, X_OK))
     throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN, "Forbidden");
 
   request.overwritePath(http_path);
@@ -104,10 +104,10 @@ std::string RequestHandler::generateErrorPageContent(
   const ServerConfig* server_conf = request.getServerConfig();
 
   if (server_conf == NULL)
-    return HttpUtils::generateErrorPage(status_code, phrase);
+    return http_utils::generateErrorPage(status_code, phrase);
   else {
     const std::string* error_page =
         ConfigAdapter::searchErrorPage(*server_conf, status_code);
-    return HttpUtils::generateErrorPage(error_page, status_code, phrase);
+    return http_utils::generateErrorPage(error_page, status_code, phrase);
   }
 }

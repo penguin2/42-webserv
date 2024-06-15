@@ -7,10 +7,10 @@
 #include "CgiRequest.hpp"
 #include "CgiResponseHandler.hpp"
 #include "ConnectionState.hpp"
-#include "HttpUtils.hpp"
+#include "utils/HttpUtils.hpp"
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
 
@@ -91,7 +91,7 @@ std::string Http::makeResponseLog() const {
       request_.getRequestData()->getUri().getHost().empty()
           ? ""
           : request_.getRequestData()->getUri().buildAbsoluteUri();
-  return Utils::uintToString(current_response.getStatusCode()) + " \"" +
+  return utils::uintToString(current_response.getStatusCode()) + " \"" +
          method + "\" \"" + uri + "\"";
 }
 
@@ -156,7 +156,7 @@ connection::State Http::httpHandlerRecvTimeout(void) {
 void Http::prepareToSendResponse(Response& response) {
   this->keep_alive_flag_ =
       ((request_.haveConnectionCloseHeader() == false) &&
-       HttpUtils::isKeepConnection(response.getStatusCode()));
+       http_utils::isKeepConnection(response.getStatusCode()));
   if (response.getStatusCode() == 204) response.clearBody();
   response.insertCommonHeaders(this->keep_alive_flag_);
   response.getResponseRawData(raw_response_data_);

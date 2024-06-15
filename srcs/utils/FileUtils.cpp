@@ -1,4 +1,4 @@
-#include "FileUtils.hpp"
+#include "utils/FileUtils.hpp"
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 
-bool FileUtils::isExistDir(const std::string& file_path) {
+bool file_utils::isExistDir(const std::string& file_path) {
   struct stat st;
 
   if (stat(file_path.c_str(), &st) < 0) return false;
@@ -20,7 +20,7 @@ bool FileUtils::isExistDir(const std::string& file_path) {
   return false;
 }
 
-bool FileUtils::isExistFile(const std::string& file_path) {
+bool file_utils::isExistFile(const std::string& file_path) {
   struct stat st;
 
   if (stat(file_path.c_str(), &st) < 0) return false;
@@ -28,13 +28,13 @@ bool FileUtils::isExistFile(const std::string& file_path) {
   return false;
 }
 
-bool FileUtils::hasFilePermission(const std::string& file_path, int type) {
+bool file_utils::hasFilePermission(const std::string& file_path, int type) {
   if (access(file_path.c_str(), type) == 0) return true;
   return false;
 }
 
-bool FileUtils::writeAllDataToFile(const std::string& file_path,
-                                   const std::string& data) {
+bool file_utils::writeAllDataToFile(const std::string& file_path,
+                                    const std::string& data) {
   std::ofstream ofs(file_path.c_str());
 
   if (ofs.fail()) return false;
@@ -44,8 +44,8 @@ bool FileUtils::writeAllDataToFile(const std::string& file_path,
 }
 
 // file or dir の確認や権限確認はこの関数外で行う
-bool FileUtils::readAllDataFromFile(const std::string& file,
-                                    std::stringstream& ss) {
+bool file_utils::readAllDataFromFile(const std::string& file,
+                                     std::stringstream& ss) {
   std::ifstream ifs(file.c_str(), std::ios::binary);
 
   if (ifs.fail()) return false;
@@ -53,35 +53,35 @@ bool FileUtils::readAllDataFromFile(const std::string& file,
   return true;
 }
 
-off_t FileUtils::getFileSize(const std::string& file_path) {
+off_t file_utils::getFileSize(const std::string& file_path) {
   struct stat file_st;
 
   if (stat(file_path.c_str(), &file_st) == 0) return file_st.st_size;
   return -1;
 }
 
-FileUtils::Entry::Entry(const struct dirent& dir_ent)
+file_utils::Entry::Entry(const struct dirent& dir_ent)
     : file_name_(dir_ent.d_name) {
   switch (dir_ent.d_type) {
     case (DT_DIR):
-      this->type_ = FileUtils::Entry::DIRECTORY;
+      this->type_ = file_utils::Entry::DIRECTORY;
       break;
     case (DT_REG):
-      this->type_ = FileUtils::Entry::REGFILE;
+      this->type_ = file_utils::Entry::REGFILE;
       break;
     default:
-      this->type_ = FileUtils::Entry::UNKNOWN;
+      this->type_ = file_utils::Entry::UNKNOWN;
   }
 }
 
-FileUtils::Entry::~Entry(void) {}
+file_utils::Entry::~Entry(void) {}
 
-FileUtils::Entry::Entry(const Entry& entry) {
+file_utils::Entry::Entry(const Entry& entry) {
   this->file_name_ = entry.file_name_;
   this->type_ = entry.type_;
 }
 
-FileUtils::Entry& FileUtils::Entry::operator=(const Entry& entry) {
+file_utils::Entry& file_utils::Entry::operator=(const Entry& entry) {
   if (this != &entry) {
     this->file_name_ = entry.file_name_;
     this->type_ = entry.type_;
@@ -89,38 +89,38 @@ FileUtils::Entry& FileUtils::Entry::operator=(const Entry& entry) {
   return *this;
 }
 
-bool FileUtils::Entry::operator>(const Entry& entry) const {
+bool file_utils::Entry::operator>(const Entry& entry) const {
   if (this->type_ != entry.type_) return (this->type_ > entry.type_);
   return (this->file_name_ > entry.file_name_);
 }
 
-bool FileUtils::Entry::operator<(const Entry& entry) const {
+bool file_utils::Entry::operator<(const Entry& entry) const {
   if (this->type_ != entry.type_) return (this->type_ < entry.type_);
   return (this->file_name_ < entry.file_name_);
 }
 
-bool FileUtils::Entry::operator>=(const Entry& entry) const {
+bool file_utils::Entry::operator>=(const Entry& entry) const {
   return ((*this == entry) || (*this > entry));
 }
 
-bool FileUtils::Entry::operator<=(const Entry& entry) const {
+bool file_utils::Entry::operator<=(const Entry& entry) const {
   return ((*this == entry) || (*this < entry));
 }
 
-bool FileUtils::Entry::operator==(const Entry& entry) const {
+bool file_utils::Entry::operator==(const Entry& entry) const {
   return ((this->type_ == entry.type_) &&
           (this->file_name_ == entry.file_name_));
 }
 
-bool FileUtils::Entry::operator!=(const Entry& entry) const {
+bool file_utils::Entry::operator!=(const Entry& entry) const {
   return (!(*this == entry));
 }
 
 // 存在しないディレクトリなら空のvector
 // 空のディレクトリならカレントディレクトリと親ディレクトリのパスのvector
-std::vector<FileUtils::Entry> FileUtils::Entry::readDirData(
+std::vector<file_utils::Entry> file_utils::Entry::readDirData(
     const std::string& dir_path) {
-  std::vector<FileUtils::Entry> dir_data;
+  std::vector<file_utils::Entry> dir_data;
   DIR* dir = opendir(dir_path.c_str());
 
   if (dir == NULL) return dir_data;
@@ -132,14 +132,14 @@ std::vector<FileUtils::Entry> FileUtils::Entry::readDirData(
   return dir_data;
 }
 
-const std::string& FileUtils::Entry::getFileName(void) const {
+const std::string& file_utils::Entry::getFileName(void) const {
   return this->file_name_;
 }
 
-FileUtils::Entry::Type FileUtils::Entry::getFileType(void) const {
+file_utils::Entry::Type file_utils::Entry::getFileType(void) const {
   return this->type_;
 }
 
-bool FileUtils::Entry::startWithDot(void) const {
-  return (Utils::isStartsWith(this->file_name_, "."));
+bool file_utils::Entry::startWithDot(void) const {
+  return (utils::isStartsWith(this->file_name_, "."));
 }

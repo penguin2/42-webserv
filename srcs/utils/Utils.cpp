@@ -1,9 +1,9 @@
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 
 #include <sstream>
 #include <string>
 
-void Utils::strTrim(std::string& str, const char* charset) {
+void utils::strTrim(std::string& str, const char* charset) {
   const size_t left = str.find_first_not_of(charset);
   if (left == std::string::npos)
     str = "";
@@ -13,7 +13,7 @@ void Utils::strTrim(std::string& str, const char* charset) {
   }
 }
 
-void Utils::strLTrim(std::string& str, const char* charset) {
+void utils::strLTrim(std::string& str, const char* charset) {
   const size_t left = str.find_first_not_of(charset);
   if (left == std::string::npos)
     str = "";
@@ -21,64 +21,64 @@ void Utils::strLTrim(std::string& str, const char* charset) {
     str = str.substr(left);
 }
 
-bool Utils::isContain(const std::string& str, int (*is_func)(int)) {
+bool utils::isContain(const std::string& str, int (*is_func)(int)) {
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
     if (is_func(*it)) return true;
   }
   return false;
 }
 
-bool Utils::isContain(const std::string& str, const std::string charset) {
+bool utils::isContain(const std::string& str, const std::string charset) {
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
     if (charset.find(*it) != std::string::npos) return true;
   }
   return false;
 }
 
-bool Utils::isContainsOnly(const std::string& str, int (*is_func)(int)) {
+bool utils::isContainsOnly(const std::string& str, int (*is_func)(int)) {
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
     if (!is_func(*it)) return false;
   }
   return true;
 }
 
-bool Utils::isContainsOnly(const std::string& str, const std::string charset) {
+bool utils::isContainsOnly(const std::string& str, const std::string charset) {
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
     if (charset.find(*it) == std::string::npos) return false;
   }
   return true;
 }
 
-void Utils::toLowerString(std::string& str) {
+void utils::toLowerString(std::string& str) {
   for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
     if (std::isupper(*it)) *it = std::tolower(*it);
   }
 }
 
-std::string Utils::toLower(const std::string& str) {
+std::string utils::toLower(const std::string& str) {
   std::string cpy(str);
-  Utils::toLowerString(cpy);
+  utils::toLowerString(cpy);
   return cpy;
 }
 
-void Utils::toUpperString(std::string& str) {
+void utils::toUpperString(std::string& str) {
   for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
     if (std::islower(*it)) *it = std::toupper(*it);
   }
 }
 
-std::string Utils::toUpper(const std::string& str) {
+std::string utils::toUpper(const std::string& str) {
   std::string cpy(str);
-  Utils::toUpperString(cpy);
+  utils::toUpperString(cpy);
   return cpy;
 }
 
 // 符号なし 8 or 10 or 16進数対応
-bool Utils::strToSize_t(const std::string& str, size_t& num, int base) {
+bool utils::strToSize_t(const std::string& str, size_t& num, int base) {
   static const std::string string16 = "0123456789abcdef";
-  std::string lower_str = Utils::toLower(str);
+  std::string lower_str = utils::toLower(str);
 
-  if (!Utils::isContainsOnly(lower_str, string16.substr(0, base))) return false;
+  if (!utils::isContainsOnly(lower_str, string16.substr(0, base))) return false;
   if (base != 8 && base != 10 && base != 16) return false;
   std::stringstream ss(lower_str);
   switch (base) {
@@ -98,28 +98,28 @@ bool Utils::strToSize_t(const std::string& str, size_t& num, int base) {
   return true;
 }
 
-bool Utils::isStartsWith(const std::string& str, const std::string& prefix) {
+bool utils::isStartsWith(const std::string& str, const std::string& prefix) {
   return (str.compare(0, prefix.size(), prefix) == 0);
 }
 
-bool Utils::isEndsWith(const std::string& str, const std::string& suffix) {
+bool utils::isEndsWith(const std::string& str, const std::string& suffix) {
   if (str.size() < suffix.size()) return false;
   return (str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0);
 }
 
-bool Utils::isStartsWithCaseInsensitive(const std::string& str,
+bool utils::isStartsWithCaseInsensitive(const std::string& str,
                                         const std::string& prefix) {
-  return (Utils::toLower(str).compare(0, prefix.size(),
-                                      Utils::toLower(prefix)) == 0);
+  return (utils::toLower(str).compare(0, prefix.size(),
+                                      utils::toLower(prefix)) == 0);
 }
 
-std::string Utils::popFrontSubstr(std::string& str, std::size_t n) {
+std::string utils::popFrontSubstr(std::string& str, std::size_t n) {
   std::string front_substr = str.substr(0, n);
   str.erase(0, n);
   return front_substr;
 }
 
-std::string Utils::getExtension(const std::string& file) {
+std::string utils::getExtension(const std::string& file) {
   size_t pos_last_of_period = file.find_last_of('.');
   // '.'がない || '.'よりも後ろに'/'
   if (pos_last_of_period == std::string::npos ||
@@ -128,7 +128,7 @@ std::string Utils::getExtension(const std::string& file) {
   return file.substr(pos_last_of_period + 1);
 }
 
-std::vector<std::string> Utils::split(const std::string& str, char separator) {
+std::vector<std::string> utils::split(const std::string& str, char separator) {
   std::vector<std::string> strings;
   std::string buf;
   std::stringstream ss(str);
@@ -141,7 +141,7 @@ std::vector<std::string> Utils::split(const std::string& str, char separator) {
   return strings;
 }
 
-std::string Utils::joinStrings(const std::vector<std::string>& strings,
+std::string utils::joinStrings(const std::vector<std::string>& strings,
                                std::string delimiter) {
   std::stringstream ss;
   for (std::vector<std::string>::const_iterator it = strings.begin();
@@ -153,33 +153,33 @@ std::string Utils::joinStrings(const std::vector<std::string>& strings,
   return ss.str();
 }
 
-bool Utils::isSameValueCaseInsensitive(
+bool utils::isSameValueCaseInsensitive(
     const std::map<std::string, std::string>& mp, const std::string& key,
     const std::string& value) {
   std::map<std::string, std::string>::const_iterator it = mp.find(key);
   if (it == mp.end()) return false;
-  return Utils::toLower(it->second) == Utils::toLower(value);
+  return utils::toLower(it->second) == utils::toLower(value);
 }
 
-std::string Utils::uintToString(unsigned int val) {
+std::string utils::uintToString(unsigned int val) {
   std::stringstream ss;
   ss << std::dec << val;
   return ss.str();
 }
 
-bool Utils::hasContentInMap(const std::map<std::string, std::string>& mp,
+bool utils::hasContentInMap(const std::map<std::string, std::string>& mp,
                             const std::string& key) {
   return (mp.find(key) != mp.end());
 }
 
-std::string Utils::concatWithSlash(const std::string& s1,
+std::string utils::concatWithSlash(const std::string& s1,
                                    const std::string& s2) {
   if (isEndsWith(s1, "/") && isStartsWith(s2, "/")) return s1 + s2.substr(1);
   if (!isEndsWith(s1, "/") && !isStartsWith(s2, "/")) return s1 + "/" + s2;
   return s1 + s2;
 }
 
-std::string Utils::findLongestString(const std::vector<std::string>& strings) {
+std::string utils::findLongestString(const std::vector<std::string>& strings) {
   std::vector<std::string>::const_iterator longest_string_it = strings.begin();
 
   if (strings.empty()) return "";

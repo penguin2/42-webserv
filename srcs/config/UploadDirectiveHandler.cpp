@@ -1,6 +1,6 @@
 #include "./config/UploadDirectiveHandler.hpp"
 
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 
 UploadDirectiveHandler::UploadDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
@@ -10,7 +10,7 @@ bool UploadDirectiveHandler::isDirectiveValid() const {
   if (tokens_.size() != 3) {
     return false;
   }
-  std::string on_or_off = Utils::toLower(tokens_[1]);
+  std::string on_or_off = utils::toLower(tokens_[1]);
   if (on_or_off != "on" && on_or_off != "off") return false;
   return true;
 }
@@ -18,5 +18,5 @@ bool UploadDirectiveHandler::isDirectiveValid() const {
 void UploadDirectiveHandler::setConfig() {
   log();
   LocationConfig& locationConfig = getLocationConfig();
-  locationConfig.setAllowUpload(Utils::toLower(tokens_[1]) == "on");
+  locationConfig.setAllowUpload(utils::toLower(tokens_[1]) == "on");
 }

@@ -1,6 +1,6 @@
 #include "./config/ListenDirectiveHandler.hpp"
 
-#include "UriUtils.hpp"
+#include "utils/UriUtils.hpp"
 
 ListenDirectiveHandler::ListenDirectiveHandler() {
   this->directive_context_ = ConfigEnums::SERVER;
@@ -28,15 +28,15 @@ bool ListenDirectiveHandler::parseAddressAndPort(const std::string& str,
     port_raw_str = str;
   } else {
     address = str.substr(0, pos_colon);
-    if (Utils::toLower(address) == "localhost") address = "127.0.0.1";
+    if (utils::toLower(address) == "localhost") address = "127.0.0.1";
     port_raw_str = str.substr(pos_colon + 1);
   }
 
-  if (!UriUtils::isIPv4Address(address)) return false;
-  if (Utils::strToSize_t(port_raw_str, port_number, 10) == false) return false;
+  if (!uri_utils::isIPv4Address(address)) return false;
+  if (utils::strToSize_t(port_raw_str, port_number, 10) == false) return false;
   if (port_number < 1 || 65535 < port_number) return false;
 
-  port = Utils::uintToString(port_number);
+  port = utils::uintToString(port_number);
   return true;
 }
 

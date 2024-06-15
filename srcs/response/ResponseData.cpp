@@ -1,7 +1,7 @@
 #include "ResponseData.hpp"
 
 #include "Cookie.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 
 ResponseData::ResponseData(void) : status_code_(0) {}
 ResponseData::~ResponseData(void) {}
@@ -31,7 +31,7 @@ void ResponseData::appendBody(const std::string& str) { body_.append(str); }
 void ResponseData::insertHeader(const std::string& key,
                                 const std::string& value) {
   // Headerのkeyは大文字小文字を区別しないため内部で小文字で管理
-  std::string lower_case_key = Utils::toLower(key);
+  std::string lower_case_key = utils::toLower(key);
   // 既に存在していれば上書きする
   headers_[lower_case_key] = value;
 }

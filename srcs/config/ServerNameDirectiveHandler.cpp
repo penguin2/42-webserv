@@ -1,7 +1,7 @@
 #include "./config/ServerNameDirectiveHandler.hpp"
 
-#include "UriUtils.hpp"
-#include "Utils.hpp"
+#include "utils/UriUtils.hpp"
+#include "utils/Utils.hpp"
 
 ServerNameDirectiveHandler::ServerNameDirectiveHandler() {
   this->directive_context_ = ConfigEnums::SERVER;
@@ -13,12 +13,12 @@ bool ServerNameDirectiveHandler::isDirectiveValid() const {
   }
 
   std::string servername = tokens_[1];
-  return Utils::isContainsOnly(servername,
-                               UriUtils::isRegNameWithoutPctEncoding);
+  return utils::isContainsOnly(servername,
+                               uri_utils::isRegNameWithoutPctEncoding);
 }
 
 void ServerNameDirectiveHandler::setConfig() {
   log();
   ServerConfig& serverConfig = getServerConfig();
-  serverConfig.setServerName(Utils::toLower(this->tokens_[1]));
+  serverConfig.setServerName(utils::toLower(this->tokens_[1]));
 }

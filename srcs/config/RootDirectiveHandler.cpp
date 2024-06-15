@@ -1,7 +1,7 @@
 #include "./config/RootDirectiveHandler.hpp"
 
-#include "UriUtils.hpp"
-#include "Utils.hpp"
+#include "utils/UriUtils.hpp"
+#include "utils/Utils.hpp"
 
 RootDirectiveHandler::RootDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
@@ -12,7 +12,7 @@ bool RootDirectiveHandler::isDirectiveValid() const {
     return false;
   }
   const std::string& root = tokens_[1];
-  if (!Utils::isContainsOnly(root, UriUtils::isPathCharsetWithoutPctEncoding))
+  if (!utils::isContainsOnly(root, uri_utils::isPathCharsetWithoutPctEncoding))
     return false;
   return true;
 }

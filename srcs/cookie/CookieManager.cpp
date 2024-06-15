@@ -3,8 +3,8 @@
 #include <utility>
 
 #include "Cookie.hpp"
-#include "HttpUtils.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
+#include "utils/HttpUtils.hpp"
 
 CookieManager::CookieManager(void) {}
 CookieManager::~CookieManager(void) {}
@@ -30,7 +30,7 @@ bool CookieManager::parseCookieName(std::string& set_cookie_header_value,
 
   if (pos_equal == std::string::npos) return false;
   if (name.empty()) return false;
-  if (!Utils::isContainsOnly(name, HttpUtils::isHeaderKeyChar)) return false;
+  if (!utils::isContainsOnly(name, http_utils::isHeaderKeyChar)) return false;
   set_cookie_header_value.erase(0, pos_equal + 1);
   cookie.setName(name);
   return true;
@@ -40,14 +40,14 @@ bool CookieManager::parseCookieValue(std::string& set_cookie_header_value,
                                      Cookie& cookie) {
   std::string value;
 
-  if (Utils::isStartsWith(set_cookie_header_value, "\"")) {
+  if (utils::isStartsWith(set_cookie_header_value, "\"")) {
     size_t pos_close_d_quote = set_cookie_header_value.find('"', 1);
     if (pos_close_d_quote == std::string::npos) return false;
     std::string value_without_d_quote =
         set_cookie_header_value.substr(1, pos_close_d_quote - 1);
     value = set_cookie_header_value.substr(0, pos_close_d_quote + 1);
-    if (!Utils::isContainsOnly(value_without_d_quote,
-                               HttpUtils::isCookieValueChar)) {
+    if (!utils::isContainsOnly(value_without_d_quote,
+                               http_utils::isCookieValueChar)) {
       return false;
     }
   } else {
@@ -55,7 +55,7 @@ bool CookieManager::parseCookieValue(std::string& set_cookie_header_value,
     if (pos_end_of_value == std::string::npos)
       pos_end_of_value = set_cookie_header_value.size();
     value = set_cookie_header_value.substr(0, pos_end_of_value);
-    if (!Utils::isContainsOnly(value, HttpUtils::isCookieValueChar))
+    if (!utils::isContainsOnly(value, http_utils::isCookieValueChar))
       return false;
   }
   set_cookie_header_value.erase(0, value.size());
@@ -69,7 +69,7 @@ bool CookieManager::parseCookieAttributes(std::string& set_cookie_header_value,
   std::string attribute;
 
   while (set_cookie_header_value.empty() == false) {
-    if (!Utils::isStartsWith(set_cookie_header_value, "; ")) return false;
+    if (!utils::isStartsWith(set_cookie_header_value, "; ")) return false;
     set_cookie_header_value.erase(0, 2);
     pos_attribute_end = set_cookie_header_value.find(';');
     if (pos_attribute_end == std::string::npos)
@@ -90,15 +90,15 @@ bool CookieManager::parseCookieAttribute(std::string attribute,
   static const std::string secure = "secure";
   static const std::string httponly = "httponly";
 
-  if (Utils::isStartsWithCaseInsensitive(attribute, expires))
+  if (utils::isStartsWithCaseInsensitive(attribute, expires))
     return cookie.setAndCheckExpires(attribute.substr(expires.size()));
-  if (Utils::isStartsWithCaseInsensitive(attribute, max_age))
+  if (utils::isStartsWithCaseInsensitive(attribute, max_age))
     return cookie.setAndCheckMaxAge(attribute.substr(max_age.size()));
-  if (Utils::isStartsWithCaseInsensitive(attribute, domain))
+  if (utils::isStartsWithCaseInsensitive(attribute, domain))
     return cookie.setAndCheckDomain(attribute.substr(domain.size()));
-  if (Utils::isStartsWithCaseInsensitive(attribute, path))
+  if (utils::isStartsWithCaseInsensitive(attribute, path))
     return cookie.setAndCheckPath(attribute.substr(path.size()));
-  if (Utils::toLower(attribute) == secure) return cookie.setSecure(true);
-  if (Utils::toLower(attribute) == httponly) return cookie.setHttpOnly(true);
+  if (utils::toLower(attribute) == secure) return cookie.setSecure(true);
+  if (utils::toLower(attribute) == httponly) return cookie.setHttpOnly(true);
   return false;
 }
