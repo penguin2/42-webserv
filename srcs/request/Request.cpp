@@ -5,12 +5,15 @@
 
 #include "RequestData.hpp"
 #include "ServerException.hpp"
-#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
+#include "utils/Utils.hpp"
 
-Request::Request(void)
-    : state_(METHOD), header_line_counter_(0), crlf_counter_before_method_(0) {
+Request::Request(const std::vector<const ServerConfig*>& server_configs)
+    : state_(METHOD),
+      header_line_counter_(0),
+      crlf_counter_before_method_(0),
+      server_configs_(server_configs) {
   this->data_ = new RequestData;
 }
 

@@ -9,7 +9,7 @@
 
 class Request {
  public:
-  Request(void);
+  Request(const std::vector<const ServerConfig*>& server_configs);
   ~Request(void);
 
   bool parse(std::string& buffer);
@@ -37,6 +37,7 @@ class Request {
   size_t body_size_;
   size_t header_line_counter_;
   size_t crlf_counter_before_method_;
+  std::vector<const ServerConfig*> server_configs_;
 
   void parseMethod(std::string& buffer);
   void parseUri(std::string& buffer);
@@ -48,6 +49,7 @@ class Request {
   void determineParseBody(std::string& buffer);
   void insertContentLength(void);
 
+  Request(void);
   Request(const Request&);
   void operator=(const Request&);
 };

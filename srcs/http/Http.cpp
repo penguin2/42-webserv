@@ -7,18 +7,20 @@
 #include "CgiRequest.hpp"
 #include "CgiResponseHandler.hpp"
 #include "ConnectionState.hpp"
-#include "utils/HttpUtils.hpp"
+#include "Request.hpp"
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
-#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
+#include "utils/HttpUtils.hpp"
+#include "utils/Utils.hpp"
 
 Http::Http(SocketAddress peer_address,
            const std::vector<const ServerConfig*>& server_configs)
     : peer_address_(peer_address),
       server_configs_(server_configs),
       keep_alive_flag_(true),
+      request_(server_configs),
       cgi_request_(NULL),
       cgi_response_(NULL) {}
 
