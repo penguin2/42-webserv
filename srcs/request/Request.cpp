@@ -7,6 +7,7 @@
 #include "ServerException.hpp"
 #include "Uri.hpp"
 #include "config/ConfigAdapter.hpp"
+#include "config/LocationConfig.hpp"
 #include "config/ServerConfig.hpp"
 #include "utils/Utils.hpp"
 
@@ -182,6 +183,8 @@ void Request::parseChunkedSize(std::string& buffer) {
   static const size_t CHUNK_SIZE_LIMIT_DIGITS = 20;
   const size_t pos_crlf = buffer.find("\r\n");
   size_t chunk_size;
+  const LocationConfig* location_config = ConfigAdapter::searchLocationConfig(
+      data_->getUri().getPath(), getServerConfig()->getLocationConfigs());
 
   if (pos_crlf == std::string::npos && CHUNK_SIZE_LIMIT_DIGITS < buffer.size())
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
@@ -197,7 +200,8 @@ void Request::parseChunkedSize(std::string& buffer) {
                           "Bad chunk size");
 
   // chunk_size or 合計のbodyのサイズが正常な数値であるが大き過ぎる場合
-  if (ConfigAdapter::getMaxBodySize() < (chunk_size + data_->getBody().size()))
+  if (ConfigAdapter::getClientMaxBodySize(*location_config) <
+      (chunk_size + data_->getBody().size()))
     throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                           "Body size too large");
 
@@ -238,6 +242,13 @@ void Request::determineParseBody(std::string& buffer) {
                           "Internal Error");
   setServerConfig(*server_config);
 
+  const LocationConfig* location_config = ConfigAdapter::searchLocationConfig(
+      uri.getPath(), server_config->getLocationConfigs());
+  // ここでNULLcheckをするので以降Request.parse()内でsearchLocationConfig実行時,NULLが返ることは絶対にない
+  if (location_config == NULL) {
+    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
+  }
+
   if (transfer_encoding != headers.end()) {
     // Transfer-Encodingにchunked以外の値がある場合
     if (transfer_encoding->second != "chunked")
@@ -256,7 +267,7 @@ void Request::determineParseBody(std::string& buffer) {
                             "Bad Content-Length");
 
     // body_size_が正常な数値であるが大き過ぎる場合
-    if (ConfigAdapter::getMaxBodySize() < body_size_)
+    if (ConfigAdapter::getClientMaxBodySize(*location_config) < body_size_)
       throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                             "Body size too large");
 
