@@ -5,12 +5,12 @@
 
 #include "CgiRequest.hpp"
 #include "ListenSocket.hpp"
-#include "utils/Utils.hpp"
 #include "config/Config.hpp"
 #include "config/LocationConfig.hpp"
 #include "config/ServerConfig.hpp"
 #include "utils/FileUtils.hpp"
 #include "utils/SysUtils.hpp"
+#include "utils/Utils.hpp"
 
 std::map<SocketAddress, std::vector<const ServerConfig*> >
 ConfigAdapter::makeServerConfigGroups() {
@@ -248,10 +248,6 @@ size_t ConfigAdapter::getMaxHeaderSize(void) {
 
 size_t ConfigAdapter::getMaxNumberOfHeaders(void) {
   return INTERNAL::DEFAULT_MAX_NUMBER_OF_HEADERS;
-}
-
-size_t ConfigAdapter::getMaxBodySize(void) {
-  return INTERNAL::DEFAULT_MAX_BODY_SIZE;
 }
 
 bool ConfigAdapter::isCorrespondingMethod(const std::string& method) {
