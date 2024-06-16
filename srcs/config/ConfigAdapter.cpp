@@ -222,10 +222,7 @@ bool ConfigAdapter::canUpload(const LocationConfig& location_conf) {
 
 size_t ConfigAdapter::getClientMaxBodySize(
     const LocationConfig& location_conf) {
-  size_t max_body_size = location_conf.getClientMaxBodySize();
-
-  if (max_body_size == 0) return INTERNAL::DEFAULT_MAX_CLIENT_BODY_SIZE;
-  return max_body_size;
+  return location_conf.getClientMaxBodySize();
 }
 
 size_t ConfigAdapter::getMaxNumberOfCrlfBeforeMethod(void) {
