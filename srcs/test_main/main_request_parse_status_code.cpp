@@ -5,6 +5,7 @@
 
 #include "Request.hpp"
 #include "ServerException.hpp"
+#include "config/ServerConfig.hpp"
 #include "utils/Utils.hpp"
 
 static std::string getAllChars(const char* file) {
@@ -29,7 +30,11 @@ int main(int argc, char** argv) {
     return 3;
   }
 
-  Request request;
+  ServerConfig server_config;
+  server_config.addLocationConfig("");
+  std::vector<const ServerConfig*> server_configs;
+  server_configs.push_back(&server_config);
+  Request request(server_configs);
   std::string buffer;
   std::string raw_data = getAllChars(argv[1]);
 

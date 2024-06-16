@@ -14,15 +14,22 @@ class RequestMock {
   RequestMock(void) {
     string buffer("GET / HTTP/1.1\r\nHost: localhost\r\n\r\n");
     this->server_conf_ = new ServerConfig;
-    this->request_.parse(buffer);
-    this->request_.setServerConfig(*this->server_conf_);
+    this->server_conf_->addLocationConfig("");
+    vector<const ServerConfig*> server_configs;
+    server_configs.push_back(this->server_conf_);
+    this->request_ = new Request(server_configs);
+    this->request_->parse(buffer);
+    this->request_->setServerConfig(*this->server_conf_);
   }
 
-  ~RequestMock(void) { delete this->server_conf_; }
-  Request& getRequest(void) { return request_; }
+  ~RequestMock(void) {
+    delete this->server_conf_;
+    delete this->request_;
+  }
+  Request& getRequest(void) { return *request_; }
 
  private:
-  Request request_;
+  Request* request_;
   ServerConfig* server_conf_;
 };
 
