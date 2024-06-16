@@ -126,6 +126,9 @@ stress_test: $(GOLANG_DIR) $(K6_DIR) $(NAME)
 .PHONY : all
 all : $(NAME)
 
+.PHONY : bonus
+bonus : $(NAME)
+
 .PHONY : clean
 clean :
 	$(RM) $(OBJ_DIR)
