@@ -14,7 +14,6 @@ function generateUniqueId() {
 }
 
 const data = JSON.stringify({ largeField: 'x'.repeat(10 * 1024 * 1024 - 20) });
-let counter = 0;
 
 export default function () {
 	const uniqueId = generateUniqueId();
