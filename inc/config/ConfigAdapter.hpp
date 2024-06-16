@@ -74,7 +74,6 @@ size_t getMaxMethodSize(void);
 size_t getMaxUriSize(void);
 size_t getMaxHeaderSize(void);
 size_t getMaxNumberOfHeaders(void);
-size_t getMaxBodySize(void);
 
 bool isCorrespondingMethod(const std::string& method);
 
@@ -84,8 +83,6 @@ const size_t DEFAULT_MAX_NUMBER_OF_CRLF_BEFORE_METHOD = 10;
 const size_t DEFAULT_MAX_URI_SIZE = 2000;
 const size_t DEFAULT_MAX_HEADER_SIZE = 200;
 const size_t DEFAULT_MAX_NUMBER_OF_HEADERS = 100;
-const size_t DEFAULT_MAX_BODY_SIZE = 1000000000;
-const size_t DEFAULT_MAX_CLIENT_BODY_SIZE = 0;
 const std::string DEFAULT_ROOT = "/var/www/html";
 }  // namespace INTERNAL
 

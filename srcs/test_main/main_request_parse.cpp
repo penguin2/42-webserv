@@ -5,6 +5,7 @@
 
 #include "Request.hpp"
 #include "ServerException.hpp"
+#include "config/ServerConfig.hpp"
 
 #define SAMPLE_REQUEST               \
   "\r\nGET /index.html HTTP/1.1\r\n" \
@@ -51,7 +52,11 @@ static std::string getAllChars(const char* file) {
 // 1 -> 異常なリクエストで例外をthrow
 // 2 -> リクエストが未完成
 int main(int argc, char** argv) {
-  Request request;
+  ServerConfig server_config;
+  server_config.addLocationConfig("");
+  std::vector<const ServerConfig*> server_configs;
+  server_configs.push_back(&server_config);
+  Request request(server_configs);
   std::string buffer;
   std::string raw_data = (argc == 1) ? SAMPLE_REQUEST : getAllChars(argv[1]);
 

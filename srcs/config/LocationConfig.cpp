@@ -1,7 +1,7 @@
 #include "./config/LocationConfig.hpp"
 
 LocationConfig::LocationConfig()
-    : client_max_body_size(0),
+    : client_max_body_size(1000000),
       autoindex(false),
       allow_upload(false),
       return_status_code(0) {}

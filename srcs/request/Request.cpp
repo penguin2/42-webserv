@@ -5,12 +5,17 @@
 
 #include "RequestData.hpp"
 #include "ServerException.hpp"
-#include "utils/Utils.hpp"
+#include "Uri.hpp"
 #include "config/ConfigAdapter.hpp"
+#include "config/LocationConfig.hpp"
 #include "config/ServerConfig.hpp"
+#include "utils/Utils.hpp"
 
-Request::Request(void)
-    : state_(METHOD), header_line_counter_(0), crlf_counter_before_method_(0) {
+Request::Request(const std::vector<const ServerConfig*>& server_configs)
+    : state_(METHOD),
+      header_line_counter_(0),
+      crlf_counter_before_method_(0),
+      server_configs_(server_configs) {
   this->data_ = new RequestData;
 }
 
@@ -178,6 +183,8 @@ void Request::parseChunkedSize(std::string& buffer) {
   static const size_t CHUNK_SIZE_LIMIT_DIGITS = 20;
   const size_t pos_crlf = buffer.find("\r\n");
   size_t chunk_size;
+  const LocationConfig* location_config = ConfigAdapter::searchLocationConfig(
+      data_->getUri().getPath(), getServerConfig()->getLocationConfigs());
 
   if (pos_crlf == std::string::npos && CHUNK_SIZE_LIMIT_DIGITS < buffer.size())
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
@@ -193,7 +200,8 @@ void Request::parseChunkedSize(std::string& buffer) {
                           "Bad chunk size");
 
   // chunk_size or 合計のbodyのサイズが正常な数値であるが大き過ぎる場合
-  if (ConfigAdapter::getMaxBodySize() < (chunk_size + data_->getBody().size()))
+  if (ConfigAdapter::getClientMaxBodySize(*location_config) <
+      (chunk_size + data_->getBody().size()))
     throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                           "Body size too large");
 
@@ -211,6 +219,9 @@ void Request::parseChunkedSize(std::string& buffer) {
 void Request::determineParseBody(std::string& buffer) {
   const std::string& method = data_->getMethod();
   const std::map<std::string, std::string>& headers = data_->getHeaders();
+  const Uri& uri = this->data_->getUri();
+  const ServerConfig* server_config =
+      ConfigAdapter::searchServerConfig(uri.getHost(), this->server_configs_);
   const std::map<std::string, std::string>::const_iterator host =
       headers.find("host");
   const std::map<std::string, std::string>::const_iterator transfer_encoding =
@@ -225,6 +236,18 @@ void Request::determineParseBody(std::string& buffer) {
   if (host == headers.end())
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Host field not found");
+
+  if (server_config == NULL)
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Internal Error");
+  setServerConfig(*server_config);
+
+  const LocationConfig* location_config = ConfigAdapter::searchLocationConfig(
+      uri.getPath(), server_config->getLocationConfigs());
+  // ここでNULLcheckをするので以降Request.parse()内でsearchLocationConfig実行時,NULLが返ることは絶対にない
+  if (location_config == NULL) {
+    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
+  }
 
   if (transfer_encoding != headers.end()) {
     // Transfer-Encodingにchunked以外の値がある場合
@@ -244,7 +267,7 @@ void Request::determineParseBody(std::string& buffer) {
                             "Bad Content-Length");
 
     // body_size_が正常な数値であるが大き過ぎる場合
-    if (ConfigAdapter::getMaxBodySize() < body_size_)
+    if (ConfigAdapter::getClientMaxBodySize(*location_config) < body_size_)
       throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                             "Body size too large");
 

@@ -14,14 +14,17 @@ class CreateCgiRequestTest {
   CreateCgiRequestTest(string request_raw_str, string root = "/lib",
                        string server_name = "") {
     SocketAddress peer_addr("1.2.3.4", "NO USE PARAM");
-    Request request;
-    request.parse(request_raw_str);
+
     server_conf_ = new ServerConfig;
     server_conf_->setListenAddress(peer_addr.getIpAddr());
     server_conf_->setListenPort("4242");
     server_conf_->addLocationConfig("/");
     server_conf_->getLocationConfig("/").setRoot(root);
     server_conf_->getLocationConfig("/").addCgiExt(".py");
+    vector<const ServerConfig*> server_configs;
+    server_configs.push_back(server_conf_);
+    Request request(server_configs);
+    request.parse(request_raw_str);
     if (!server_name.empty()) server_conf_->setServerName(server_name);
     request.setServerConfig(*server_conf_);
     cgi_request_ = CgiRequest::createCgiRequest(request, peer_addr);

@@ -4,13 +4,13 @@
 #include <utility>
 
 #include "Connection.hpp"
-#include "utils/FileUtils.hpp"
-#include "utils/HttpUtils.hpp"
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
-#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/LocationConfig.hpp"
+#include "utils/FileUtils.hpp"
+#include "utils/HttpUtils.hpp"
+#include "utils/Utils.hpp"
 
 std::map<std::string, RequestHandler::MethodHandler::method_handler>
 RequestHandler::MethodHandler::makeMethodHandlerMap(void) {
@@ -101,10 +101,6 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
   }
   if (file_utils::isExistFile(file_path) || file_utils::isExistDir(file_path)) {
     throw ServerException(ServerException::SERVER_ERROR_CONFLICT, "Conflict");
-  }
-  if (ConfigAdapter::getClientMaxBodySize(*location_conf) < body.size()) {
-    throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
-                          "Payload too large");
   }
   if (file_utils::writeAllDataToFile(file_path, body) == false) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,

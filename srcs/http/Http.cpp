@@ -7,18 +7,20 @@
 #include "CgiRequest.hpp"
 #include "CgiResponseHandler.hpp"
 #include "ConnectionState.hpp"
-#include "utils/HttpUtils.hpp"
+#include "Request.hpp"
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
-#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
+#include "utils/HttpUtils.hpp"
+#include "utils/Utils.hpp"
 
 Http::Http(SocketAddress peer_address,
            const std::vector<const ServerConfig*>& server_configs)
     : peer_address_(peer_address),
       server_configs_(server_configs),
       keep_alive_flag_(true),
+      request_(server_configs),
       cgi_request_(NULL),
       cgi_response_(NULL) {}
 
@@ -98,7 +100,6 @@ std::string Http::makeResponseLog() const {
 connection::State Http::httpHandlerRecv(void) {
   try {
     if (request_.parse(this->client_data_) == true) {
-      Http::setServerConfig(request_, server_configs_);
       return RequestHandler::dispatch(
           request_, response_, request_.getRequestData()->getUri().getPath());
     }
@@ -160,18 +161,6 @@ void Http::prepareToSendResponse(Response& response) {
   if (response.getStatusCode() == 204) response.clearBody();
   response.insertCommonHeaders(this->keep_alive_flag_);
   response.getResponseRawData(raw_response_data_);
-}
-
-void Http::setServerConfig(
-    Request& request, const std::vector<const ServerConfig*>& server_configs) {
-  const std::string& host = request.getRequestData()->getUri().getHost();
-  const ServerConfig* server_conf =
-      ConfigAdapter::searchServerConfig(host, server_configs);
-
-  if (server_conf == NULL)
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Internal Error");
-  request.setServerConfig(*server_conf);
 }
 
 void Http::createCgiRequestAndResponse(void) {
