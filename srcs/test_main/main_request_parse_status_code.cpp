@@ -5,7 +5,7 @@
 
 #include "Request.hpp"
 #include "ServerException.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 
 static std::string getAllChars(const char* file) {
   std::fstream fs(file);
@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
   std::string raw_data = getAllChars(argv[1]);
 
   size_t expect_status_code;
-  Utils::strToSize_t(argv[2], expect_status_code, 10);
+  utils::strToSize_t(argv[2], expect_status_code, 10);
 
   try {
     for (std::string::const_iterator it = raw_data.begin();

@@ -4,13 +4,13 @@
 #include <cstdlib>
 
 #include "CgiRequest.hpp"
-#include "FileUtils.hpp"
 #include "ListenSocket.hpp"
-#include "SysUtils.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 #include "config/Config.hpp"
 #include "config/LocationConfig.hpp"
 #include "config/ServerConfig.hpp"
+#include "utils/FileUtils.hpp"
+#include "utils/SysUtils.hpp"
 
 std::map<SocketAddress, std::vector<const ServerConfig*> >
 ConfigAdapter::makeServerConfigGroups() {
@@ -43,7 +43,7 @@ std::map<int, ListenSocket*> ConfigAdapter::makeInitialListenSockets() {
     const SocketAddress& socket_address = it->first;
     const std::vector<const ServerConfig*>& server_configs = it->second;
 
-    const int listen_socket_fd = SysUtils::makeListenSocket(
+    const int listen_socket_fd = sys_utils::makeListenSocket(
         socket_address.getIpAddr().c_str(), socket_address.getPort().c_str(),
         ConfigAdapter::INTERNAL::DEFAULT_LISTEN_BACKLOG);
     if (listen_socket_fd < 0) continue;
@@ -83,10 +83,10 @@ const LocationConfig* ConfigAdapter::searchLocationConfig(
     const std::string& location_path = it->first;
     const LocationConfig* location_config = &(it->second);
 #if defined(__MACH__)
-    if (Utils::isStartsWithCaseInsensitive(http_path, location_path))
+    if (utils::isStartsWithCaseInsensitive(http_path, location_path))
       return location_config;
 #elif defined(__linux__)
-    if (Utils::isStartsWith(http_path, location_path)) return location_config;
+    if (utils::isStartsWith(http_path, location_path)) return location_config;
 #endif
   }
   return NULL;
@@ -98,7 +98,7 @@ std::string ConfigAdapter::makeFilePath(const LocationConfig& location_conf,
 
   if (root.empty()) return INTERNAL::DEFAULT_ROOT + http_path;
   if (root == "/") return http_path;
-  return Utils::concatWithSlash(root, http_path);
+  return utils::concatWithSlash(root, http_path);
 }
 
 const std::string* ConfigAdapter::searchRedirectUri(
@@ -122,7 +122,7 @@ bool ConfigAdapter::isCgiPath(const LocationConfig& location_conf,
   std::string path_to_cgi_script = file_data_map["DIR"] + file_data_map["FILE"];
 
   if (file_data_map["FILE"].empty()) return false;
-  return FileUtils::isExistFile(path_to_cgi_script);
+  return file_utils::isExistFile(path_to_cgi_script);
 }
 
 const std::string* ConfigAdapter::searchErrorPage(
@@ -193,15 +193,15 @@ std::map<std::string, std::string> ConfigAdapter::makeFileDataMap(
 
 std::map<std::string, std::string> ConfigAdapter::makeFileDataMapFromFilePath(
     const std::string& file_path, const std::string& ext) {
-  std::vector<std::string> path_elements = Utils::split(file_path, '/');
+  std::vector<std::string> path_elements = utils::split(file_path, '/');
   std::map<std::string, std::string> file_data_map;
-  file_data_map["DIR"] = Utils::isStartsWith(file_path, "/") ? "/" : "";
+  file_data_map["DIR"] = utils::isStartsWith(file_path, "/") ? "/" : "";
   file_data_map["FILE"] = "";
   file_data_map["PATH_INFO"] = "";
 
   std::vector<std::string>::const_iterator it = path_elements.begin();
   for (; it != path_elements.end(); ++it) {
-    if (Utils::isEndsWith(*it, ext)) {
+    if (utils::isEndsWith(*it, ext)) {
       file_data_map["FILE"] = *it;
       ++it;
       break;
@@ -212,7 +212,7 @@ std::map<std::string, std::string> ConfigAdapter::makeFileDataMapFromFilePath(
   for (; it != path_elements.end(); ++it) {
     file_data_map["PATH_INFO"].append("/").append(*it);
   }
-  if (Utils::isEndsWith(file_path, "/")) file_data_map["PATH_INFO"].append("/");
+  if (utils::isEndsWith(file_path, "/")) file_data_map["PATH_INFO"].append("/");
   return file_data_map;
 }
 
@@ -234,7 +234,7 @@ size_t ConfigAdapter::getMaxNumberOfCrlfBeforeMethod(void) {
 
 size_t ConfigAdapter::getMaxMethodSize(void) {
   static const std::string longest_method =
-      Utils::findLongestString(Config::makeCorrespondingMethods());
+      utils::findLongestString(Config::makeCorrespondingMethods());
   return longest_method.size();
 }
 

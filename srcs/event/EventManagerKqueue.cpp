@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "Logger.hpp"
-#include "SysUtils.hpp"
+#include "utils/SysUtils.hpp"
 
 const struct timespec EventManagerKqueue::kWaitTimeout = {
     EventManagerKqueue::kWaitTimeoutSec,
@@ -17,7 +17,7 @@ struct kevent
 EventManagerKqueue::EventManagerKqueue(
     const std::map<int, ASocket*>& listen_sockets) {
   kq_fd_ = kqueue();
-  if (kq_fd_ < 0 || SysUtils::addCloseOnExecFlag(kq_fd_) < 0) {
+  if (kq_fd_ < 0 || sys_utils::addCloseOnExecFlag(kq_fd_) < 0) {
     LOG(ERROR, "kqueue(create): ", std::strerror(errno));
     std::exit(EXIT_FAILURE);
   }

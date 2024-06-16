@@ -1,4 +1,4 @@
-#include "SysUtils.hpp"
+#include "utils/SysUtils.hpp"
 
 #include <fcntl.h>
 #include <netdb.h>
@@ -12,7 +12,7 @@
 
 #include "Logger.hpp"
 
-int SysUtils::addNonblockingFlag(int fd) {
+int sys_utils::addNonblockingFlag(int fd) {
   if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0) {
     LOG(WARN, "fcntl(F_SETFL): ", std::strerror(errno));
     return -1;
@@ -20,7 +20,7 @@ int SysUtils::addNonblockingFlag(int fd) {
   return 0;
 }
 
-int SysUtils::addCloseOnExecFlag(int fd) {
+int sys_utils::addCloseOnExecFlag(int fd) {
   if (fcntl(fd, F_SETFD, FD_CLOEXEC) < 0) {
     LOG(WARN, "fcntl(F_SETFD): ", std::strerror(errno));
     return -1;
@@ -28,8 +28,8 @@ int SysUtils::addCloseOnExecFlag(int fd) {
   return 0;
 }
 
-int SysUtils::makeListenSocket(const char* host, const char* service,
-                               int backlog) {
+int sys_utils::makeListenSocket(const char* host, const char* service,
+                                int backlog) {
   int socket_fd;
   struct addrinfo hints, *listp, *p;
 
@@ -66,8 +66,8 @@ int SysUtils::makeListenSocket(const char* host, const char* service,
     return -1;
   }
 
-  if (SysUtils::addNonblockingFlag(socket_fd) < 0 ||
-      SysUtils::addCloseOnExecFlag(socket_fd) < 0) {
+  if (sys_utils::addNonblockingFlag(socket_fd) < 0 ||
+      sys_utils::addCloseOnExecFlag(socket_fd) < 0) {
     LOG(WARN,
         "makeListenSocket failed on: ", "add nonblocking/closeonexec flags");
     close(socket_fd);
@@ -83,15 +83,15 @@ int SysUtils::makeListenSocket(const char* host, const char* service,
   return socket_fd;
 }
 
-char* SysUtils::convertToCstring(const std::string& str) {
+char* sys_utils::convertToCstring(const std::string& str) {
   char* cstr = new char[str.size() + 1];
   std::strcpy(cstr, str.c_str());
   return cstr;
 }
 
-void SysUtils::deleteCstring(char* cstr) { delete cstr; }
+void sys_utils::deleteCstring(char* cstr) { delete cstr; }
 
-char* const* SysUtils::convertToEnvp(
+char* const* sys_utils::convertToEnvp(
     const std::map<std::string, std::string> envp_map) {
   const std::size_t envp_size = envp_map.size();
   char** envp = new char*[envp_size + 1];
@@ -108,13 +108,13 @@ char* const* SysUtils::convertToEnvp(
   return envp;
 }
 
-void SysUtils::deleteCstringArray(char* const* c_str_array) {
+void sys_utils::deleteCstringArray(char* const* c_str_array) {
   for (std::size_t idx = 0; c_str_array[idx] != NULL; ++idx)
     delete[] c_str_array[idx];
   delete[] c_str_array;
 }
 
-int SysUtils::clearFd(int* fd) {
+int sys_utils::clearFd(int* fd) {
   if (*fd != -1) {
     if (close(*fd) < 0) return -1;
     *fd = -1;
@@ -122,7 +122,7 @@ int SysUtils::clearFd(int* fd) {
   return 0;
 }
 
-pid_t SysUtils::waitNoHang(pid_t pid, int* status) {
+pid_t sys_utils::waitNoHang(pid_t pid, int* status) {
   if (pid == -1) return -1;
 
   int stat_loc;
@@ -138,7 +138,7 @@ pid_t SysUtils::waitNoHang(pid_t pid, int* status) {
   return exited_pid;
 }
 
-int SysUtils::killAndWaitProcess(pid_t pid) {
+int sys_utils::killAndWaitProcess(pid_t pid) {
   if (kill(pid, SIGTERM) < 0 || kill(pid, SIGKILL) < 0) {
     LOG(WARN, "kill(cgi): ", std::strerror(errno));
     return -1;

@@ -1,4 +1,4 @@
-#include "HttpUtils.hpp"
+#include "utils/HttpUtils.hpp"
 
 #include <dirent.h>
 #include <sys/stat.h>
@@ -12,13 +12,13 @@
 #include <set>
 #include <sstream>
 
-#include "FileUtils.hpp"
 #include "ServerException.hpp"
-#include "Utils.hpp"
+#include "utils/FileUtils.hpp"
+#include "utils/Utils.hpp"
 
 // デフォルトのエラーページHTMLをプログラムで生成
-std::string HttpUtils::generateErrorPage(size_t status_code,
-                                         const std::string& phrase) {
+std::string http_utils::generateErrorPage(size_t status_code,
+                                          const std::string& phrase) {
   std::stringstream ss;
 
   ss << "<!DOCTYPE html>\r\n"
@@ -66,19 +66,19 @@ std::string HttpUtils::generateErrorPage(size_t status_code,
 
 // デフォルトのエラーページHTMLをファイルから読み取り生成
 // ファイルがなかったり読み取りエラーとなった場合はプログラムで生成
-std::string HttpUtils::generateErrorPage(const std::string* file,
-                                         size_t status_code,
-                                         const std::string& phrase) {
+std::string http_utils::generateErrorPage(const std::string* file,
+                                          size_t status_code,
+                                          const std::string& phrase) {
   std::stringstream ss;
-  if (file == NULL || !FileUtils::isExistFile(*file) ||
-      !FileUtils::hasFilePermission(*file, R_OK) ||
-      FileUtils::readAllDataFromFile(file->c_str(), ss) == false)
-    return HttpUtils::generateErrorPage(status_code, phrase);
+  if (file == NULL || !file_utils::isExistFile(*file) ||
+      !file_utils::hasFilePermission(*file, R_OK) ||
+      file_utils::readAllDataFromFile(file->c_str(), ss) == false)
+    return http_utils::generateErrorPage(status_code, phrase);
   return ss.str();
 }
 
-std::string HttpUtils::generateDateAsFormat(std::time_t t,
-                                            const std::string& fmt) {
+std::string http_utils::generateDateAsFormat(std::time_t t,
+                                             const std::string& fmt) {
   const int buffer_size = 256;
   char buf[buffer_size];
 
@@ -87,10 +87,10 @@ std::string HttpUtils::generateDateAsFormat(std::time_t t,
 }
 
 // ファイルの拡張子に基づいてContent-Typeを決定
-std::string HttpUtils::convertPathToContentType(const std::string& file_path) {
+std::string http_utils::convertPathToContentType(const std::string& file_path) {
   static const std::map<std::string, std::string> content_type_map =
       makeContentTypeMap();
-  const std::string extension(Utils::getExtension(file_path));
+  const std::string extension(utils::getExtension(file_path));
   const std::map<std::string, std::string>::const_iterator it =
       content_type_map.find(extension);
 
@@ -98,20 +98,19 @@ std::string HttpUtils::convertPathToContentType(const std::string& file_path) {
   return "text/plain";
 }
 
-bool HttpUtils::isKeepConnection(size_t code) {
+bool http_utils::isKeepConnection(size_t code) {
   static const std::set<size_t> keep_conn_codes =
-      HttpUtils::makeKeepConnectionCodeSet();
+      http_utils::makeKeepConnectionCodeSet();
   return (keep_conn_codes.find(code) != keep_conn_codes.end());
 }
 
-bool HttpUtils::isRedirectStatusCode(size_t code) {
+bool http_utils::isRedirectStatusCode(size_t code) {
   static const std::set<size_t> redirect_codes =
-      HttpUtils::makeRedirectCodeSet();
+      http_utils::makeRedirectCodeSet();
   return (redirect_codes.find(code) != redirect_codes.end());
 }
 
-// TODO Content-Typeの仕様を調べる
-std::map<std::string, std::string> HttpUtils::makeContentTypeMap(void) {
+std::map<std::string, std::string> http_utils::makeContentTypeMap(void) {
   std::map<std::string, std::string> content_type_map;
   content_type_map.insert(std::make_pair("csv", "text/csv"));
   content_type_map.insert(std::make_pair("html", "text/html"));
@@ -129,7 +128,7 @@ std::map<std::string, std::string> HttpUtils::makeContentTypeMap(void) {
 }
 
 // リダイレクトと静的ファイルの正常系ステータスコードのみKeepAlive
-std::set<size_t> HttpUtils::makeKeepConnectionCodeSet(void) {
+std::set<size_t> http_utils::makeKeepConnectionCodeSet(void) {
   std::set<size_t> keep_connection_codes = makeRedirectCodeSet();
   keep_connection_codes.insert(200);
   keep_connection_codes.insert(201);
@@ -138,7 +137,7 @@ std::set<size_t> HttpUtils::makeKeepConnectionCodeSet(void) {
 }
 
 // リダイレクトは301,302,303,307,308のみ対応
-std::set<size_t> HttpUtils::makeRedirectCodeSet(void) {
+std::set<size_t> http_utils::makeRedirectCodeSet(void) {
   std::set<size_t> redirect_status_codes;
   redirect_status_codes.insert(301);
   redirect_status_codes.insert(302);
@@ -148,11 +147,11 @@ std::set<size_t> HttpUtils::makeRedirectCodeSet(void) {
   return redirect_status_codes;
 }
 
-bool HttpUtils::generateAutoindexPage(const std::string& path_component,
-                                      const std::string& dir_path,
-                                      std::stringstream& ss) {
-  std::vector<FileUtils::Entry> dir_data =
-      FileUtils::Entry::readDirData(dir_path);
+bool http_utils::generateAutoindexPage(const std::string& path_component,
+                                       const std::string& dir_path,
+                                       std::stringstream& ss) {
+  std::vector<file_utils::Entry> dir_data =
+      file_utils::Entry::readDirData(dir_path);
   if (dir_data.size() == 0) return false;
   std::sort(dir_data.begin(), dir_data.end());
 
@@ -165,12 +164,12 @@ bool HttpUtils::generateAutoindexPage(const std::string& path_component,
      << "<hr>\r\n"
      << "<pre>\r\n"
      << "<a href=\"../\">../</a>\r\n";
-  for (std::vector<FileUtils::Entry>::const_iterator it = dir_data.begin();
+  for (std::vector<file_utils::Entry>::const_iterator it = dir_data.begin();
        it != dir_data.end(); ++it) {
     if (it->startWithDot() == true ||
-        it->getFileType() == FileUtils::Entry::UNKNOWN)
+        it->getFileType() == file_utils::Entry::UNKNOWN)
       continue;
-    if (AutoindexUtils::generateFileRecord(*it, dir_path, ss) == false)
+    if (autoindex_utils::generateFileRecord(*it, dir_path, ss) == false)
       return false;
     ss << "\r\n";
   }
@@ -181,22 +180,23 @@ bool HttpUtils::generateAutoindexPage(const std::string& path_component,
   return true;
 }
 
-bool HttpUtils::AutoindexUtils::generateFileRecord(
-    const FileUtils::Entry& entry, const std::string& dir,
+bool http_utils::autoindex_utils::generateFileRecord(
+    const file_utils::Entry& entry, const std::string& dir,
     std::stringstream& ss) {
   const std::string file_path(dir + "/" + entry.getFileName());
 
   std::string file_name(entry.getFileName());
-  const bool is_dir_type = (entry.getFileType() == FileUtils::Entry::DIRECTORY);
+  const bool is_dir_type =
+      (entry.getFileType() == file_utils::Entry::DIRECTORY);
   if (is_dir_type) file_name.push_back('/');
-  AutoindexUtils::generateFileLink(file_name, ss);
-  if (AutoindexUtils::generateFileDetail(file_path, is_dir_type, ss) == false)
+  autoindex_utils::generateFileLink(file_name, ss);
+  if (autoindex_utils::generateFileDetail(file_path, is_dir_type, ss) == false)
     return false;
   return true;
 }
 
-void HttpUtils::AutoindexUtils::generateFileLink(const std::string& file_name,
-                                                 std::stringstream& ss) {
+void http_utils::autoindex_utils::generateFileLink(const std::string& file_name,
+                                                   std::stringstream& ss) {
   static const int MAX_FILE_NAME_SIZE = 50;
 
   ss << "<a href=\"" << file_name << "\">";
@@ -210,9 +210,8 @@ void HttpUtils::AutoindexUtils::generateFileLink(const std::string& file_name,
   }
 }
 
-bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
-                                                   bool is_dir,
-                                                   std::stringstream& ss) {
+bool http_utils::autoindex_utils::generateFileDetail(
+    const std::string& file_path, bool is_dir, std::stringstream& ss) {
   static const int MAX_FILE_DETAIL_SIZE = 20;
   struct stat st;
 
@@ -221,7 +220,7 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
   if (is_dir) {
     ss << std::string(MAX_FILE_DETAIL_SIZE - 1, ' ') << '-';
   } else {
-    off_t file_size = FileUtils::getFileSize(file_path);
+    off_t file_size = file_utils::getFileSize(file_path);
     if (file_size < 0) return false;
     std::stringstream ss_file_size;
     ss_file_size << file_size;
@@ -231,18 +230,18 @@ bool HttpUtils::AutoindexUtils::generateFileDetail(const std::string& file_path,
   return true;
 }
 
-bool HttpUtils::isStatusCode(size_t status_code) {
+bool http_utils::isStatusCode(size_t status_code) {
   return (100 <= status_code && status_code < 1000);
 }
 
-int HttpUtils::isHeaderKeyChar(int c) {
+int http_utils::isHeaderKeyChar(int c) {
   std::string str;
   str.push_back(c);
 
-  return (std::isalnum(c) || Utils::isContain(str, "!#$%&'*+-.^_`"));
+  return (std::isalnum(c) || utils::isContain(str, "!#$%&'*+-.^_`"));
 }
 
-int HttpUtils::isCookieValueChar(int c) {
+int http_utils::isCookieValueChar(int c) {
   if (c == 0x21) return true;
   if (0x23 <= c && c <= 0x2B) return true;
   if (0x2D <= c && c <= 0x3A) return true;
@@ -251,7 +250,7 @@ int HttpUtils::isCookieValueChar(int c) {
   return false;
 }
 
-bool HttpUtils::isFullDateRFC1123(const std::string& date_str) {
+bool http_utils::isFullDateRFC1123(const std::string& date_str) {
   // RFC1123-date = wkday "," SP date1 SP time SP "GMT"
   // wkday = ("Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun")
   // date1 = 2DIGIT(day) SP month SP 4DIGIT(year)
@@ -260,22 +259,22 @@ bool HttpUtils::isFullDateRFC1123(const std::string& date_str) {
   // time = 2DIGIT ":" 2DIGIT ":" 2DIGIT (00:00:00 - 23:59:59)
   static const size_t total_date_size = (3 + 1 + 1 + 11 + 1 + 8 + 1 + 3);
   if (date_str.size() != total_date_size) return false;
-  if (!IsFullDateUtils::isWkDay(date_str.substr(0, 3))) return false;
+  if (!is_full_date_utils::isWkDay(date_str.substr(0, 3))) return false;
   if (date_str.substr(3, 2) != ", ") return false;
-  if (!IsFullDateUtils::isDate1(date_str.substr(5, 11))) return false;
+  if (!is_full_date_utils::isDate1(date_str.substr(5, 11))) return false;
   if (date_str[16] != ' ') return false;
-  if (!IsFullDateUtils::isTime(date_str.substr(17, 8))) return false;
+  if (!is_full_date_utils::isTime(date_str.substr(17, 8))) return false;
   if (date_str.substr(25) != " GMT") return false;
   return true;
 }
 
-bool HttpUtils::IsFullDateUtils::isWkDay(const std::string& wkday_str) {
+bool http_utils::is_full_date_utils::isWkDay(const std::string& wkday_str) {
   static const std::vector<std::string> wkdays = makeWkDay();
 
   return (std::find(wkdays.begin(), wkdays.end(), wkday_str) != wkdays.end());
 }
 
-std::vector<std::string> HttpUtils::IsFullDateUtils::makeWkDay(void) {
+std::vector<std::string> http_utils::is_full_date_utils::makeWkDay(void) {
   std::vector<std::string> wkday_vec;
 
   wkday_vec.push_back("Mon");
@@ -288,22 +287,22 @@ std::vector<std::string> HttpUtils::IsFullDateUtils::makeWkDay(void) {
   return wkday_vec;
 }
 
-bool HttpUtils::IsFullDateUtils::isDate1(const std::string& date1_str) {
-  if (!Utils::isContainsOnly(date1_str.substr(0, 2), isdigit)) return false;
+bool http_utils::is_full_date_utils::isDate1(const std::string& date1_str) {
+  if (!utils::isContainsOnly(date1_str.substr(0, 2), isdigit)) return false;
   if (date1_str[2] != ' ') return false;
   if (!isMonth(date1_str.substr(3, 3))) return false;
   if (date1_str[6] != ' ') return false;
-  if (!Utils::isContainsOnly(date1_str.substr(7), isdigit)) return false;
+  if (!utils::isContainsOnly(date1_str.substr(7), isdigit)) return false;
   return true;
 }
 
-bool HttpUtils::IsFullDateUtils::isMonth(const std::string& month_str) {
+bool http_utils::is_full_date_utils::isMonth(const std::string& month_str) {
   static const std::vector<std::string> months = makeMonth();
 
   return (std::find(months.begin(), months.end(), month_str) != months.end());
 }
 
-std::vector<std::string> HttpUtils::IsFullDateUtils::makeMonth(void) {
+std::vector<std::string> http_utils::is_full_date_utils::makeMonth(void) {
   std::vector<std::string> months;
 
   months.push_back("Jan");
@@ -321,18 +320,18 @@ std::vector<std::string> HttpUtils::IsFullDateUtils::makeMonth(void) {
   return months;
 }
 
-bool HttpUtils::IsFullDateUtils::isTime(const std::string& time_str) {
-  if (!Utils::isContainsOnly(time_str.substr(0, 2), isdigit)) return false;
+bool http_utils::is_full_date_utils::isTime(const std::string& time_str) {
+  if (!utils::isContainsOnly(time_str.substr(0, 2), isdigit)) return false;
   if (time_str[2] != ':') return false;
-  if (!Utils::isContainsOnly(time_str.substr(3, 2), isdigit)) return false;
+  if (!utils::isContainsOnly(time_str.substr(3, 2), isdigit)) return false;
   if (time_str[5] != ':') return false;
-  if (!Utils::isContainsOnly(time_str.substr(6), isdigit)) return false;
+  if (!utils::isContainsOnly(time_str.substr(6), isdigit)) return false;
   return true;
 }
 
-std::string HttpUtils::generateRedirectContent(const std::string& uri,
-                                               size_t status_code,
-                                               const std::string& phrase) {
+std::string http_utils::generateRedirectContent(const std::string& uri,
+                                                size_t status_code,
+                                                const std::string& phrase) {
   std::stringstream ss;
 
   ss << "<!DOCTYPE html>\r\n"

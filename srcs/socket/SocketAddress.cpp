@@ -5,7 +5,7 @@
 #include <ostream>
 #include <vector>
 
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 
 SocketAddress::SocketAddress(std::string ip_addr, std::string port)
     : ip_addr_(ip_addr), port_(port) {}
@@ -45,7 +45,7 @@ SocketAddress SocketAddress::createFromSockaddrIn(
     const struct sockaddr_in* addr, socklen_t addr_len) {
   const std::string ip_addr =
       SocketAddress::ipv4ToString(ntohl(addr->sin_addr.s_addr));
-  const std::string port = Utils::uintToString(ntohs(addr->sin_port));
+  const std::string port = utils::uintToString(ntohs(addr->sin_port));
 
   return SocketAddress(ip_addr, port);
   (void)addr_len;
@@ -53,11 +53,11 @@ SocketAddress SocketAddress::createFromSockaddrIn(
 
 std::string SocketAddress::ipv4ToString(unsigned long ip_long) {
   std::vector<std::string> ip_segments;
-  ip_segments.push_back(Utils::uintToString((ip_long >> 24) & 0xffU));
-  ip_segments.push_back(Utils::uintToString((ip_long >> 16) & 0xffU));
-  ip_segments.push_back(Utils::uintToString((ip_long >> 8) & 0xffU));
-  ip_segments.push_back(Utils::uintToString((ip_long >> 0) & 0xffU));
-  return Utils::joinStrings(ip_segments, ".");
+  ip_segments.push_back(utils::uintToString((ip_long >> 24) & 0xffU));
+  ip_segments.push_back(utils::uintToString((ip_long >> 16) & 0xffU));
+  ip_segments.push_back(utils::uintToString((ip_long >> 8) & 0xffU));
+  ip_segments.push_back(utils::uintToString((ip_long >> 0) & 0xffU));
+  return utils::joinStrings(ip_segments, ".");
 }
 
 std::ostream& operator<<(std::ostream& os,

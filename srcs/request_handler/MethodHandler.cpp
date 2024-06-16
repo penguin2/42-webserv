@@ -4,11 +4,11 @@
 #include <utility>
 
 #include "Connection.hpp"
-#include "FileUtils.hpp"
-#include "HttpUtils.hpp"
+#include "utils/FileUtils.hpp"
+#include "utils/HttpUtils.hpp"
 #include "RequestHandler.hpp"
 #include "ServerException.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/LocationConfig.hpp"
 
@@ -28,12 +28,12 @@ connection::State RequestHandler::MethodHandler::getMethodHandler(
   const std::string file_path =
       ConfigAdapter::makeFilePath(*location_conf, http_path);
 
-  if (FileUtils::isExistFile(file_path) &&
-      FileUtils::hasFilePermission(file_path, R_OK)) {
+  if (file_utils::isExistFile(file_path) &&
+      file_utils::hasFilePermission(file_path, R_OK)) {
     return getMethodFileHandler(request, response, http_path);
   }
-  if (FileUtils::isExistDir(file_path) &&
-      FileUtils::hasFilePermission(file_path, R_OK)) {
+  if (file_utils::isExistDir(file_path) &&
+      file_utils::hasFilePermission(file_path, R_OK)) {
     return getMethodDirHandler(request, response, http_path);
   }
   throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not found");
@@ -47,13 +47,13 @@ connection::State RequestHandler::MethodHandler::getMethodFileHandler(
       ConfigAdapter::makeFilePath(*location_conf, http_path);
   std::stringstream ss;
 
-  if (FileUtils::readAllDataFromFile(file_path, ss) == false) {
+  if (file_utils::readAllDataFromFile(file_path, ss) == false) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Read Error");
   }
   response.appendBody(ss.str());
   response.insertHeader("Content-Type",
-                        HttpUtils::convertPathToContentType(http_path));
+                        http_utils::convertPathToContentType(http_path));
   response.setStatusLine(200, "OK");
   return connection::SEND;
 }
@@ -70,7 +70,7 @@ connection::State RequestHandler::MethodHandler::getMethodDirHandler(
   if (!index.empty()) {
     try {
       return RequestHandler::dispatch(request, response,
-                                      Utils::concatWithSlash(http_path, index));
+                                      utils::concatWithSlash(http_path, index));
     } catch (ServerException& e) {
       // 内部リダイレクト失敗時の情報は無視, 後工程の処理を続ける
     }
@@ -78,7 +78,7 @@ connection::State RequestHandler::MethodHandler::getMethodDirHandler(
   if (!ConfigAdapter::isAutoindex(*location_conf)) {
     throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
   }
-  if (HttpUtils::generateAutoindexPage(http_path, file_path, ss) == false) {
+  if (http_utils::generateAutoindexPage(http_path, file_path, ss) == false) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Autoindex Error");
   }
@@ -99,14 +99,14 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
   if (!ConfigAdapter::canUpload(*location_conf)) {
     throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN, "Forbidden");
   }
-  if (FileUtils::isExistFile(file_path) || FileUtils::isExistDir(file_path)) {
+  if (file_utils::isExistFile(file_path) || file_utils::isExistDir(file_path)) {
     throw ServerException(ServerException::SERVER_ERROR_CONFLICT, "Conflict");
   }
   if (ConfigAdapter::getClientMaxBodySize(*location_conf) < body.size()) {
     throw ServerException(ServerException::SERVER_ERROR_PAYLOAD_TOO_LARGE,
                           "Payload too large");
   }
-  if (FileUtils::writeAllDataToFile(file_path, body) == false) {
+  if (file_utils::writeAllDataToFile(file_path, body) == false) {
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "Internal Error");
   }
@@ -126,10 +126,10 @@ connection::State RequestHandler::MethodHandler::deleteMethodHandler(
   const std::string file_path =
       ConfigAdapter::makeFilePath(*location_conf, http_path);
 
-  if (!FileUtils::isExistFile(file_path)) {
+  if (!file_utils::isExistFile(file_path)) {
     throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
   }
-  if (!FileUtils::hasFilePermission(file_path, W_OK)) {
+  if (!file_utils::hasFilePermission(file_path, W_OK)) {
     throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
   }
   if (std::remove(file_path.c_str()) != 0) {
@@ -143,7 +143,7 @@ connection::State RequestHandler::MethodHandler::deleteMethodHandler(
 std::string RequestHandler::MethodHandler::generatePostSuccessJsonData(
     const std::string& file_path, const std::string& absolute_uri) {
   std::stringstream ss;
-  const off_t file_size = FileUtils::getFileSize(file_path);
+  const off_t file_size = file_utils::getFileSize(file_path);
   std::time_t raw_time;
   std::time(&raw_time);
 
@@ -153,7 +153,7 @@ std::string RequestHandler::MethodHandler::generatePostSuccessJsonData(
     ss << "  \"FILE_SIZE\": " << file_size << ",\r\n";
   }
   ss << "  \"CREATED\": "
-     << HttpUtils::generateDateAsFormat(raw_time, "%Y-%m-%d %H:%M:%S")
+     << http_utils::generateDateAsFormat(raw_time, "%Y-%m-%d %H:%M:%S")
      << "\r\n";
   ss << "}\r\n";
   return ss.str();

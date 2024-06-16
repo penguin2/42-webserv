@@ -3,9 +3,9 @@
 #include <set>
 #include <stdexcept>
 
-#include "HttpUtils.hpp"
-#include "UriUtils.hpp"
-#include "Utils.hpp"
+#include "utils/HttpUtils.hpp"
+#include "utils/UriUtils.hpp"
+#include "utils/Utils.hpp"
 
 ErrorPageDirectiveHandler::ErrorPageDirectiveHandler() {
   this->directive_context_ = ConfigEnums::SERVER;
@@ -18,7 +18,7 @@ bool ErrorPageDirectiveHandler::isDirectiveValid() const {
 
   const size_t page_index = (tokens_.size() - 2);
   const std::string& page = tokens_[page_index];
-  if (!Utils::isContainsOnly(page, UriUtils::isPathCharsetWithoutPctEncoding))
+  if (!utils::isContainsOnly(page, uri_utils::isPathCharsetWithoutPctEncoding))
     return false;
 
   std::vector<std::string> unique_code_strings =
@@ -47,8 +47,8 @@ std::vector<size_t> ErrorPageDirectiveHandler::codeStringsToStatusCodes(
   for (std::vector<std::string>::const_iterator code_str = code_strings.begin();
        code_str != code_strings.end(); ++code_str) {
     size_t status_code;
-    if (Utils::strToSize_t(*code_str, status_code, 10) == false ||
-        !HttpUtils::isStatusCode(status_code)) {
+    if (utils::strToSize_t(*code_str, status_code, 10) == false ||
+        !http_utils::isStatusCode(status_code)) {
       throw std::out_of_range("Not Status Code");
     }
     status_codes.push_back(status_code);

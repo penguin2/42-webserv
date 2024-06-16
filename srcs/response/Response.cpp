@@ -4,7 +4,7 @@
 
 #include "Cookie.hpp"
 #include "CookieManager.hpp"
-#include "HttpUtils.hpp"
+#include "utils/HttpUtils.hpp"
 #include "ResponseData.hpp"
 
 Response::Response(void) { this->data_ = new ResponseData; }
@@ -60,7 +60,7 @@ void Response::insertCommonHeaders(bool keep_alive) {
 
   std::time_t raw_time;
   std::time(&raw_time);
-  this->insertHeader("Date", HttpUtils::generateDateAsFormat(
+  this->insertHeader("Date", http_utils::generateDateAsFormat(
                                  raw_time, "%a, %d %b %Y %H:%M:%S GMT"));
 }
 

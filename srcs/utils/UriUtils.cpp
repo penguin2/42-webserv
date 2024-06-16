@@ -1,13 +1,13 @@
-#include "UriUtils.hpp"
+#include "utils/UriUtils.hpp"
 
 #include <algorithm>
 #include <sstream>
 #include <vector>
 
 #include "ServerException.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 
-bool UriUtils::decodeUrlEncoding(std::string &str) {
+bool uri_utils::decodeUrlEncoding(std::string &str) {
   std::string decoded_str;
   size_t num;
   size_t idx = 0;
@@ -17,7 +17,7 @@ bool UriUtils::decodeUrlEncoding(std::string &str) {
         return false;
       } else {
         std::string hex_2_characters(str.substr(idx + 1, 2));
-        if (Utils::strToSize_t(hex_2_characters, num, 16) == false)
+        if (utils::strToSize_t(hex_2_characters, num, 16) == false)
           return false;
       }
       idx += 2;
@@ -31,10 +31,10 @@ bool UriUtils::decodeUrlEncoding(std::string &str) {
   return true;
 }
 
-bool UriUtils::isIPv4Address(const std::string &str) {
+bool uri_utils::isIPv4Address(const std::string &str) {
   std::istringstream iss(str);
   std::string segment;
-  std::vector<std::string> segments = Utils::split(str, '.');
+  std::vector<std::string> segments = utils::split(str, '.');
 
   if (std::count(str.begin(), str.end(), '.') != 3) return false;
   if (segments.size() != 4) return false;
@@ -44,53 +44,53 @@ bool UriUtils::isIPv4Address(const std::string &str) {
        it != segments.end(); ++it) {
     if (it->size() == 0 || 3 < it->size()) return false;
     if (2 <= it->size() && (*it)[0] == '0') return false;
-    if (Utils::strToSize_t(*it, num, 10) == false || 255 < num) return false;
+    if (utils::strToSize_t(*it, num, 10) == false || 255 < num) return false;
   }
   return true;
 }
 
-int UriUtils::isUnreserved(int c) {
+int uri_utils::isUnreserved(int c) {
   return (std::isalnum(c) || c == '-' || c == '.' || c == '_' || c == '~');
 }
 
-int UriUtils::isSubDelims(int c) {
+int uri_utils::isSubDelims(int c) {
   std::string str;
   str.push_back(c);
-  return Utils::isContain(str, "!$&'()*+,;=");
+  return utils::isContain(str, "!$&'()*+,;=");
 }
 
-int UriUtils::isPctEncodingCharset(int c) {
+int uri_utils::isPctEncodingCharset(int c) {
   std::string str;
   str.push_back(c);
-  return (std::isdigit(c) || Utils::isContain(str, "abcdefABCDEF") || c == '%');
+  return (std::isdigit(c) || utils::isContain(str, "abcdefABCDEF") || c == '%');
 }
 
-int UriUtils::isRegName(int c) {
+int uri_utils::isRegName(int c) {
   return (isUnreserved(c) || isPctEncodingCharset(c) || isSubDelims(c));
 }
 
-int UriUtils::isRegNameWithoutPctEncoding(int c) {
+int uri_utils::isRegNameWithoutPctEncoding(int c) {
   return (isUnreserved(c) || isSubDelims(c));
 }
 
-int UriUtils::isUserInfoCharset(int c) { return (isRegName(c) || c == ':'); }
+int uri_utils::isUserInfoCharset(int c) { return (isRegName(c) || c == ':'); }
 
-int UriUtils::isPathCharset(int c) {
+int uri_utils::isPathCharset(int c) {
   return (isRegName(c) || c == ':' || c == '@' || c == '/');
 }
 
-int UriUtils::isPathCharsetWithoutPctEncoding(int c) {
+int uri_utils::isPathCharsetWithoutPctEncoding(int c) {
   return (isUnreserved(c) || isSubDelims(c) || c == ':' || c == '@' ||
           c == '/');
 }
 
-int UriUtils::isQueryCharset(int c) {
+int uri_utils::isQueryCharset(int c) {
   return (isRegName(c) || c == ':' || c == '@' || c == '/' || c == '?');
 }
 
-std::string UriUtils::removeDotSegments(const std::string &path) {
+std::string uri_utils::removeDotSegments(const std::string &path) {
   const bool is_finish_slash = (!path.empty() && path[path.size() - 1] == '/');
-  std::vector<std::string> input_buffer = Utils::split(path, '/');
+  std::vector<std::string> input_buffer = utils::split(path, '/');
   std::vector<std::string> output_buffer;
 
   for (std::vector<std::string>::const_iterator it = input_buffer.begin();

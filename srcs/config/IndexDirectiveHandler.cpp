@@ -1,7 +1,7 @@
 #include "./config/IndexDirectiveHandler.hpp"
 
-#include "UriUtils.hpp"
-#include "Utils.hpp"
+#include "utils/UriUtils.hpp"
+#include "utils/Utils.hpp"
 
 IndexDirectiveHandler::IndexDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
@@ -12,8 +12,8 @@ bool IndexDirectiveHandler::isDirectiveValid() const {
     return false;
   }
   const std::string& index_path = tokens_[1];
-  if (!Utils::isContainsOnly(index_path,
-                             UriUtils::isPathCharsetWithoutPctEncoding))
+  if (!utils::isContainsOnly(index_path,
+                             uri_utils::isPathCharsetWithoutPctEncoding))
     return false;
   return true;
 }

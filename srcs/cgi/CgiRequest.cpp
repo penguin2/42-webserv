@@ -6,7 +6,7 @@
 #include "Request.hpp"
 #include "SocketAddress.hpp"
 #include "Time.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/LocationConfig.hpp"
 #include "config/ServerConfig.hpp"
@@ -86,10 +86,10 @@ void CgiRequest::insertContentLengthAndBodyIfHasHeader(const Request& request) {
 
   if (content_length != headers.end()) {
     size_t size;
-    if (Utils::strToSize_t(content_length->second, size, 10) == false ||
+    if (utils::strToSize_t(content_length->second, size, 10) == false ||
         size == 0)
       return;
-    addEnvVar("CONTENT_LENGTH", Utils::uintToString(size));
+    addEnvVar("CONTENT_LENGTH", utils::uintToString(size));
     setMessage(request.getRequestData()->getBody());
   }
 }
@@ -132,7 +132,7 @@ void CgiRequest::insertHTTPHeaders(const Request& request) {
 
   for (std::map<std::string, std::string>::const_iterator it = headers.begin();
        it != headers.end(); ++it) {
-    std::string cgi_key = "HTTP_" + Utils::toUpper(it->first);
+    std::string cgi_key = "HTTP_" + utils::toUpper(it->first);
     std::replace(cgi_key.begin(), cgi_key.end(), '-', '_');
     addEnvVar(cgi_key, it->second);
   }

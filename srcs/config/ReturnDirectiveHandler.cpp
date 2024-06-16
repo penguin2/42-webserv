@@ -1,6 +1,6 @@
 #include "./config/ReturnDirectiveHandler.hpp"
 
-#include "HttpUtils.hpp"
+#include "utils/HttpUtils.hpp"
 #include "ServerException.hpp"
 #include "Uri.hpp"
 
@@ -24,8 +24,8 @@ bool ReturnDirectiveHandler::isDirectiveValid() const {
     return false;
   }
 
-  if (Utils::strToSize_t(status_code_string, status_code, 10) == false ||
-      !HttpUtils::isRedirectStatusCode(status_code))
+  if (utils::strToSize_t(status_code_string, status_code, 10) == false ||
+      !http_utils::isRedirectStatusCode(status_code))
     return false;
   return true;
 }
@@ -34,7 +34,7 @@ void ReturnDirectiveHandler::setConfig() {
   log();
   LocationConfig& locationConfig = getLocationConfig();
   size_t return_status_code;
-  Utils::strToSize_t(tokens_[1], return_status_code, 10);
+  utils::strToSize_t(tokens_[1], return_status_code, 10);
 
   locationConfig.setReturnStatusCode(return_status_code);
   locationConfig.setReturnUri(tokens_[2]);

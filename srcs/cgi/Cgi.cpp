@@ -8,7 +8,7 @@
 
 #include "Logger.hpp"
 #include "Server.hpp"
-#include "SysUtils.hpp"
+#include "utils/SysUtils.hpp"
 
 char Cgi::read_buffer_[Cgi::kReadBufferSize];
 
@@ -30,9 +30,9 @@ int Cgi::getReadFd() const { return read_fd_; }
 
 int Cgi::getWriteFd() const { return write_fd_; }
 
-int Cgi::clearReadFd() { return SysUtils::clearFd(&read_fd_); }
+int Cgi::clearReadFd() { return sys_utils::clearFd(&read_fd_); }
 
-int Cgi::clearWriteFd() { return SysUtils::clearFd(&write_fd_); }
+int Cgi::clearWriteFd() { return sys_utils::clearFd(&write_fd_); }
 
 pid_t Cgi::tryWaitNoHang(int* exit_status) {
   if (pid_ == -1) return -1;
@@ -42,7 +42,7 @@ pid_t Cgi::tryWaitNoHang(int* exit_status) {
   }
   ++wait_count_;
 
-  const pid_t exited_pid = SysUtils::waitNoHang(pid_, exit_status);
+  const pid_t exited_pid = sys_utils::waitNoHang(pid_, exit_status);
   if (exited_pid > 0) {
     pid_ = -1;
     wait_count_ = 0;
@@ -52,7 +52,7 @@ pid_t Cgi::tryWaitNoHang(int* exit_status) {
 
 int Cgi::clearProcess() {
   if (pid_ == -1) return 0;
-  if (SysUtils::killAndWaitProcess(pid_) < 0) return -1;
+  if (sys_utils::killAndWaitProcess(pid_) < 0) return -1;
   pid_ = -1;
   return 0;
 }
@@ -100,12 +100,12 @@ int Cgi::makePipes(int read_pipe[2], int write_pipe[2]) {
   write_pipe[Cgi::READ_END] = -1;
   write_pipe[Cgi::WRITE_END] = -1;
   if (pipe(read_pipe) < 0 || pipe(write_pipe) < 0 ||
-      SysUtils::addNonblockingFlag(read_pipe[Cgi::READ_END]) < 0 ||
-      SysUtils::addNonblockingFlag(write_pipe[Cgi::WRITE_END]) < 0 ||
-      SysUtils::addCloseOnExecFlag(read_pipe[Cgi::READ_END]) < 0 ||
-      SysUtils::addCloseOnExecFlag(read_pipe[Cgi::WRITE_END]) < 0 ||
-      SysUtils::addCloseOnExecFlag(write_pipe[Cgi::READ_END]) < 0 ||
-      SysUtils::addCloseOnExecFlag(write_pipe[Cgi::WRITE_END]) < 0) {
+      sys_utils::addNonblockingFlag(read_pipe[Cgi::READ_END]) < 0 ||
+      sys_utils::addNonblockingFlag(write_pipe[Cgi::WRITE_END]) < 0 ||
+      sys_utils::addCloseOnExecFlag(read_pipe[Cgi::READ_END]) < 0 ||
+      sys_utils::addCloseOnExecFlag(read_pipe[Cgi::WRITE_END]) < 0 ||
+      sys_utils::addCloseOnExecFlag(write_pipe[Cgi::READ_END]) < 0 ||
+      sys_utils::addCloseOnExecFlag(write_pipe[Cgi::WRITE_END]) < 0) {
     clearPipes(read_pipe, write_pipe);
     return -1;
   }
@@ -114,8 +114,8 @@ int Cgi::makePipes(int read_pipe[2], int write_pipe[2]) {
 
 void Cgi::clearPipes(int read_pipe[2], int write_pipe[2]) {
   for (int i = 0; i < 2; ++i) {
-    SysUtils::clearFd(&read_pipe[i]);
-    SysUtils::clearFd(&write_pipe[i]);
+    sys_utils::clearFd(&read_pipe[i]);
+    sys_utils::clearFd(&write_pipe[i]);
   }
 }
 
@@ -143,22 +143,22 @@ Cgi* Cgi::createCgi(const CgiRequest* cgi_request) {
       std::exit(EXIT_FAILURE);
     }
 
-    char* filename = SysUtils::convertToCstring(cgi_request->getFilename());
-    char* const* envp = SysUtils::convertToEnvp(cgi_request->getEnvVars());
+    char* filename = sys_utils::convertToCstring(cgi_request->getFilename());
+    char* const* envp = sys_utils::convertToEnvp(cgi_request->getEnvVars());
     char* const argv[2] = {filename, NULL};
 
     execve(filename, argv, envp);
 
     LOG(WARN, "execve(cgi): ", std::strerror(errno));
-    SysUtils::deleteCstringArray(envp);
-    SysUtils::deleteCstring(filename);
+    sys_utils::deleteCstringArray(envp);
+    sys_utils::deleteCstring(filename);
 
     std::exit(EXIT_FAILURE);
   }
   //
 
-  SysUtils::clearFd(&read_pipe[Cgi::WRITE_END]);
-  SysUtils::clearFd(&write_pipe[Cgi::READ_END]);
+  sys_utils::clearFd(&read_pipe[Cgi::WRITE_END]);
+  sys_utils::clearFd(&write_pipe[Cgi::READ_END]);
 
   Cgi* new_cgi = new Cgi();
   new_cgi->pid_ = cgi_pid;

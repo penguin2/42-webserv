@@ -1,7 +1,7 @@
 #include "HttpMock.hpp"
 
 #include "ConnectionState.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 
 const std::string HttpMock::kCgiCheckString = "CGI\r\n";
 
@@ -18,7 +18,7 @@ connection::State HttpMock::httpHandler(connection::State state) {
   switch (state) {
     case connection::RECV:
       if (isCgi()) {
-        std::string client_request = Utils::popFrontSubstr(
+        std::string client_request = utils::popFrontSubstr(
             client_data_, HttpMock::kCgiCheckString.size());
         cgi_request_ = CgiRequestMock::createCgiRequest(client_request);
         if (cgi_request_ == NULL) {
@@ -74,7 +74,7 @@ void HttpMock::makeResponse() {
 }
 
 bool HttpMock::isCgi() const {
-  return Utils::isStartsWith(client_data_, HttpMock::kCgiCheckString);
+  return utils::isStartsWith(client_data_, HttpMock::kCgiCheckString);
 }
 
 void HttpMock::makeCgiResponse() {

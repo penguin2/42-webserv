@@ -10,7 +10,7 @@
 
 #include "ASocket.hpp"
 #include "Logger.hpp"
-#include "SysUtils.hpp"
+#include "utils/SysUtils.hpp"
 
 struct epoll_event
     EventManagerEpoll::ready_list_[EventManagerEpoll::kEvlistMaxSize];
@@ -18,7 +18,7 @@ struct epoll_event
 EventManagerEpoll::EventManagerEpoll(
     const std::map<int, ASocket*>& listen_sockets) {
   ep_fd_ = epoll_create(2);
-  if (ep_fd_ < 0 || SysUtils::addCloseOnExecFlag(ep_fd_) < 0) {
+  if (ep_fd_ < 0 || sys_utils::addCloseOnExecFlag(ep_fd_) < 0) {
     LOG(ERROR, "epoll_create: ", std::strerror(errno));
     std::exit(EXIT_FAILURE);
   }

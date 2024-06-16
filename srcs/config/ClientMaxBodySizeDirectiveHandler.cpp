@@ -20,7 +20,7 @@ bool ClientMaxBodySizeDirectiveHandler::isDirectiveValid() const {
   }
 
   size_t client_max_body_size_bytes;
-  if (Utils::strToSize_t(size_string, client_max_body_size_bytes, 10) == false) {
+  if (utils::strToSize_t(size_string, client_max_body_size_bytes, 10) == false) {
     return false;
   }
   if (client_max_body_size_bytes > 999) {
@@ -37,7 +37,7 @@ void ClientMaxBodySizeDirectiveHandler::setConfig() {
     tokens_[1].erase(tokens_[1].size() - 1);
   }
   size_t client_max_body_size_bytes;
-  Utils::strToSize_t(tokens_[1], client_max_body_size_bytes, 10);
+  utils::strToSize_t(tokens_[1], client_max_body_size_bytes, 10);
   size_t client_max_body_size_mega_bytes = (client_max_body_size_bytes * 1000000);
   locationConfig.setClientMaxBodySize(client_max_body_size_mega_bytes);
 }

@@ -1,9 +1,9 @@
 #include "RequestData.hpp"
 
-#include "HttpUtils.hpp"
+#include "utils/HttpUtils.hpp"
 #include "ServerException.hpp"
 #include "Uri.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
 
@@ -37,23 +37,23 @@ void RequestData::insertHeader(std::string &line) {
   if (std::isspace(line[0])) return;
 
   // ':'が無い or keyが無い(": value"のような場合)
-  if (pos_colon == std::string::npos || Utils::isStartsWith(line, ":"))
+  if (pos_colon == std::string::npos || utils::isStartsWith(line, ":"))
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Bad header");
 
   // Headerのkeyは大文字小文字を区別しないため、内部は全て小文字で処理
-  key = Utils::toLower(line.substr(0, pos_colon));
+  key = utils::toLower(line.substr(0, pos_colon));
   value = line.substr(pos_colon + 1);
 
   // valueの前後の空白は除去される
-  Utils::strTrim(value, " ");
+  utils::strTrim(value, " ");
   // keyとコロンの間に空白文字がある場合
   if (std::isspace(key[key.size() - 1]))
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Header in space between key and colon");
 
   // keyに使用不可能文字が含まれる
-  if (!Utils::isContainsOnly(key, HttpUtils::isHeaderKeyChar))
+  if (!utils::isContainsOnly(key, http_utils::isHeaderKeyChar))
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Header contain unusable char");
 
@@ -68,7 +68,7 @@ void RequestData::insertHeader(std::string &line) {
                             "Bad host header");
 
     // Hostヘッダにuser_infoコンポーネントが含まれる
-    if (Utils::isContain(value, "@"))
+    if (utils::isContain(value, "@"))
       throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                             "Host header contain user_info");
 
@@ -76,7 +76,7 @@ void RequestData::insertHeader(std::string &line) {
     this->uri_.overwriteAuthorityIfNotSet(value);
   }
   // keyに空白文字が含まれる or hostヘッダ以外が重複する
-  if (Utils::isContain(key, std::isspace) || headers_.count(key) != 0) return;
+  if (utils::isContain(key, std::isspace) || headers_.count(key) != 0) return;
   headers_.insert(std::make_pair(key, value));
 }
 

@@ -9,7 +9,7 @@
 
 #include "Logger.hpp"
 #include "SocketAddress.hpp"
-#include "SysUtils.hpp"
+#include "utils/SysUtils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ConfigParser.hpp"
 
@@ -53,8 +53,8 @@ int Server::acceptListenSocket(const ListenSocket& listen_socket) {
   const SocketAddress peer_address = SocketAddress::createFromSockaddrIn(
       reinterpret_cast<struct sockaddr_in*>(&peer_sockaddr), peer_sockaddr_len);
 
-  if (SysUtils::addNonblockingFlag(connected_socket_fd) < 0 ||
-      SysUtils::addCloseOnExecFlag(connected_socket_fd) < 0 ||
+  if (sys_utils::addNonblockingFlag(connected_socket_fd) < 0 ||
+      sys_utils::addCloseOnExecFlag(connected_socket_fd) < 0 ||
       addConnection(connected_socket_fd, local_address, peer_address,
                     listen_socket.getServerConfigs()) < 0) {
     close(connected_socket_fd);

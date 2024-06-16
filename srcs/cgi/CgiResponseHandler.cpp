@@ -2,12 +2,12 @@
 
 #include <sstream>
 
-#include "HttpUtils.hpp"
+#include "utils/HttpUtils.hpp"
 #include "Request.hpp"
 #include "ResponseData.hpp"
 #include "ServerException.hpp"
 #include "Uri.hpp"
-#include "Utils.hpp"
+#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 
 void CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
@@ -43,7 +43,7 @@ void CgiResponseHandler::localRedirectResponseHandler(ResponseData& data,
   const std::string absolute_location =
       INTERNAL::convertLocalLocationToAbsoluteLocation(data, request);
 
-  data.appendBody(HttpUtils::generateRedirectContent(
+  data.appendBody(http_utils::generateRedirectContent(
       absolute_location, redirect_status_code, "Found"));
   data.insertHeader("location", absolute_location);
   data.setStatusCode(redirect_status_code);
@@ -55,7 +55,7 @@ void CgiResponseHandler::clientRedirectResponseHandler(ResponseData& data) {
   const std::map<std::string, std::string>& headers = data.getHeaders();
   const std::string& absolute_location = headers.find("location")->second;
 
-  data.appendBody(HttpUtils::generateRedirectContent(
+  data.appendBody(http_utils::generateRedirectContent(
       absolute_location, redirect_status_code, "Found"));
   data.setStatusCode(redirect_status_code);
   data.setPhrase("Found");
@@ -64,7 +64,7 @@ void CgiResponseHandler::clientRedirectResponseHandler(ResponseData& data) {
 void CgiResponseHandler::clientRedirectResponseWithDocumentHandler(
     ResponseData& data) {
   INTERNAL::convertStatusHeaderToStatusLine(data);
-  if (!HttpUtils::isRedirectStatusCode(data.getStatusCode()))
+  if (!http_utils::isRedirectStatusCode(data.getStatusCode()))
     throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
                           "INTERNAL Server Error");
 }
@@ -77,7 +77,7 @@ void CgiResponseHandler::INTERNAL::convertStatusHeaderToStatusLine(
   const std::string code_str = status->second.substr(0, pos_space);
   size_t code;
 
-  Utils::strToSize_t(code_str, code, 10);
+  utils::strToSize_t(code_str, code, 10);
   data.setStatusCode(code);
   data.setPhrase(status->second.substr(pos_space + 1));
   data.eraseHeader("status");
@@ -114,7 +114,7 @@ bool CgiResponseHandler::INTERNAL::isLocalRedirectResponse(
       headers.find("location");
   bool only_location = (headers.size() == 1) && (location != headers.end());
 
-  return (only_location && Utils::isStartsWith(location->second, "/") &&
+  return (only_location && utils::isStartsWith(location->second, "/") &&
           !has_body);
 }
 
@@ -126,7 +126,7 @@ bool CgiResponseHandler::INTERNAL::isClientRedirectResponse(
       headers.find("location");
   bool only_location = (headers.size() == 1) && (location != headers.end());
 
-  return (only_location && !Utils::isStartsWith(location->second, "/")) &&
+  return (only_location && !utils::isStartsWith(location->second, "/")) &&
          !has_body;
 }
 
@@ -141,5 +141,5 @@ bool CgiResponseHandler::INTERNAL::isClientRedirectResponseWithDocument(
   bool has_status = headers.find("status") != headers.end();
 
   return (has_content_type && has_status && has_location &&
-          !Utils::isStartsWith(location->second, "/") && has_body);
+          !utils::isStartsWith(location->second, "/") && has_body);
 }
