@@ -5,6 +5,7 @@
 
 #include "RequestData.hpp"
 #include "ServerException.hpp"
+#include "Uri.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
 #include "utils/Utils.hpp"
@@ -214,6 +215,9 @@ void Request::parseChunkedSize(std::string& buffer) {
 void Request::determineParseBody(std::string& buffer) {
   const std::string& method = data_->getMethod();
   const std::map<std::string, std::string>& headers = data_->getHeaders();
+  const Uri& uri = this->data_->getUri();
+  const ServerConfig* server_config =
+      ConfigAdapter::searchServerConfig(uri.getHost(), this->server_configs_);
   const std::map<std::string, std::string>::const_iterator host =
       headers.find("host");
   const std::map<std::string, std::string>::const_iterator transfer_encoding =
@@ -228,6 +232,11 @@ void Request::determineParseBody(std::string& buffer) {
   if (host == headers.end())
     throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
                           "Host field not found");
+
+  if (server_config == NULL)
+    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
+                          "Internal Error");
+  setServerConfig(*server_config);
 
   if (transfer_encoding != headers.end()) {
     // Transfer-Encodingにchunked以外の値がある場合
