@@ -14,7 +14,7 @@
 
 class Server {
  public:
-  Server(const char* config_file);
+  Server(const char* config_filename);
   ~Server();
 
   int acceptListenSocket(const ListenSocket& listen_socket);
@@ -43,6 +43,8 @@ class Server {
                           std::vector<ASocket*>& closing_sockets);
   int closeSocket(ASocket* socket);
   int closeSockets(const std::vector<ASocket*>& closing_sockets);
+
+  static const std::string kDefaultConfigFilename;
 };
 
 std::ostream& operator<<(std::ostream& os,

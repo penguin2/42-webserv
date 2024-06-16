@@ -7,44 +7,30 @@
 #include "Logger.hpp"
 #include "Server.hpp"
 
-int main(int argc, char **argv) {
-  if (argc != 2) {
-    std::cerr << "usage: " << argv[0] << " <config_file>" << std::endl;
-    return EXIT_FAILURE;
-  }
+static void printUsage(const char* exec_filename) {
+  std::cerr << "usage: " << exec_filename << " <config_file>" << std::endl;
+}
+
+static int setSignalHandlers() {
   if (std::signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
     LOG(ERROR, "signal: ", std::strerror(errno));
+    return -1;
+  }
+  return 0;
+}
+
+int main(int argc, char** argv) {
+  if (!(argc == 1 || argc == 2)) {
+    if (argv != NULL && argv[0] != NULL) printUsage(argv[0]);
     return EXIT_FAILURE;
   }
 
   Logger::getInstance().init();
 
-  Server server(argv[1]);
+  if (setSignalHandlers() < 0) return EXIT_FAILURE;
 
+  Server server(argv[1]);
   if (server.start() < 0) return EXIT_FAILURE;
 
   return EXIT_SUCCESS;
 }
-
-// #include "./config/ConfigParser.hpp"
-
-// int main(int argc, char* argv[]) {
-//   if (argc != 2) {
-//     std::cerr << "Usage: " << argv[0] << " <config_file.conf>" << std::endl;
-//     return 1;
-//   }
-
-//   Logger& log = Logger::getInstance();
-//   log.setDebugMode(true);
-
-//   std::string configFileName = argv[1];
-
-//   ConfigParser parser;
-//   parser.parseConfig(configFileName);
-
-//   Config& config = Config::getInstance();
-
-//   config.print();
-
-//   return 0;
-// }
