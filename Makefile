@@ -10,14 +10,6 @@ INC_DIR		= ./inc
 
 SRCS		= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp" -and ! -name "utest*.cpp")
 
-### OS dependency
-OS			= $(shell uname -s)
-ifeq ($(OS), Darwin)
-# TODO: check flags: -pedantic-errors -Wall -Wextra -Werror
-CXXFLAGS	= -std=c++98 -MMD -MP
-endif
-###
-
 ifeq ($(MAKECMDGOALS), mock)
 	CXXFLAGS += -DMOCK
 endif

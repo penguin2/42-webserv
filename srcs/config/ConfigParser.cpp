@@ -4,8 +4,7 @@ ConfigParser::ConfigParser()
     : http_count_(0),
       server_count_(0),
       location_count_(0),
-      current_context_(ConfigEnums::DEFAULT),
-      current_delimiter_(ConfigEnums::SPACE) {
+      current_context_(ConfigEnums::DEFAULT) {
   this->handlers["listen"] = new ListenDirectiveHandler();
   this->handlers["server_name"] = new ServerNameDirectiveHandler();
   this->handlers["error_page"] = new ErrorPageDirectiveHandler();
