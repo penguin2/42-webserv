@@ -10,6 +10,10 @@ INC_DIR		= ./inc
 
 SRCS		= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp" -and ! -name "utest*.cpp")
 
+### OS dependency
+OS			= $(shell uname -s)
+###
+
 ifeq ($(MAKECMDGOALS), mock)
 	CXXFLAGS += -DMOCK
 endif
@@ -99,7 +103,11 @@ GO_VERSION		=	1.22.3
 GOLANG_GIP_FILE	=	go$(GO_VERSION).linux-arm64.tar.gz
 
 ifeq ($(OS), Darwin)
+ifeq ($(shell uname -m), arm64)
+	GOLANG_GIP_FILE	=	go$(GO_VERSION).darwin-arm64.tar.gz
+else
 	GOLANG_GIP_FILE	=	go$(GO_VERSION).darwin-amd64.tar.gz
+endif
 endif
 
 $(GOLANG_DIR):
