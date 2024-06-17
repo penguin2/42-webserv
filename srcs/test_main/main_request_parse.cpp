@@ -24,8 +24,7 @@ static void printRequest(const RequestData* request) {
   std::cout << "Version : " << request->getVersion() << std::endl;
   const std::map<std::string, std::string>& headers = request->getHeaders();
   std::cout << "Headers :";
-  for (typename std::map<std::string, std::string>::const_iterator it =
-           headers.begin();
+  for (std::map<std::string, std::string>::const_iterator it = headers.begin();
        it != headers.end(); ++it) {
     std::cout << " \"" << it->first << ": " << it->second << "\"";
   }
