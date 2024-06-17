@@ -1,7 +1,9 @@
 #!/bin/bash
 
 WEBSERV="../../webserv"
-UPLOAD_DIR="../../html/upload"
+UPLOAD_DIR="./html/upload"
+
+mkdir $UPLOAD_DIR
 
 for dir in tests/*
 do
@@ -9,5 +11,6 @@ do
 	SERVER_PID=$!
 	./k6/k6 run $dir/test.js
 	kill $SERVER_PID
-	rm $UPLOAD_DIR/*.json
 done
+
+rm -r $UPLOAD_DIR
