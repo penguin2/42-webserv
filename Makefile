@@ -12,10 +12,6 @@ SRCS		= $(shell cd $(SRC_DIR) && find * -name "*.cpp" -and ! -name "main*.cpp" -
 
 ### OS dependency
 OS			= $(shell uname -s)
-ifeq ($(OS), Darwin)
-# TODO: check flags: -pedantic-errors -Wall -Wextra -Werror
-CXXFLAGS	= -std=c++98 -MMD -MP
-endif
 ###
 
 ifeq ($(MAKECMDGOALS), mock)
@@ -107,7 +103,11 @@ GO_VERSION		=	1.22.3
 GOLANG_GIP_FILE	=	go$(GO_VERSION).linux-arm64.tar.gz
 
 ifeq ($(OS), Darwin)
+ifeq ($(shell uname -m), arm64)
+	GOLANG_GIP_FILE	=	go$(GO_VERSION).darwin-arm64.tar.gz
+else
 	GOLANG_GIP_FILE	=	go$(GO_VERSION).darwin-amd64.tar.gz
+endif
 endif
 
 $(GOLANG_DIR):
@@ -133,6 +133,9 @@ stress_test: $(GOLANG_DIR) $(K6_DIR) $(NAME)
 .DEFAULT_GOAL = all
 .PHONY : all
 all : $(NAME)
+
+.PHONY : bonus
+bonus : $(NAME)
 
 .PHONY : clean
 clean :
