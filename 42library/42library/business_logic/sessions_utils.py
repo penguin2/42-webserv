@@ -2,6 +2,7 @@ from typing import Optional
 from persistence.library_database import LibraryDatabase
 from persistence.library_database import SESSIONS
 
+import http.cookies
 import time
 import os
 
@@ -9,14 +10,17 @@ SESSION_ID_KEY = "library_session_id"
 
 
 def get_session_from_envs(envs: os._Environ) -> Optional[list]:
-    if SESSION_ID_KEY not in envs:
+    if "HTTP_COOKIE" not in envs:
+        return None
+    cookie = http.cookies.SimpleCookie(envs["HTTP_COOKIE"])
+    session_id = cookie.get(SESSION_ID_KEY)
+    if session_id is None:
         return None
     db = LibraryDatabase()
-    session_list = db.select(SESSIONS, {"session_id": envs[SESSION_ID_KEY]})
+    session_list = db.select(SESSIONS, {"session_id": session_id.value})
     now = int(time.time())
     for session in session_list:
-        # now < end_date && is_active == True
-        if now < session[2] and session[3] == 1:
+        if now < session[2]:
             return session
     return None
 
@@ -26,18 +30,8 @@ def update_session(session: list, new_session_date: int = 3600):
     session_id = session[0]
     db.update(
         SESSIONS,
-        {"end_date": str(new_session_date)},
+        {"end_date": str(int(time.time()) + new_session_date)},
         {"session_id": str(session_id)}
-    )
-
-
-def invalidate_session(session: list):
-    db = LibraryDatabase()
-    session_id = session[0]
-    db.update(
-        SESSIONS,
-        {"is_active": "0"},
-        {"session_id": session_id}
     )
 
 

@@ -1,6 +1,6 @@
 USERS_TABLE: dict[str, str] = {
     "user_id": "INTEGER PRIMARY KEY AUTOINCREMENT",
-    "user_name": "TEXT NOT NULL",
+    "user_name": "TEXT UNIQUE NOT NULL",
     "password": "TEXT NOT NULL"
 }
 
@@ -15,10 +15,9 @@ BOOKS_TABLE: dict[str, str] = {
 }
 
 SESSIONS_TABLE: dict[str, str] = {
-    "session_id": "INTEGER PRIMARY KEY",
+    "session_id": "TEXT PRIMARY KEY",
     "start_date": "INTEGER DEFAULT (strftime('%s', 'now'))",
     "end_date": "INTEGER DEFAULT (strftime('%s', 'now', '+1 days'))",
-    "is_active": "INTEGER DEFAULT 1",
     "user_id": "INTEGER NOT NULL"
 }
 

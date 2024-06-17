@@ -1,3 +1,4 @@
+from typing import Optional
 from persistence.database_manager import DatabaseManager
 from persistence.table_data import USERS_TABLE, USERS_FOREIGN_KEYS
 from persistence.table_data import BOOKS_TABLE, BOOKS_FOREIGN_KEYS
@@ -7,6 +8,13 @@ from persistence.table_data import USERS, BOOKS, SESSIONS, BOOK_LOANS
 
 import os
 import time
+
+
+def _random_str(size) -> str:
+    tbl = bytes.maketrans(bytearray(range(256)),
+                          bytearray([ord(b'a') + b % 26 for b in range(256)]))
+    # generate random bytes and translate them to lowercase ascii
+    return os.urandom(size).translate(tbl).decode()
 
 
 class LibraryDatabase:
@@ -36,43 +44,42 @@ class LibraryDatabase:
         self.insert_user("noname", "nono")
         self.insert_book("school", "100", 1)
         self.insert_book("food", "200", 1)
-        self.insert_session(1)
-        self.insert_session(2)
-        self.insert_book_loan(1, 2)
-        print("users = ", self.db.select(USERS).fetchall())
-        print("books = ", self.db.select(BOOKS).fetchall())
-        print("sessions = ", self.db.select(SESSIONS).fetchall())
-        print("book_loans = ", self.db.select(BOOK_LOANS).fetchall())
 
-    def insert_user(self, name: str, password: str):
+    def insert_user(self, name: str, password: str) -> int:
         columns = {"user_name": name, "password": password}
-        self.db.insert(USERS, columns)
+        cursor = self.db.insert(USERS, columns)
+        return cursor.lastrowid
 
     def insert_book(self,
                     title: str,
                     isbn: str,
                     owner_id: int,
-                    max_loan_sec=0):
+                    max_loan_sec=0) -> int:
         columns = {"title": title, "isbn": isbn, "owner_user_id": owner_id}
         if max_loan_sec:
             columns["max_loan_sec"] = max_loan_sec
-        self.db.insert(BOOKS, columns)
+        cursor = self.db.insert(BOOKS, columns)
+        return cursor.lastrowid
 
-    def insert_session(self, user_id: int, session_duration_sec=None):
-        columns = {"user_id": user_id}
+    def insert_session(self, user_id: int, session_duration_sec=None) -> tuple:
+        self.db.delete(SESSIONS, {"user_id": str(user_id)})
+        columns = {"session_id": _random_str(10), "user_id": user_id}
         if session_duration_sec:
             session_end_date = int(time.time()) + session_duration_sec
             columns["end_date"] = session_end_date
         self.db.insert(SESSIONS, columns)
+        cursor = self.db.select(SESSIONS, {"user_id": str(user_id)})
+        return cursor.fetchone()
 
     def insert_book_loan(self,
                          book_id: int,
                          user_id: int,
-                         max_loan_sec: int = 0):
+                         max_loan_sec: int = 0) -> int:
         columns = {"book_id": book_id, "loan_user_id": str(user_id)}
         if max_loan_sec:
             columns["checkout_date"] = str(int(time.time()) + max_loan_sec)
-        self.db.insert(BOOK_LOANS, columns)
+        cursor = self.db.insert(BOOK_LOANS, columns)
+        return cursor.lastrowid
 
     def select(self, table: str,
                conditions: dict[str, str] = {},
@@ -82,12 +89,15 @@ class LibraryDatabase:
 
     def update(self, table: str,
                data_dict: dict[str, str],
-               conditions: dict[str, str]):
-        self.db.update(table, data_dict, conditions)
+               conditions: dict[str, str]) -> Optional[tuple]:
+        cursor = self.db.update(table, data_dict, conditions)
+        return cursor.fetchone()
 
     def delete(self, table: str, conditions: dict[str, str]):
         self.db.delete(table, conditions)
 
 
 if __name__ == "__main__":
-    LibraryDatabase()
+    db = LibraryDatabase()
+    new_session = db.insert_session(1, 3600)
+    print(new_session)

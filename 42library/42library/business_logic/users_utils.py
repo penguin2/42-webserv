@@ -1,12 +1,16 @@
+from typing import Optional
 from persistence.library_database import LibraryDatabase
 from persistence.library_database import USERS
 
 
 # if (exist user): [user data]
 # else: []
-def check_user(user_name: str, password: str) -> list:
+def check_user(user_name: str, password: str) -> Optional[tuple]:
     db = LibraryDatabase()
-    return db.select(USERS, {"user_name": user_name, "password": password})
+    user = db.select(USERS, {"user_name": user_name, "password": password})
+    if user:
+        return user[0]
+    return None
 
 
 def fetch_users() -> list:

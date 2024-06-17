@@ -1,0 +1,27 @@
+/* styles.css */
+
+.books {
+	margin: 10%;
+}
+
+.book {
+	display: flex;
+	flex: 1;
+	padding: 1%;
+	border: 1px solid #ccc;
+	margin-right: 10px;
+	background-color: lightblue;
+	float: left;
+}
+
+ul {
+	list-style-type: none;
+	padding: 0;
+	display: block;
+	width: 100px;
+}
+
+li {
+	display: block;
+	margin-right: 10px;
+}

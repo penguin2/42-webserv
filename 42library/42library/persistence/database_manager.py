@@ -39,18 +39,16 @@ class DatabaseManager():
             """
         )
 
-    def insert(self, table: str, data: dict):
+    def insert(self, table: str, data: dict) -> sqlite3.Cursor:
         placeholders: str = ', '.join('?' * len(data))
         column_names: str = ', '.join(data.keys())
         column_values: list = list(data.values())
-        self._execute(
-            f"""
-            INSERT INTO {table}
-            ({column_names})
-            VALUES ({placeholders});
-            """,
-            column_values
-        )
+        query = f"""
+                INSERT INTO {table}
+                ({column_names})
+                VALUES ({placeholders});
+                """
+        return self._execute(query, column_values)
 
     def select(self, table: str,
                conditions: dict[str, str] = {},
@@ -71,28 +69,24 @@ class DatabaseManager():
 
     def update(self, table: str,
                data_dict: dict[str, str],
-               conditions: dict[str, str]):
+               conditions: dict[str, str]) -> sqlite3.Cursor:
         data_placeholders = [f'{column} = ?' for column in data_dict.keys()]
         update_datas = ', '.join(data_placeholders)
         conditions_placeholders = [
             f'{condition} = ?' for condition in conditions.keys()]
         update_conditions = ' AND '.join(conditions_placeholders)
-        self._execute(
-            f"""
-            UPDATE {table}
-            SET {update_datas}
-            WHERE {update_conditions}
-            """,
-            list(data_dict.values()) + list(conditions.values())
-        )
+        query = f"""
+                UPDATE {table}
+                SET {update_datas}
+                WHERE {update_conditions}
+                """
+        return self._execute(query, list(data_dict.values()) + list(conditions.values()))
 
-    def delete(self, table: str, conditions: dict[str, str]):
+    def delete(self, table: str, conditions: dict[str, str]) -> sqlite3.Cursor:
         placeholders = [f'{column} = ?' for column in conditions.keys()]
         delete_conditions = ' AND '.join(placeholders)
-        self._execute(
-            f"""
-            DELETE FROM {table}
-            WHERE {delete_conditions}
-            """,
-            list(conditions.values())
-        )
+        query = f"""
+                DELETE FROM {table}
+                WHERE {delete_conditions}
+                """
+        return self._execute(query, list(conditions.values()))
