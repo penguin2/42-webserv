@@ -1,17 +1,102 @@
-/* styles.css */
+.container {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	/* スペースを均等に配分 */
+	padding: 0;
+	margin: 0 5%;
+}
+
+.button {
+	display: block;
+	width: 100px;
+	background-color: #009cd3;
+	color: #ffffff;
+	font-size: 15px;
+	text-align: center;
+	line-height: 50px;
+	margin: 20px 0;
+	border-radius: 5px;
+	border: 3px solid #009cd3;
+	text-decoration: none;
+	/* リンクの下線を消す */
+}
+
+.button:hover {
+	text-decoration: none;
+	background-color: #ffffff;
+	color: #009cd3;
+}
+
+.button_page {
+	width: 50px;
+	background-color: #013521;
+	color: #ffffff;
+	font-size: 10px;
+	display: block;
+	text-align: center;
+	line-height: 40px;
+	margin: 10px;
+	border-radius: 5px;
+	border: 3px solid #013521;
+	text-decoration: none;
+	/* リンクの下線を消す */
+}
+
+.button_page:hover {
+	text-decoration: none;
+	background-color: #ffffff;
+	color: #013521;
+}
 
 .books_list {
+	display: block;
+	justify-content: center;
+	align-items: center;
+	font-size: 20%;
+	padding-left: 10%;
+	padding-right: 10%;
+}
+
+.contents {
+	display: grid;
 	margin: 10%;
+	grid-template-columns: repeat(3, 30%);
+	gap: 20px;
+	justify-content: center;
+	align-items: center;
 }
 
 .book {
 	display: flex;
 	flex: 1;
+	padding: 5%;
+	border: 1px solid #ccc;
+	margin-right: 5%;
+	background-color: lightblue;
+	justify-content: center;
+	align-items: center;
+}
+
+.pagination {
+	width: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	padding: 1%;
 	border: 1px solid #ccc;
 	margin-right: 10px;
-	background-color: lightblue;
-	float: left;
+	background-color: #add8e6;
+	white-space: nowrap;
+}
+
+header {
+	width: 100%;
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0;
 }
 
 ul {

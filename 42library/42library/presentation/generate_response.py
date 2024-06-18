@@ -1,7 +1,4 @@
 from business_logic.sessions_utils import SESSION_ID_KEY
-from persistence.table_data import BOOKS
-import cgi
-from persistence.library_database import LibraryDatabase
 from presentation.response_generator import ResponseGenerator
 
 

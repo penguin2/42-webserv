@@ -10,10 +10,22 @@ MAXIMUM_NUMBER_OF_BOOKS_PER_PAGE = 4
 
 def generate_index_py_response(user: tuple):
     generator = ResponseGenerator()
+    db = LibraryDatabase()
+    books = db.select(BOOKS, order_by={"book_id": "DESC"})
+    page_number = _get_page_number_from_query_string()
+    book_creator = ContentCreator(page_number, books, create_simple_book, 3, 4)
+    book_contents = book_creator.create_contents()
+    page_href = book_creator.create_page_href("/42library/index.py")
+
     generator.insert_header("Content-Type", "text/html")
-    generator.append_body(f"<p>USER: {user[1]}!!</p>")
-    generator.append_body('<a href="/logout.html">LOGOUT</a>\n')
-    generator.append_body(_create_book_list())
+    generator.append_body('<header>')
+    generator.append_body(
+        f'<div class="container"><a class="button">{user[1]}</a></div>')
+    generator.append_body(page_href)
+    generator.append_body(
+        '<div class="container"><a href="/logout.html" class="button">LOGOUT</a></div>\n')
+    generator.append_body('</header>')
+    generator.append_body(f"<div class=books_list>{book_contents}</div>")
     generator.generate_page()
 
 
@@ -28,17 +40,6 @@ def _get_page_number_from_query_string() -> int:
         page_number = 1
 
     return page_number
-
-
-def _create_book_list() -> str:
-    db = LibraryDatabase()
-    books = db.select(BOOKS, order_by={"book_id": "DESC"})
-    page_number = _get_page_number_from_query_string()
-
-    book_creator = ContentCreator(page_number, books, create_simple_book)
-    page_href = book_creator.create_page_href("/42library/index.py")
-    book_contents = book_creator.create_contents()
-    return page_href + '<div class=books_list>' + book_contents + '</div>'
 
 
 if __name__ == "__main__":

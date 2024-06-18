@@ -41,6 +41,13 @@ def delete_session(session: list):
     db.delete(SESSIONS, {"session_id": session_id})
 
 
+def create_session(user_id: int) -> str:
+    db = LibraryDatabase()
+    session: tuple = db.insert_session(user_id)
+    session_id: str = session[0]
+    return session_id
+
+
 if __name__ == "__main__":
     envs = {SESSION_ID_KEY: "1"}
     sess = get_session_from_envs(envs)

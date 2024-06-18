@@ -10,11 +10,11 @@
 	<form action="/42library/login.py" method="post">
 		<div>
 			<label for="username">NAME:</label>
-			<input type="text" id="username" name="username" required>
+			<input type="text" id="username" name="username" required minlength="3" maxlength="10">
 		</div>
 		<div>
 			<label for="password">PASSWORD:</label>
-			<input type="password" id="password" name="password" required>
+			<input type="password" id="password" name="password" required minlength="3" maxlength="10">
 		</div>
 		<div>
 			<button type="submit">LOGIN</button>

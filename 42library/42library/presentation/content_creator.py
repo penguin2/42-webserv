@@ -30,7 +30,7 @@ def create_book(book: tuple) -> str:
 def create_simple_book(book: tuple) -> str:
     response = '<div class="book">'
     response += "<ul>"
-    response += f'<img src="/images/{book[1]}.png" alt="{book[1]}">'
+    response += f'<img src="/images/{book[0]}.png" alt="{book[1]}">'
     response += f"<li>Title: {book[1]}</li>"
     response += "</ul>"
     response += "</div>"
@@ -56,20 +56,20 @@ class ContentCreator:
         self._contents_per_page: int = num_of_contents * num_of_lines
 
     def _create_pre_page_href(self, path: str) -> str:
-        pre_page_href = ""
         if 1 < self._page_number:
-            pre_page_number = self._page_number - 1
-            pre_page_href = f'<a href="{path}?p={pre_page_number}">Previos</a>'
+            pre_page_href = f'<a href="{path}?p={self._page_number - 1}" class="button_page">Previos</a>'
+        else:
+            pre_page_href = '<a class="button_page">Previos</a>'
         return pre_page_href
 
     def _create_next_page_href(self, path: str) -> str:
         len_contents = len(self._contents)
         max_page_number: int = math.ceil(
             len_contents / self._contents_per_page)
-        next_page_href = ""
         if self._page_number < max_page_number:
-            next_page_number = self._page_number + 1
-            next_page_href = f'<a href="{path}?p={next_page_number}">Next</a>'
+            next_page_href = f'<a href="{path}?p={self._page_number + 1}" class="button_page">Next</a>'
+        else:
+            next_page_href = '<a class="button_page">Next</a>'
         return next_page_href
 
     def create_page_href(self, path: str) -> str:
@@ -80,8 +80,8 @@ class ContentCreator:
         page_start = (self._page_number - 1) * self._contents_per_page + 1
         page_end = self._page_number * self._contents_per_page
         page_end = len_content if (len_content < page_end) else page_end
-        page_data = f"Displaying entries {page_start} - {page_end} of in {len_content} in total"
-        return pre_page_href + page_data + next_page_href
+        page_data = f'<p>{page_start} - {page_end} of in {len_content} in total</p>'
+        return '<div class="pagination">' + pre_page_href + page_data + next_page_href + '</div>'
 
     def create_contents(self) -> str:
         # if (1, 4) -> 0
@@ -99,7 +99,9 @@ class ContentCreator:
 
         contents = ""
         for content_list in contents_list:
+            contents += '<div class="contents">'
             contents += "".join(
                 [self._fptr(content) for content in content_list]
             )
+            contents += '</div>'
         return contents
