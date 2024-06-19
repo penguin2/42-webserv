@@ -2,14 +2,6 @@ from business_logic.sessions_utils import SESSION_ID_KEY
 from presentation.response_generator import ResponseGenerator
 
 
-def generate_no_session_page():
-    generator = ResponseGenerator()
-    generator.insert_header("Content-Type", "text/html")
-    generator.append_body("<p>SESSION is Not Set</p>\n")
-    generator.append_body('<a href="/login.html">LOGIN</p>\n')
-    generator.generate_page()
-
-
 def generate_redirect_page(location_value: str):
     generator = ResponseGenerator()
     generator.insert_header("Location", location_value)
@@ -39,4 +31,4 @@ def generate_logout_page(host: str):
 
 
 if __name__ == "__main__":
-    generate_no_session_page()
+    generate_logout_page("/logout.html")
