@@ -4,20 +4,21 @@
 <head>
 	<meta charset="UTF-8">
 	<title>SIGNUP FORM</title>
+    <link rel="stylesheet" href="/static/static_styles.css">
 </head>
 
 <body>
 	<form action="/42library/signup.py" method="post">
-		<div>
+		<div class="form-container">
 			<label for="username">NAME:</label>
 			<input type="text" id="username" name="username" required minlength="3" maxlength="10">
 		</div>
-		<div>
+		<div class="form-container">
 			<label for="password">PASSWORD:</label>
 			<input type="password" id="password" name="password" required required minlength="3" maxlength="10">
 		</div>
 		<div>
-			<button type="submit">SIGNUP</button>
+			<button type="submit" class="button">Sign Up</button>
 		</div>
 	</form>
 </body>
