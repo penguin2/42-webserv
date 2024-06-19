@@ -26,7 +26,7 @@ class HtmlBuilder:
                 <head>
                     <meta charset="UTF-8">
                     <title>{self.__title}</title>
-                    <link rel="stylesheet" href="/static/styles.css">
+                    <link rel="stylesheet" href="/static/cgi_styles.css">
                 </head>
                 <body>
                     {self.__html_body}
