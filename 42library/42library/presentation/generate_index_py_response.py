@@ -1,6 +1,7 @@
 from presentation.response_generator import ResponseGenerator
 from persistence.library_database import LibraryDatabase
 from persistence.table_data import BOOKS
+from business_logic.sessions_utils import SESSION_ID_KEY
 from presentation.content_creator import ContentCreator
 from presentation.content_creator import create_simple_book
 import cgi
@@ -8,7 +9,7 @@ import cgi
 MAXIMUM_NUMBER_OF_BOOKS_PER_PAGE = 4
 
 
-def generate_index_py_response(user: tuple):
+def generate_index_py_response(user: tuple, session_id: str, max_age: int = 30):
     generator = ResponseGenerator()
     db = LibraryDatabase()
     books = db.select(BOOKS, order_by={"book_id": "DESC"})
@@ -18,13 +19,18 @@ def generate_index_py_response(user: tuple):
     page_href = book_creator.create_page_href("/42library/index.py")
 
     generator.insert_header("Content-Type", "text/html")
-    generator.append_body('<header>')
+    generator.insert_header(
+        "Set-Cookie", f"{SESSION_ID_KEY}={session_id}; Max-Age={max_age}"
+    )
+    generator.append_body("<header>")
     generator.append_body(
-        f'<div class="container"><a class="button">{user[1]}</a></div>')
+        f'<div class="container"><a class="button">{user[1]}</a></div>'
+    )
     generator.append_body(page_href)
     generator.append_body(
-        '<div class="container"><a href="/logout.html" class="button">LOGOUT</a></div>\n')
-    generator.append_body('</header>')
+        '<div class="container"><a href="/logout.html" class="button">LOGOUT</a></div>\n'
+    )
+    generator.append_body("</header>")
     generator.append_body(f"<div class=books_list>{book_contents}</div>")
     generator.generate_page()
 
@@ -43,4 +49,4 @@ def _get_page_number_from_query_string() -> int:
 
 
 if __name__ == "__main__":
-    generate_index_py_response((1, 2, 3, 34))
+    generate_index_py_response((1, 2, 3, 34), 1)

@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/local/bin/python3
 from business_logic.users_utils import is_exist_user
 from business_logic.users_utils import create_user
 from business_logic.sessions_utils import create_session
@@ -10,8 +10,8 @@ import os
 
 def main():
     form = cgi.FieldStorage()
-    user_name = form.getvalue('username')
-    password = form.getvalue('password')
+    user_name = form.getvalue("username")
+    password = form.getvalue("password")
 
     if not is_exist_user(user_name):
         user_id = create_user(user_name, password)

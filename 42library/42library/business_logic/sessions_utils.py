@@ -25,13 +25,13 @@ def get_session_from_envs(envs: os._Environ) -> Optional[list]:
     return None
 
 
-def update_session(session: list, new_session_date: int = 3600):
+def update_session(session: list, new_session_date: int = 30):
     db = LibraryDatabase()
     session_id = session[0]
     db.update(
         SESSIONS,
         {"end_date": str(int(time.time()) + new_session_date)},
-        {"session_id": str(session_id)}
+        {"session_id": str(session_id)},
     )
 
 

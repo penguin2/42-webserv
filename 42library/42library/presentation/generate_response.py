@@ -16,12 +16,14 @@ def generate_redirect_page(location_value: str):
     generator.generate_headers()
 
 
-def generate_redirect_to_index_py(session_id: str, host: str):
+def generate_redirect_to_index_py(session_id: str, host: str, max_age: int = 60):
     generator = ResponseGenerator()
     generator.insert_header("Location", f"http://{host}/42library/index.py")
     generator.insert_header("Status", "302 Found")
     generator.insert_header("Content-Type", "text/html")
-    generator.insert_header("Set-Cookie", f"{SESSION_ID_KEY}={session_id}")
+    generator.insert_header(
+        "Set-Cookie", f"{SESSION_ID_KEY}={session_id}; Max-Age={max_age}"
+    )
     generator.append_body("<p>REDIRECT</p>")
     generator.generate_page()
 

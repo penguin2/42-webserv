@@ -43,7 +43,7 @@ def slice(contents: list, start_idx: int, end_idx: int) -> list[tuple]:
         return []
     if len_contents < end_idx:
         end_idx = len(contents)
-    return contents[start_idx: end_idx]
+    return contents[start_idx:end_idx]
 
 
 class ContentCreator:
@@ -54,19 +54,19 @@ class ContentCreator:
         self._num_of_contents: int = num_of_contents
         self._num_of_lines: int = num_of_lines
         self._contents_per_page: int = num_of_contents * num_of_lines
+        self._max_page_number: int = math.ceil(len(contents) / self._contents_per_page)
 
     def _create_pre_page_href(self, path: str) -> str:
-        if 1 < self._page_number:
-            pre_page_href = f'<a href="{path}?p={self._page_number - 1}" class="button_page">Previos</a>'
-        else:
+        if self._page_number <= 1:
             pre_page_href = '<a class="button_page">Previos</a>'
+        elif self._max_page_number < self._page_number:
+            pre_page_href = f'<a href="{path}?p={self._max_page_number}" class="button_page">Previos</a>'
+        else:
+            pre_page_href = f'<a href="{path}?p={self._page_number - 1}" class="button_page">Previos</a>'
         return pre_page_href
 
     def _create_next_page_href(self, path: str) -> str:
-        len_contents = len(self._contents)
-        max_page_number: int = math.ceil(
-            len_contents / self._contents_per_page)
-        if self._page_number < max_page_number:
+        if self._page_number < self._max_page_number:
             next_page_href = f'<a href="{path}?p={self._page_number + 1}" class="button_page">Next</a>'
         else:
             next_page_href = '<a class="button_page">Next</a>'
@@ -78,10 +78,12 @@ class ContentCreator:
         next_page_href = self._create_next_page_href(path)
 
         page_start = (self._page_number - 1) * self._contents_per_page + 1
+        page_start = len_content if (len_content < page_start) else page_start
         page_end = self._page_number * self._contents_per_page
         page_end = len_content if (len_content < page_end) else page_end
-        page_data = f'<p>{page_start} - {page_end} of in {len_content} in total</p>'
-        return '<div class="pagination">' + pre_page_href + page_data + next_page_href + '</div>'
+        page_data = f"<p>{page_start} - {page_end} of in {len_content} in total</p>"
+        page_all_data = pre_page_href + page_data + next_page_href
+        return '<div class="pagination">' + page_all_data + "</div>"
 
     def create_contents(self) -> str:
         # if (1, 4) -> 0
@@ -100,8 +102,6 @@ class ContentCreator:
         contents = ""
         for content_list in contents_list:
             contents += '<div class="contents">'
-            contents += "".join(
-                [self._fptr(content) for content in content_list]
-            )
-            contents += '</div>'
+            contents += "".join([self._fptr(content) for content in content_list])
+            contents += "</div>"
         return contents
