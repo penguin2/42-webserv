@@ -48,13 +48,14 @@ int Connection::handler(Server* server) {
 }
 
 int Connection::handlerTimeout() {
-  if (state_ == connection::SEND) return 0;
-
   connection::State next_state;
 
   switch (state_) {
     case connection::RECV:
       next_state = http_.httpHandler(connection::RECV_TIMEOUT);
+      break;
+    case connection::SEND:
+      next_state = connection::CLOSED;
       break;
     case connection::CGI:
       next_state = http_.httpHandler(connection::CGI_TIMEOUT);
@@ -165,15 +166,41 @@ void Connection::clearCgi() {
 }
 
 int Connection::updateState(connection::State new_state) {
-  if (state_ == new_state) return 0;
-
   const connection::State prev_state = state_;
   state_ = new_state;
 
+  if (new_state == connection::CLOSED ||
+      updateTimeout(prev_state, new_state) < 0)
+    return -1;
+
+  if (prev_state == new_state) return 0;
   Connection::TransitHandlerMap::const_iterator it =
       Connection::transitHandlers.find(std::make_pair(prev_state, new_state));
   if (it == Connection::transitHandlers.end()) return -1;
   return it->second(this);
+}
+
+int Connection::updateTimeout(connection::State prev_state,
+                              connection::State new_state) {
+  Time new_timeout_limit = Time(0, 0);
+  switch (new_state) {
+    case connection::RECV:
+      if (prev_state != connection::RECV)
+        new_timeout_limit = TimeoutManager::kDefaultTimeoutLimit;
+      break;
+    case connection::SEND:
+      new_timeout_limit = TimeoutManager::kDefaultTimeoutLimit;
+      break;
+    case connection::CGI:
+      new_timeout_limit = TimeoutManager::kCgiTimeoutLimit;
+      break;
+    default:
+      break;
+  }
+  if (new_timeout_limit > Time(0, 0) &&
+      timeout_manager_->update(this, new_timeout_limit) < 0)
+    return -1;
+  return 0;
 }
 
 std::string Connection::makeLog() const {
@@ -210,7 +237,6 @@ int Connection::recvToCgi(Connection* conn) {
       conn->event_manager_->insert(conn->cgi_->getWriteFd(), conn,
                                    EventType::WRITE) < 0)
     return -1;
-  conn->timeout_manager_->update(conn, TimeoutManager::kCgiTimeoutLimit);
   return 0;
 }
 
@@ -224,12 +250,10 @@ int Connection::sendToCgi(Connection* conn) {
       conn->event_manager_->insert(conn->cgi_->getWriteFd(), conn,
                                    EventType::WRITE) < 0)
     return -1;
-  conn->timeout_manager_->update(conn, TimeoutManager::kCgiTimeoutLimit);
   return 0;
 }
 
 int Connection::sendToRecv(Connection* conn) {
-  conn->timeout_manager_->update(conn, TimeoutManager::kDefaultTimeoutLimit);
   return conn->event_manager_->modify(conn->socket_fd_, conn, EventType::READ);
 }
 

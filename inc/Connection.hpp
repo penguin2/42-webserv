@@ -58,6 +58,7 @@ class Connection : public ASocket {
   void clearCgi();
 
   int updateState(connection::State new_state);
+  int updateTimeout(connection::State prev_state, connection::State new_state);
 
   std::string makeLog() const;
 
