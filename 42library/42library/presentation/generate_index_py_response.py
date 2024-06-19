@@ -1,49 +1,53 @@
-from presentation.response_generator import ResponseGenerator
+from presentation.html_builder import HtmlBuilder
 from persistence.library_database import LibraryDatabase
 from persistence.table_data import BOOKS
 from business_logic.sessions_utils import SESSION_ID_KEY
 from presentation.content_creator import ContentCreator
-from presentation.content_creator import create_simple_book
+from presentation.content_creator import create_book_html
 import cgi
-
-MAXIMUM_NUMBER_OF_BOOKS_PER_PAGE = 4
 
 
 def generate_index_py_response(user: tuple, session_id: str, max_age: int = 30):
-    generator = ResponseGenerator()
+    builder = HtmlBuilder()
     db = LibraryDatabase()
     books = db.select(BOOKS, order_by={"book_id": "DESC"})
     page_number = _get_page_number_from_query_string()
-    book_creator = ContentCreator(page_number, books, create_simple_book, 3, 4)
-    book_contents = book_creator.create_contents()
-    page_href = book_creator.create_page_href("/42library/index.py")
+    book_content_creator = ContentCreator(page_number, books, create_book_html)
+    book_contents = book_content_creator.create_contents()
+    page_href = book_content_creator.create_page_href("/42library/index.py")
 
-    generator.insert_header("Content-Type", "text/html")
-    generator.insert_header(
+    builder.insert_header("Content-Type", "text/html")
+    builder.insert_header(
         "Set-Cookie", f"{SESSION_ID_KEY}={session_id}; Max-Age={max_age}"
     )
-    generator.append_body("<header>")
-    generator.append_body(
-        f'<div class="container"><a class="button">{user[1]}</a></div>'
-    )
-    generator.append_body(page_href)
-    generator.append_body(
-        '<div class="container"><a href="/logout.html" class="button">LOGOUT</a></div>\n'
-    )
-    generator.append_body("</header>")
-    generator.append_body(f"<div class=books_list>{book_contents}</div>")
-    generator.generate_page()
+    body = f"""
+        <header>
+            <div class="container">
+                <a class="button">{user[1]}</a>
+            </div>
+            {page_href}
+            <div class="container">
+                <a href="/logout.html" class="button">LOGOUT</a>
+            </div>
+        </header>
+        <div class=books_list>{book_contents}</div>
+    """
+    builder.append_body(body)
+    builder.generate_page()
 
 
 def _get_page_number_from_query_string() -> int:
+    """
+    QUERY_STRINGから'p'というkeyを取得
+    'p'が存在しない・不正な値の場合は1ページ目を表示させる
+    """
     form = cgi.FieldStorage()
-    # QUERY_STRINGから'p'というkeyを取得
     page_number = form.getvalue("p")
-    if page_number is None:
+    try:
+        page_number = int(page_number)
+    except Exception:
         page_number = 1
-    page_number = int(page_number)
-    if page_number <= 0:
-        page_number = 1
+    page_number = 1 if (page_number <= 0) else page_number
 
     return page_number
 

@@ -10,6 +10,11 @@ SESSION_ID_KEY = "library_session_id"
 
 
 def get_session_from_envs(envs: os._Environ) -> Optional[list]:
+    """
+    環境変数`HTTP_COOKIE`からsession_idを取り出す
+    if (session_id in Cookie and session_id in DB): return Session
+    else: return None
+    """
     if "HTTP_COOKIE" not in envs:
         return None
     cookie = http.cookies.SimpleCookie(envs["HTTP_COOKIE"])
@@ -25,12 +30,12 @@ def get_session_from_envs(envs: os._Environ) -> Optional[list]:
     return None
 
 
-def update_session(session: list, new_session_date: int = 30):
+def update_session(session: list, additional_session_sec: int = 30):
     db = LibraryDatabase()
     session_id = session[0]
     db.update(
         SESSIONS,
-        {"end_date": str(int(time.time()) + new_session_date)},
+        {"end_date": str(int(time.time()) + additional_session_sec)},
         {"session_id": str(session_id)},
     )
 

@@ -11,18 +11,14 @@ def return_book(book_id: int) -> bool:
     book = books[0]
     next_status = 0
     if book[2] == 2:
-        # if (current_status = 貸出停止): next_status = 削除可能
+        # if (current_status == 貸出停止): next_status = 削除可能
         next_status = 3
-    db.update(
-        BOOKS,
-        {"status": str(next_status)},
-        {"book_id": str(book_id)}
-    )
+    db.update(BOOKS, {"status": str(next_status)}, {"book_id": str(book_id)})
     now = int(time.time())
     db.update(
         BOOK_LOANS,
         {"actual_return_date": str(now), "is_returned": "1"},
-        {"book_id": str(book_id)}
+        {"book_id": str(book_id)},
     )
     return True
 
@@ -33,12 +29,12 @@ def loan_book(book_id: int, user_id: int) -> bool:
     if not books:
         return False
     book = books[0]
-    if not book[2] == 0:
+    if int(book[2]) != 0:
         # if (図書が貸出可能ではない): return False
         return False
     db.update(BOOKS, {"status": "1"}, {"book_id": str(book_id)})
-    max_loan_ses = int(book[3])
-    db.insert_book_loan(book_id, user_id, max_loan_ses)
+    max_loan_sec = int(book[3])
+    db.insert_book_loan(book_id, user_id, max_loan_sec)
 
     return True
 

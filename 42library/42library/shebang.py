@@ -42,6 +42,10 @@ def remove_shebang_from_files(files: list[str]):
 
 
 if __name__ == "__main__":
+    """
+    シェバンの値は環境依存なのでサンプルサイトを動かす前に実行する
+    新たにCGIスクリプトを追加した場合は下記のリストに追加する
+    """
     write_shebang_to_files(
         ["./index.py", "./login.py", "./logout.py", "./signup.py"], "python3"
     )
