@@ -13,7 +13,7 @@ def main():
     user_name = form.getvalue("username")
     password = form.getvalue("password")
 
-    if not is_exist_user(user_name):
+    if user_name and password and not is_exist_user(user_name):
         user_id = create_user(user_name, password)
         session_id = create_session(user_id)
         host = os.environ["HTTP_HOST"]
