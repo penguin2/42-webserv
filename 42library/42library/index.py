@@ -10,9 +10,9 @@ import os
 def main():
     session = get_session_from_envs(os.environ)
     if session:
-        update_session(session)
+        update_session(session, 30)
         user = get_user_from_session(session)
-        generate_index_py_response(user, session[0])
+        generate_index_py_response(user, session[0], 30)
     else:
         generate_no_session_page()
 
