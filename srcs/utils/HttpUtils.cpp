@@ -12,7 +12,6 @@
 #include <set>
 #include <sstream>
 
-#include "ServerException.hpp"
 #include "utils/FileUtils.hpp"
 #include "utils/Utils.hpp"
 

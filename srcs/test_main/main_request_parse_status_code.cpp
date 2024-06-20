@@ -3,8 +3,8 @@
 #include <iostream>
 #include <map>
 
+#include "HttpException.hpp"
 #include "Request.hpp"
-#include "ServerException.hpp"
 #include "config/ServerConfig.hpp"
 #include "utils/Utils.hpp"
 
@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
       buffer += *it;
       if (request.parse(buffer) == true) return 4;
     }
-  } catch (ServerException& e) {
+  } catch (HttpException& e) {
     std::cout << e.code() << e.what() << std::endl;
     return e.code() == expect_status_code;
   }

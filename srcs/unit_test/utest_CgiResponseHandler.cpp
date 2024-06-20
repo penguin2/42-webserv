@@ -2,9 +2,9 @@
 
 #include "CgiResponse.hpp"
 #include "CgiResponseHandler.hpp"
+#include "HttpException.hpp"
 #include "Request.hpp"
 #include "ResponseData.hpp"
-#include "ServerException.hpp"
 #include "config/ServerConfig.hpp"
 
 using namespace std;
@@ -51,7 +51,7 @@ void testConvertCgi2HttpError(string cgi_response_string) {
 
   ASSERT_THROW(CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
                    request.getRequest(), cgi_response.getResponseData()),
-               ServerException);
+               HttpException);
 }
 
 TEST(CgiResponseHandler, ConvertCgi2Http) {

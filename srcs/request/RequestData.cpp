@@ -1,11 +1,11 @@
 #include "RequestData.hpp"
 
-#include "utils/HttpUtils.hpp"
-#include "ServerException.hpp"
+#include "HttpException.hpp"
 #include "Uri.hpp"
-#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
+#include "utils/HttpUtils.hpp"
+#include "utils/Utils.hpp"
 
 RequestData::RequestData(void) : server_config(NULL) {}
 RequestData::~RequestData(void) {}
@@ -16,12 +16,10 @@ void RequestData::setMethod(const std::string &method) {
 
 void RequestData::setUri(const std::string &uri) {
   if (ConfigAdapter::getMaxUriSize() < uri.size()) {
-    throw ServerException(ServerException::SERVER_ERROR_URI_TOO_LONG,
-                          "Too long URI");
+    throw HttpException(HttpException::URI_TOO_LONG, "Too long URI");
   }
   if (uri.empty()) {
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Bad Request");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Request");
   }
   this->uri_.parse(uri);
 }
@@ -38,8 +36,7 @@ void RequestData::insertHeader(std::string &line) {
 
   // ':'が無い or keyが無い(": value"のような場合)
   if (pos_colon == std::string::npos || utils::isStartsWith(line, ":"))
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Bad header");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad header");
 
   // Headerのkeyは大文字小文字を区別しないため、内部は全て小文字で処理
   key = utils::toLower(line.substr(0, pos_colon));
@@ -49,28 +46,26 @@ void RequestData::insertHeader(std::string &line) {
   utils::strTrim(value, " ");
   // keyとコロンの間に空白文字がある場合
   if (std::isspace(key[key.size() - 1]))
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Header in space between key and colon");
+    throw HttpException(HttpException::BAD_REQUEST,
+                        "Header in space between key and colon");
 
   // keyに使用不可能文字が含まれる
   if (!utils::isContainsOnly(key, http_utils::isHeaderKeyChar))
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Header contain unusable char");
+    throw HttpException(HttpException::BAD_REQUEST,
+                        "Header contain unusable char");
 
   if (key == "host") {
     // hostヘッダが重複する場合
     if (headers_.count(key) != 0)
-      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                            "Multiple host header");
+      throw HttpException(HttpException::BAD_REQUEST, "Multiple host header");
     // hostヘッダのvalueが無い場合
     if (value.size() == 0)
-      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                            "Bad host header");
+      throw HttpException(HttpException::BAD_REQUEST, "Bad host header");
 
     // Hostヘッダにuser_infoコンポーネントが含まれる
     if (utils::isContain(value, "@"))
-      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                            "Host header contain user_info");
+      throw HttpException(HttpException::BAD_REQUEST,
+                          "Host header contain user_info");
 
     // URIがorigin-formの場合、Hostヘッダの値でURIの情報を上書き
     this->uri_.overwriteAuthorityIfNotSet(value);

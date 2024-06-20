@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "CgiResponse.hpp"
-#include "ServerException.hpp"
+#include "HttpException.hpp"
 
 using namespace std;
 
@@ -14,7 +14,7 @@ void testParse(string cgi_raw_string) {
 // 異常系で例外がthrowされるかをテスト
 void testParseError(string cgi_raw_string) {
   CgiResponse cgi_response;
-  ASSERT_THROW(cgi_response.parse(cgi_raw_string), ServerException);
+  ASSERT_THROW(cgi_response.parse(cgi_raw_string), HttpException);
 }
 
 TEST(CgiResponse, PARSE) {
@@ -49,7 +49,7 @@ TEST(CgiResponse, PARSE) {
   testParse(" MY-Header: MyValue\n");
 }
 
-TEST(CgiResponse, ParseThrowServerException) {
+TEST(CgiResponse, ParseThrowHttpException) {
   testParseError("MyHeader\n\n");
   testParseError(":MyValue\n\n");
   testParseError(":\n\n");

@@ -3,7 +3,6 @@
 #include <string>
 
 #include "utils/HttpUtils.hpp"
-#include "ServerException.hpp"
 
 void testGenerateContentType(const std::string& path, const char* expect) {
   EXPECT_STREQ(http_utils::convertPathToContentType(path).c_str(), expect);

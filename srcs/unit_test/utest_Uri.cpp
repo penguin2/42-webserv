@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "ServerException.hpp"
+#include "HttpException.hpp"
 #include "Uri.hpp"
 
 void testAbsoluteForm(std::string uri, const char* scheme,
@@ -19,7 +19,7 @@ void testAbsoluteForm(std::string uri, const char* scheme,
     EXPECT_STREQ(URI_instance.getQuery().c_str(), query);
     EXPECT_STREQ(URI_instance.getFragment().c_str(), fragment);
   } else
-    ASSERT_THROW(URI_instance.parse(uri), ServerException);
+    ASSERT_THROW(URI_instance.parse(uri), HttpException);
 }
 
 void testOriginForm(std::string uri, std::string host_header_value,
@@ -41,7 +41,7 @@ void testOriginForm(std::string uri, std::string host_header_value,
   } else {
     EXPECT_THROW((URI_instance.parse(uri),
                   URI_instance.overwriteAuthorityIfNotSet(host_header_value)),
-                 ServerException);
+                 HttpException);
   }
 }
 

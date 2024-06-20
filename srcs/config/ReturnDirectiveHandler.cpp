@@ -1,8 +1,8 @@
 #include "./config/ReturnDirectiveHandler.hpp"
 
-#include "utils/HttpUtils.hpp"
-#include "ServerException.hpp"
+#include "HttpException.hpp"
 #include "Uri.hpp"
+#include "utils/HttpUtils.hpp"
 
 ReturnDirectiveHandler::ReturnDirectiveHandler() {
   this->directive_context_ = ConfigEnums::LOCATION;
@@ -20,7 +20,7 @@ bool ReturnDirectiveHandler::isDirectiveValid() const {
   try {
     Uri uri;
     uri.parse(uri_string);
-  } catch (ServerException& e) {
+  } catch (HttpException& e) {
     return false;
   }
 

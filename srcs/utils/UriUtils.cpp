@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 
-#include "ServerException.hpp"
+#include "HttpException.hpp"
 #include "utils/Utils.hpp"
 
 bool uri_utils::decodeUrlEncoding(std::string &str) {
@@ -98,8 +98,8 @@ std::string uri_utils::removeDotSegments(const std::string &path) {
     if (*it == ".") continue;
     if (*it == "..") {
       if (output_buffer.empty()) {
-        throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                              "Detected access to parent directory");
+        throw HttpException(HttpException::BAD_REQUEST,
+                            "Detected access to parent directory");
       }
       output_buffer.pop_back();
     } else {
