@@ -36,7 +36,7 @@ connection::State RequestHandler::MethodHandler::getMethodHandler(
       file_utils::hasFilePermission(file_path, R_OK)) {
     return getMethodDirHandler(request, response, http_path);
   }
-  throw HttpException(HttpException::NOT_FOUND, "Not found");
+  throw HttpException(HttpException::NOT_FOUND, "Not Found");
 }
 
 connection::State RequestHandler::MethodHandler::getMethodFileHandler(
@@ -127,8 +127,7 @@ connection::State RequestHandler::MethodHandler::deleteMethodHandler(
     throw HttpException(HttpException::NOT_FOUND, "Not Found");
   }
   if (std::remove(file_path.c_str()) != 0) {
-    throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "Can not remove file");
+    throw HttpException(HttpException::INTERNAL_SERVER_ERROR, "Can't Remove");
   }
   response.setStatusLine(204, "No Content");
   return connection::SEND;

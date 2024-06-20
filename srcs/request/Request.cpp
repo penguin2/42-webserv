@@ -71,18 +71,18 @@ void Request::parseMethod(std::string& buffer) {
     if (ConfigAdapter::getMaxNumberOfCrlfBeforeMethod() <
         crlf_counter_before_method_)
       throw HttpException(HttpException::BAD_REQUEST,
-                          "Too many CRLF before Method");
+                          "Too Many CRLF Before Method");
   }
   if (buffer.size() == 0 || (buffer.size() == 1 && buffer[0] == '\r')) return;
   const size_t pos_first_space = buffer.find(' ');
   // 対応するMethodの最大文字数よりも大きい
   if (pos_first_space == std::string::npos &&
       ConfigAdapter::getMaxMethodSize() < buffer.size())
-    throw HttpException(HttpException::BAD_REQUEST, "Bad method");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Method");
   if (pos_first_space == std::string::npos) return;
   // StatusLineが空白で始まる
   if (pos_first_space == 0)
-    throw HttpException(HttpException::BAD_REQUEST, "RequestLine start space");
+    throw HttpException(HttpException::BAD_REQUEST, "RequestLine Start Space");
   data_->setMethod(buffer.substr(0, pos_first_space));
   // SP分の+1
   buffer.erase(0, pos_first_space + 1);
@@ -98,7 +98,7 @@ void Request::parseUri(std::string& buffer) {
   // URIが大きすぎる
   if (pos_first_space == std::string::npos &&
       ConfigAdapter::getMaxUriSize() < buffer.size())
-    throw HttpException(HttpException::URI_TOO_LONG, "Too long URI");
+    throw HttpException(HttpException::URI_TOO_LONG, "Too Long URI");
   if (pos_first_space == std::string::npos) return;
   // uriが不正な場合、RequestData内で例外をthrowする
   data_->setUri(buffer.substr(0, pos_first_space));
@@ -116,12 +116,12 @@ void Request::parseVersion(std::string& buffer) {
   if (buffer.compare(0, 5, "HTTP/") != 0 || !std::isdigit(buffer[5]) ||
       buffer[6] != '.' || !std::isdigit(buffer[7]) ||
       buffer.compare(8, 2, "\r\n") != 0)
-    throw HttpException(HttpException::BAD_REQUEST, "Bad request");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Request");
   data_->setVersion(buffer.substr(0, HTTP_VERSION.size()));
   buffer.erase(0, HTTP_VERSION.size() + 2);
   if (data_->getVersion() != HTTP_VERSION)
     throw HttpException(HttpException::HTTP_VERSION_NOT_SUPPORTED,
-                        "Bad HTTP version");
+                        "Bad HTTP Version");
   this->state_ = HEADER;
   return parseHeader(buffer);
 }
@@ -141,14 +141,14 @@ void Request::parseHeader(std::string& buffer) {
     // or Headerの1行の文字数が多すぎる
     if (ConfigAdapter::getMaxNumberOfHeaders() < header_line_counter_ ||
         ConfigAdapter::getMaxHeaderSize() < line.size())
-      throw HttpException(HttpException::HEADER_TOO_LARGE, "Header too large");
+      throw HttpException(HttpException::HEADER_TOO_LARGE, "Header Too Large");
 
     // ヘッダエラーがあった場合、RequestData.insertHeaderメンバ関数内で例外がthrowされる
     data_->insertHeader(line);
     buffer.erase(0, pos_crlf + 2);
   }
   if (ConfigAdapter::getMaxHeaderSize() < buffer.size())
-    throw HttpException(HttpException::HEADER_TOO_LARGE, "Header too large");
+    throw HttpException(HttpException::HEADER_TOO_LARGE, "Header Too Large");
 }
 
 void Request::parseBody(std::string& buffer) {
@@ -164,7 +164,7 @@ void Request::parseChunkedBody(std::string& buffer) {
   data_->appendBody(buffer.substr(0, body_size_));
   buffer.erase(0, body_size_);
   if (buffer.compare(0, 2, "\r\n"))
-    throw HttpException(HttpException::BAD_REQUEST, "Bad chunk body");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Chunk Body");
   buffer.erase(0, 2);
   this->state_ = CHUNKED_SIZE;
   return parseChunkedSize(buffer);
@@ -178,20 +178,19 @@ void Request::parseChunkedSize(std::string& buffer) {
       data_->getUri().getPath(), getServerConfig()->getLocationConfigs());
 
   if (pos_crlf == std::string::npos && CHUNK_SIZE_LIMIT_DIGITS < buffer.size())
-    throw HttpException(HttpException::BAD_REQUEST, "Bad chunk size");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Chunk Size");
   if (pos_crlf == std::string::npos) return;
 
   if (pos_crlf == 0)
-    throw HttpException(HttpException::BAD_REQUEST, "Bad chunk size is CRLF");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Chunk Size Is CRLF");
   // 行頭からCRLFまでが符号なし16進数でない場合
   if (utils::strToSize_t(buffer.substr(0, pos_crlf), chunk_size, 16) == false)
-    throw HttpException(HttpException::BAD_REQUEST, "Bad chunk size");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Chunk Size");
 
   // chunk_size or 合計のbodyのサイズが正常な数値であるが大き過ぎる場合
   if (ConfigAdapter::getClientMaxBodySize(*location_config) <
       (chunk_size + data_->getBody().size()))
-    throw HttpException(HttpException::PAYLOAD_TOO_LARGE,
-                        "Body size too large");
+    throw HttpException(HttpException::PAYLOAD_TOO_LARGE, "Payload Too Large");
 
   this->body_size_ = chunk_size;
   buffer.erase(0, pos_crlf + 2);
@@ -221,7 +220,7 @@ void Request::determineParseBody(std::string& buffer) {
     throw HttpException(HttpException::BAD_REQUEST, "Bad Method");
   // hostヘッダフィールドが存在しない場合
   if (host == headers.end())
-    throw HttpException(HttpException::BAD_REQUEST, "Host field not found");
+    throw HttpException(HttpException::BAD_REQUEST, "Host Field Not Found");
 
   if (server_config == NULL)
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR, "Internal Error");
@@ -242,7 +241,7 @@ void Request::determineParseBody(std::string& buffer) {
     // chunkedとContent-Lengthが両方指定された場合
     if (content_length != headers.end())
       throw HttpException(HttpException::BAD_REQUEST,
-                          "Exist chunked and Content-Length");
+                          "Exist Chunked And Content-Length");
     this->state_ = CHUNKED_SIZE;
     return parseChunkedSize(buffer);
   } else if (content_length != headers.end()) {
@@ -253,7 +252,7 @@ void Request::determineParseBody(std::string& buffer) {
     // body_size_が正常な数値であるが大き過ぎる場合
     if (ConfigAdapter::getClientMaxBodySize(*location_config) < body_size_)
       throw HttpException(HttpException::PAYLOAD_TOO_LARGE,
-                          "Body size too large");
+                          "Payload Too Large");
 
     this->state_ = BODY;
     return parseBody(buffer);

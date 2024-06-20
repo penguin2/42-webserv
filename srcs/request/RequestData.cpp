@@ -16,7 +16,7 @@ void RequestData::setMethod(const std::string &method) {
 
 void RequestData::setUri(const std::string &uri) {
   if (ConfigAdapter::getMaxUriSize() < uri.size()) {
-    throw HttpException(HttpException::URI_TOO_LONG, "Too long URI");
+    throw HttpException(HttpException::URI_TOO_LONG, "Too Long URI");
   }
   if (uri.empty()) {
     throw HttpException(HttpException::BAD_REQUEST, "Bad Request");
@@ -36,7 +36,7 @@ void RequestData::insertHeader(std::string &line) {
 
   // ':'が無い or keyが無い(": value"のような場合)
   if (pos_colon == std::string::npos || utils::isStartsWith(line, ":"))
-    throw HttpException(HttpException::BAD_REQUEST, "Bad header");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Header");
 
   // Headerのkeyは大文字小文字を区別しないため、内部は全て小文字で処理
   key = utils::toLower(line.substr(0, pos_colon));
@@ -46,26 +46,24 @@ void RequestData::insertHeader(std::string &line) {
   utils::strTrim(value, " ");
   // keyとコロンの間に空白文字がある場合
   if (std::isspace(key[key.size() - 1]))
-    throw HttpException(HttpException::BAD_REQUEST,
-                        "Header in space between key and colon");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Header");
 
   // keyに使用不可能文字が含まれる
   if (!utils::isContainsOnly(key, http_utils::isHeaderKeyChar))
-    throw HttpException(HttpException::BAD_REQUEST,
-                        "Header contain unusable char");
+    throw HttpException(HttpException::BAD_REQUEST, "Had Header");
 
   if (key == "host") {
     // hostヘッダが重複する場合
     if (headers_.count(key) != 0)
-      throw HttpException(HttpException::BAD_REQUEST, "Multiple host header");
+      throw HttpException(HttpException::BAD_REQUEST, "Multiple Host Header");
     // hostヘッダのvalueが無い場合
     if (value.size() == 0)
-      throw HttpException(HttpException::BAD_REQUEST, "Bad host header");
+      throw HttpException(HttpException::BAD_REQUEST, "Bad Host Header");
 
     // Hostヘッダにuser_infoコンポーネントが含まれる
     if (utils::isContain(value, "@"))
       throw HttpException(HttpException::BAD_REQUEST,
-                          "Host header contain user_info");
+                          "Host Header Contain UserInfo");
 
     // URIがorigin-formの場合、Hostヘッダの値でURIの情報を上書き
     this->uri_.overwriteAuthorityIfNotSet(value);

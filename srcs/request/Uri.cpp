@@ -28,7 +28,7 @@ void Uri::parse(const std::string& uri) {
     const size_t scheme_end_idx = uri.find("://");
     // Schemeが空
     if (scheme_end_idx == std::string::npos)
-      throw HttpException(HttpException::BAD_REQUEST, "Bad URI format");
+      throw HttpException(HttpException::BAD_REQUEST, "Bad URI Format");
     setAndCheckScheme(uri.substr(0, scheme_end_idx));
     // strlen("://") == 3
     const size_t authority_start_idx = (scheme_end_idx + 3);

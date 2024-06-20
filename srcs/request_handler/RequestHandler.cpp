@@ -26,7 +26,7 @@ connection::State RequestHandler::dispatch(Request& request, Response& response,
   if (!ConfigAdapter::isAllowMethods(*location_conf,
                                      request.getRequestData()->getMethod())) {
     throw HttpException(HttpException::METHOD_NOT_ALLOWED,
-                        "Method not allowed");
+                        "Method Not Allowed");
   }
   if (ConfigAdapter::searchRedirectUri(*location_conf) != NULL) {
     return RequestHandler::redirectHandler(request, response, http_path);

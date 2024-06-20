@@ -99,7 +99,7 @@ std::string uri_utils::removeDotSegments(const std::string &path) {
     if (*it == "..") {
       if (output_buffer.empty()) {
         throw HttpException(HttpException::BAD_REQUEST,
-                            "Detected access to parent directory");
+                            "Detected Access To Parent Directory");
       }
       output_buffer.pop_back();
     } else {

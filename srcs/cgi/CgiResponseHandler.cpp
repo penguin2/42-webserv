@@ -22,7 +22,7 @@ void CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
     clientRedirectResponseWithDocumentHandler(data);
   else
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "INTERNAL Server Error");
+                        "Internal Server Error");
 }
 
 void CgiResponseHandler::documentResponseHandler(ResponseData& data) {
@@ -66,7 +66,7 @@ void CgiResponseHandler::clientRedirectResponseWithDocumentHandler(
   INTERNAL::convertStatusHeaderToStatusLine(data);
   if (!http_utils::isRedirectStatusCode(data.getStatusCode()))
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "INTERNAL Server Error");
+                        "Internal Server Error");
 }
 
 void CgiResponseHandler::INTERNAL::convertStatusHeaderToStatusLine(

@@ -51,7 +51,7 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
 
   // ':'が無い or keyが無い(": value"のような場合)
   if (pos_colon == std::string::npos || utils::isStartsWith(line, ":"))
-    throw HttpException(HttpException::INTERNAL_SERVER_ERROR, "Bad header");
+    throw HttpException(HttpException::INTERNAL_SERVER_ERROR, "Bad Header");
 
   // Headerのkeyは大文字小文字を区別しないため、内部は全て小文字で処理
   key = utils::toLower(line.substr(0, pos_colon));
@@ -62,7 +62,7 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
   // keyとコロンの間に空白文字がある場合
   if (std::isspace(key[key.size() - 1]))
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "CGI Header in space between key and colon");
+                        "CGI Header In Space Between Key And Colon");
 
   // keyに使用不可能文字が含まれる or value 無し
   if (!utils::isContainsOnly(key, http_utils::isHeaderKeyChar) || value.empty())
@@ -96,19 +96,19 @@ void CgiResponse::insertStatusHeader(const std::string& line) {
   size_t pos_first_space = value.find(' ');
   if (pos_first_space == std::string::npos)
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "Status Header Value is invalid");
+                        "Status Header Value Is Invalid");
 
   const std::string code_str = value.substr(0, pos_first_space);
   size_t status_code;
   if (utils::strToSize_t(code_str, status_code, 10) == false ||
       !http_utils::isStatusCode(status_code))
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "Status Header is invalid");
+                        "Status Header Is Invalid");
 
   std::string phrase = value.substr(pos_first_space + 1);
   if (!utils::isContainsOnly(phrase, std::isprint))
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "Phrase contain non-printable character");
+                        "Phrase Contain Non-printable Character");
   utils::strTrim(phrase, " ");
 
   insertHeader("status", utils::uintToString(status_code) + " " + phrase);
@@ -122,7 +122,7 @@ void CgiResponse::insertLocationHeader(const std::string& value) {
     insertHeader("location", value);
   } catch (HttpException& e) {
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "Location Header Value is invalid");
+                        "Location Header Value Is Invalid");
   }
 }
 
@@ -131,13 +131,13 @@ void CgiResponse::insertContentTypeHeader(const std::string& value) {
 
   if (pos_slash == std::string::npos)
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "Invalid Content-Type value");
+                        "Invalid Content-Type Value");
 
   std::string type = value.substr(0, pos_slash);
   std::string subtype = value.substr(pos_slash + 1);
 
   if (type.empty() || subtype.empty())
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "Invalid Content-Type value");
+                        "Invalid Content-Type Value");
   insertHeader("content-type", value);
 }
