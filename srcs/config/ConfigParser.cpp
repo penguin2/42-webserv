@@ -199,5 +199,5 @@ bool ConfigParser::isValidPath(const std::string& path) {
 
 void ConfigParser::handleError(const std::string& errorMessage) {
   std::cerr << errorMessage << std::endl;
-  exit(1);
+  std::exit(1);
 }
