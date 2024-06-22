@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Sign Up</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+	<form action="/42library/signup.py" method="post">
+		<div class="form-container">
+			<label for="username">NAME:</label>
+			<input type="text" id="username" name="username" required minlength="3" maxlength="10">
+		</div>
+		<div class="form-container">
+			<label for="password">PASSWORD:</label>
+			<input type="password" id="password" name="password" required required minlength="3" maxlength="10">
+		</div>
+		<div>
+			<button type="submit" class="button">Sign Up</button>
+		</div>
+	</form>
+</body>
+
+</html>
