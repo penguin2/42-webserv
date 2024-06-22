@@ -47,6 +47,7 @@ function clean_up () {
 function exec_webserv () {
 	for dir in tests/*$1*
 	do
+		sleep 0.5
 		cd $dir
 		$WEBSERV_FROM_DETAIL_TEST_DIR *.conf 2>/dev/null &
 		SERVER_PID=$!
