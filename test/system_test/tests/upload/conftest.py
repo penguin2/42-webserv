@@ -2,14 +2,17 @@ import requests
 import pytest
 import os
 import shutil
+from system_test_utils.shebang import make_shebang_from_environment
 
 BASE_URL = "http://127.0.0.1:4242"
 HTML_DIR = "./html"
+PYTHON = "python3"
 
 
 def create_sample_cgi_script(file: str):
     with open(file, "w") as f:
-        f.write("#!/bin/python3\n")
+        shebang: str = make_shebang_from_environment(PYTHON)
+        f.write(shebang + "\n")
         f.write("print('Content-Type: text/html')\n")
         f.write("print('')\n")
         f.write("print('BODY')\n")
