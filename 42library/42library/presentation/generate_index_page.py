@@ -7,7 +7,7 @@ from presentation.content_creator import create_book_html
 import cgi
 
 
-def generate_index_py_response(user: tuple, session_id: str, max_age: int = 30):
+def generate_index_page(user: tuple, session_id: str, max_age: int = 30):
     builder = HtmlBuilder()
     db = LibraryDatabase()
     books = db.select(BOOKS, order_by={"book_id": "DESC"})
@@ -53,4 +53,4 @@ def _get_page_number_from_query_string() -> int:
 
 
 if __name__ == "__main__":
-    generate_index_py_response((1, 2, 3, 34), 1)
+    generate_index_page((1, 2, 3, 34), 1)
