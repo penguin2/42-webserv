@@ -3,7 +3,6 @@ from persistence.library_database import LibraryDatabase
 from persistence.table_data import BOOKS
 from business_logic.sessions_utils import SESSION_ID_KEY
 from presentation.content_creator import ContentCreator
-from presentation.content_creator import create_book_html
 import cgi
 
 
@@ -12,7 +11,7 @@ def generate_index_page(user: tuple, session_id: str, max_age: int = 30):
     db = LibraryDatabase()
     books = db.select(BOOKS, order_by={"book_id": "DESC"})
     page_number = _get_page_number_from_query_string()
-    book_content_creator = ContentCreator(page_number, books, create_book_html)
+    book_content_creator = ContentCreator(page_number, books, _create_book_html)
     book_contents = book_content_creator.create_contents()
     page_href = book_content_creator.create_page_href("/42library/index.py")
 
@@ -50,6 +49,20 @@ def _get_page_number_from_query_string() -> int:
     page_number = 1 if (page_number <= 0) else page_number
 
     return page_number
+
+
+def _create_book_html(book: tuple) -> str:
+    response = f"""
+        <div class="book">
+            <a href="/42library/book_detail.py?book_id={book[0]}">
+                <ul>
+                <li><img src="/images/{book[0]}.png" alt="{book[1]}"></li>
+                <li>Title: {book[1]}</li>
+                </ul>
+            </a>
+        </div>
+    """
+    return response
 
 
 if __name__ == "__main__":

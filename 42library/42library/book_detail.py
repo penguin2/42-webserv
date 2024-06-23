@@ -15,10 +15,10 @@ def main():
     """
     session = get_session_from_envs(os.environ)
     if session:
-        update_session(session, additional_session_sec=3600)
+        update_session(session, additional_session_sec=30)
         user = get_user_from_session(session)
         session_id = session[0]
-        generate_book_detail_page(user, session_id, max_age=3600)
+        generate_book_detail_page(user, session_id, max_age=30)
     else:
         generate_redirect_page("/no_session.html")
 

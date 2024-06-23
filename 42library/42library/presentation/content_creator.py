@@ -1,50 +1,5 @@
 import math
-from persistence.library_database import LibraryDatabase
-from persistence.table_data import USERS
 from typing import Callable
-
-
-def convert_book_status_to_string(status: int) -> str:
-    if status == 0:
-        return "貸出可能"
-    elif status == 1:
-        return "貸出中"
-    elif status == 2:
-        return "貸出停止"
-    else:
-        return "削除可能"
-
-
-def create_book_detail_html(book: tuple) -> str:
-    db = LibraryDatabase()
-    user: tuple = db.select(USERS, {"user_id": str(book[5])})[0]
-    response = f"""
-        <div class="book_detail">
-            <ul>
-                <img src="/images/{book[0]}.png" alt="{book[1]}">
-                <li data-label="Title:">{book[1]}</li>
-                <li data-label="Status:">{convert_book_status_to_string(book[2])}</li>
-                <li data-label="MaxLoan:">{book[3]}秒</li>
-                <li data-label="ISBN:">{book[4]}</li>
-                <li data-label="Owner:">{user[1]}</li>
-            </ul>
-        </div>
-    """
-    return response
-
-
-def create_book_html(book: tuple) -> str:
-    response = f"""
-        <div class="book">
-            <a href="/42library/book_detail.py?book_id={book[0]}">
-                <ul>
-                <li><img src="/images/{book[0]}.png" alt="{book[1]}"></li>
-                <li>Title: {book[1]}</li>
-                </ul>
-            </a>
-        </div>
-    """
-    return response
 
 
 class ContentCreator:
