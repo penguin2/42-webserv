@@ -61,8 +61,7 @@ void CgiResponse::insertHeaderLine(const std::string& line) {
   utils::strTrim(value, " ");
   // keyとコロンの間に空白文字がある場合
   if (std::isspace(key[key.size() - 1]))
-    throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "CGI Header In Space Between Key And Colon");
+    throw HttpException(HttpException::INTERNAL_SERVER_ERROR, "Bad CGI Header");
 
   // keyに使用不可能文字が含まれる or value 無し
   if (!utils::isContainsOnly(key, http_utils::isHeaderKeyChar) || value.empty())
@@ -108,7 +107,7 @@ void CgiResponse::insertStatusHeader(const std::string& line) {
   std::string phrase = value.substr(pos_first_space + 1);
   if (!utils::isContainsOnly(phrase, std::isprint))
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                        "Phrase Contain Non-printable Character");
+                        "Phrase Contains Non-printable Character");
   utils::strTrim(phrase, " ");
 
   insertHeader("status", utils::uintToString(status_code) + " " + phrase);

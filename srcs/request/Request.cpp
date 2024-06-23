@@ -82,7 +82,8 @@ void Request::parseMethod(std::string& buffer) {
   if (pos_first_space == std::string::npos) return;
   // StatusLineが空白で始まる
   if (pos_first_space == 0)
-    throw HttpException(HttpException::BAD_REQUEST, "RequestLine Start Space");
+    throw HttpException(HttpException::BAD_REQUEST,
+                        "RequestLine Starts With Space");
   data_->setMethod(buffer.substr(0, pos_first_space));
   // SP分の+1
   buffer.erase(0, pos_first_space + 1);
@@ -181,8 +182,9 @@ void Request::parseChunkedSize(std::string& buffer) {
     throw HttpException(HttpException::BAD_REQUEST, "Bad Chunk Size");
   if (pos_crlf == std::string::npos) return;
 
+  // chunk_sizeが存在しない
   if (pos_crlf == 0)
-    throw HttpException(HttpException::BAD_REQUEST, "Bad Chunk Size Is CRLF");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Chunk Size");
   // 行頭からCRLFまでが符号なし16進数でない場合
   if (utils::strToSize_t(buffer.substr(0, pos_crlf), chunk_size, 16) == false)
     throw HttpException(HttpException::BAD_REQUEST, "Bad Chunk Size");
