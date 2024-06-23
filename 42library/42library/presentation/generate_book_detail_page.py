@@ -2,7 +2,7 @@ from presentation.html_builder import HtmlBuilder
 from persistence.library_database import LibraryDatabase
 from business_logic.sessions_utils import SESSION_ID_KEY
 from persistence.table_data import BOOKS
-from persistence.table_data import USERS
+from presentation.create_book_detail_html import create_book_detail_html
 import cgi
 from typing import Optional
 
@@ -19,7 +19,7 @@ def generate_book_detail_page(user: tuple, session_id: str, max_age: int = 30):
     try:
         books = db.select(BOOKS, conditions={"book_id": str(book_id)})
         book = books[0]
-        book_detail = _create_book_detail_html(book)
+        book_detail = create_book_detail_html(user, book)
     except Exception:
         book_detail = """
         <p style="text-align:center; font-size:50px;">Book is not exist.</p>
@@ -52,32 +52,5 @@ def _get_book_id_from_query_string() -> Optional[int]:
     return book_id
 
 
-def _convert_book_status_to_string(status: int) -> str:
-    if status == 0:
-        return "貸出可能"
-    elif status == 1:
-        return "貸出中"
-    elif status == 2:
-        return "貸出停止"
-    else:
-        return "削除可能"
-
-
-def _create_book_detail_html(book: tuple) -> str:
-    db = LibraryDatabase()
-    user: tuple = db.select(USERS, {"user_id": str(book[5])})[0]
-    response = f"""
-    <div class="book_detail"><ul>
-        <img src="/images/{book[0]}.png" alt="{book[1]}">
-        <li data-label="Title:">{book[1]}</li>
-        <li data-label="Status:">{_convert_book_status_to_string(book[2])}</li>
-        <li data-label="MaxLoan:">{book[3]}秒</li>
-        <li data-label="ISBN:">{book[4]}</li>
-        <li data-label="Owner:">{user[1]}</li>
-    </ul></div>
-    """
-    return response
-
-
 if __name__ == "__main__":
-    generate_book_detail_page((1, 2, 3, 34), 1)
+    generate_book_detail_page((1, 2, 3, 34), "dfa")

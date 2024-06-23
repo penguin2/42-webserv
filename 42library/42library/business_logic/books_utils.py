@@ -12,14 +12,14 @@ def _get_book_status(book_id: int) -> Optional[int]:
     return None
 
 
-def is_on_loan(book_id: int) -> bool:
+def is_available_for_loan(book_id: int):
     book_status = _get_book_status(book_id)
     if book_status is None:
         return False
     return book_status == 0
 
 
-def is_available_for_loan(book_id: int):
+def is_on_loan(book_id: int) -> bool:
     book_status = _get_book_status(book_id)
     if book_status is None:
         return False
