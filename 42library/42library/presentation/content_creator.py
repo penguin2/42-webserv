@@ -1,4 +1,6 @@
 import math
+from persistence.library_database import LibraryDatabase
+from persistence.table_data import USERS
 from typing import Callable
 
 
@@ -14,15 +16,17 @@ def convert_book_status_to_string(status: int) -> str:
 
 
 def create_book_detail_html(book: tuple) -> str:
+    db = LibraryDatabase()
+    user: tuple = db.select(USERS, {"user_id": str(book[5])})[0]
     response = f"""
-        <div class="book">
+        <div class="book_detail">
             <ul>
-                <img src="/images/{book[1]}.png" alt="{book[1]}">
-                <li>Title: {book[1]}</li>
-                <li>Status: {convert_book_status_to_string(book[2])}</li>
-                <li>MaxLoan: {book[2]}秒</li>
-                <li>ISBN: {book[3]}</li>
-                <li>Owner: {book[4]}</li>
+                <img src="/images/{book[0]}.png" alt="{book[1]}">
+                <li data-label="Title:">{book[1]}</li>
+                <li data-label="Status:">{convert_book_status_to_string(book[2])}</li>
+                <li data-label="MaxLoan:">{book[3]}秒</li>
+                <li data-label="ISBN:">{book[4]}</li>
+                <li data-label="Owner:">{user[1]}</li>
             </ul>
         </div>
     """
@@ -32,10 +36,12 @@ def create_book_detail_html(book: tuple) -> str:
 def create_book_html(book: tuple) -> str:
     response = f"""
         <div class="book">
-            <ul>
-            <img src="/images/{book[0]}.png" alt="{book[1]}">
-            <li>Title: {book[1]}</li>
-            </ul>
+            <a href="/42library/book_detail.py?book_id={book[0]}">
+                <ul>
+                <li><img src="/images/{book[0]}.png" alt="{book[1]}"></li>
+                <li>Title: {book[1]}</li>
+                </ul>
+            </a>
         </div>
     """
     return response

@@ -48,18 +48,16 @@
 
 .books_list {
 	display: block;
-	justify-content: center;
 	align-items: center;
 	font-size: 20%;
-	padding-left: 10%;
-	padding-right: 10%;
+	padding: 0 10%;
 }
 
 .contents {
 	display: grid;
 	margin: 10%;
 	grid-template-columns: repeat(3, 30%);
-	gap: 20px;
+	gap: 5%;
 	justify-content: center;
 	align-items: center;
 }
@@ -73,6 +71,46 @@
 	background-color: lightblue;
 	justify-content: center;
 	align-items: center;
+}
+
+.book ul {
+	list-style-type: none;
+	padding: 0;
+	display: block;
+	width: 100px;
+}
+
+.book_detail {
+	display: flex;
+	flex: 1;
+	padding: 5%;
+	border: 1px solid #ccc;
+	margin: 3% 10% 5% 10%;
+	background-color: orange;
+	justify-content: center;
+}
+
+.book_detail img {
+	margin: 10% 0 10% 0;
+	width: 200px;
+}
+
+.book_detail ul li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0 5% 5% 0;
+}
+
+.book_detail ul li::before {
+  content: attr(data-label);
+  font-weight: bold;
+  display: inline-block;
+  width: 100px; /* ラベル部分の幅を調整 */
+}
+
+.book_detail ul li[data-label=""]:before {
+  content: "";
+  width: 0;
 }
 
 .pagination {
@@ -94,18 +132,6 @@ header {
 	align-items: center;
 	justify-content: space-between;
 	padding: 0;
-}
-
-ul {
-	list-style-type: none;
-	padding: 0;
-	display: block;
-	width: 100px;
-}
-
-li {
-	display: block;
-	margin-right: 10px;
 }
 
 body {
