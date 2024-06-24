@@ -11,7 +11,8 @@ def generate_index_page(user: tuple, session_id: str, max_age: int = 30):
     db = LibraryDatabase()
     books = db.select(BOOKS, order_by={"book_id": "DESC"})
     page_number = _get_page_number_from_query_string()
-    book_content_creator = ContentCreator(page_number, books, _create_book_html)
+    book_content_creator = ContentCreator(
+        page_number, books, _create_book_html)
     book_contents = book_content_creator.create_contents()
     page_href = book_content_creator.create_page_href("/42library/index.py")
 
@@ -19,16 +20,9 @@ def generate_index_page(user: tuple, session_id: str, max_age: int = 30):
     builder.insert_header(
         "Set-Cookie", f"{SESSION_ID_KEY}={session_id}; Max-Age={max_age}"
     )
+    builder.set_html_header(user[1])
     body = f"""
-        <header>
-            <div class="container">
-                <a class="button">{user[1]}</a>
-            </div>
-            {page_href}
-            <div class="container">
-                <a href="/logout.html" class="button">LOGOUT</a>
-            </div>
-        </header>
+        {page_href}
         <div class=books_list>{book_contents}</div>
     """
     builder.append_body(body)

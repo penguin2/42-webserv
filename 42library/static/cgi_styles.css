@@ -96,33 +96,32 @@
 }
 
 .book_detail ul li {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0 5% 5% 0;
+	display: flex;
+	align-items: center;
+	margin-bottom: 0 5% 5% 0;
 }
 
 .book_detail ul li::before {
-  content: attr(data-label);
-  font-weight: bold;
-  display: inline-block;
-  width: 100px; /* ラベル部分の幅を調整 */
+	content: attr(data-label);
+	font-weight: bold;
+	display: inline-block;
+	width: 100px;
+	/* ラベル部分の幅を調整 */
 }
 
 .book_detail ul li[data-label=""]:before {
-  content: "";
-  width: 0;
+	content: "";
+	width: 0;
 }
 
 .pagination {
-	width: auto;
+	width: 60%;
 	display: flex;
-	align-items: center;
 	justify-content: center;
 	padding: 1%;
 	border: 1px solid #ccc;
-	margin-right: 10px;
+	margin: auto;
 	background-color: #add8e6;
-	white-space: nowrap;
 }
 
 header {
@@ -135,5 +134,5 @@ header {
 }
 
 body {
-    background-color: #f4f4f4;
+	background-color: #f4f4f4;
 }

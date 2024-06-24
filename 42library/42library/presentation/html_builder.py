@@ -3,6 +3,7 @@ class HtmlBuilder:
         self.__headers = {}
         self.__title = "42Library"
         self.__html_body = ""
+        self.__html_header = ""
 
     def insert_header(self, key: str, value: str):
         self.__headers[key] = value
@@ -12,6 +13,21 @@ class HtmlBuilder:
 
     def append_body(self, body):
         self.__html_body += body
+
+    def set_html_header(self, user_name: str):
+        self.__html_header = f"""
+        <header>
+            <div class="container">
+                <a href="/42library/index.py" class="button">42Library</a>
+            </div>
+            <div class="container">
+                <a class="button">{user_name}</a>
+            </div>
+            <div class="container">
+                <a href="/logout.html" class="button">LOGOUT</a>
+            </div>
+        </header>
+        """
 
     def generate_headers(self):
         for key, value in self.__headers.items():
@@ -29,6 +45,7 @@ class HtmlBuilder:
                     <link rel="stylesheet" href="/static/cgi_styles.css">
                 </head>
                 <body>
+                    {self.__html_header}
                     {self.__html_body}
                 </body>
             </html>

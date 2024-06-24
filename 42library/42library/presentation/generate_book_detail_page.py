@@ -13,6 +13,7 @@ def generate_book_detail_page(user: tuple, session_id: str, max_age: int = 30):
     builder.insert_header(
         "Set-Cookie", f"{SESSION_ID_KEY}={session_id}; Max-Age={max_age}"
     )
+    builder.set_html_header(user[1])
 
     db = LibraryDatabase()
     book_id = _get_book_id_from_query_string()
@@ -28,16 +29,7 @@ def generate_book_detail_page(user: tuple, session_id: str, max_age: int = 30):
         </a>
         """
 
-    body = f"""
-        <header>
-            <div class="container"><a class="button">{user[1]}</a></div>
-            <div class="container">
-                <a href="/logout.html" class="button">LOGOUT</a>
-            </div>
-        </header>
-        {book_detail}
-    """
-    builder.append_body(body)
+    builder.append_body(book_detail)
     builder.generate_page()
 
 
