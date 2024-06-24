@@ -26,6 +26,10 @@ def manage_book_data(user: tuple, book_id: Optional[str], control: Optional[str]
 
 
 def _handler_stop(user: tuple, book_id: int):
+    """
+    if (図書のオーナーが自分 and 現在誰かが図書を借りている場合):
+        図書のstatus = 貸出停止
+    """
     book = _get_book(book_id)
     if book is None:
         return
@@ -36,6 +40,12 @@ def _handler_stop(user: tuple, book_id: int):
 
 
 def _handler_delete(user: tuple, book_id: int):
+    """
+    if (図書のオーナーが自分 and
+        (現在誰も図書を借りていない or 図書のstatus == 削除可能)):
+        DBから図書を削除
+        画像ファイルの削除権限を与え、別のDELETE_REQUESTで画像を削除可能にする
+    """
     book = _get_book(book_id)
     if book is None:
         return
@@ -48,6 +58,11 @@ def _handler_delete(user: tuple, book_id: int):
 
 
 def _handler_loan(user: tuple, book_id: int):
+    """
+    if (図書が貸出可能):
+        book_loansテーブルに新しい行の追加
+        図書のstatus = 貸出中
+    """
     book = _get_book(book_id)
     if book is None:
         return
@@ -60,6 +75,11 @@ def _handler_loan(user: tuple, book_id: int):
 
 
 def _handler_return(user: tuple, book_id: int):
+    """
+    if ((図書が貸出中 or 貸出停止中) and 自分が借りている):
+        図書のstatusを更新
+        book_loanテーブルの該当する行を更新
+    """
     book = _get_book(book_id)
     book_loan = _get_book_loan(book_id)
     if (book is None) or (book_loan is None):
