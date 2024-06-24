@@ -1,5 +1,6 @@
 from typing import Optional
 import shutil
+import glob
 
 
 def write_first_line(file_path: str, line: str):
@@ -44,8 +45,6 @@ def remove_shebang_from_files(files: list[str]):
 if __name__ == "__main__":
     """
     シェバンの値は環境依存なのでサンプルサイトを動かす前に実行する
-    新たにCGIスクリプトを追加した場合は下記のリストに追加する
     """
-    write_shebang_to_files(
-        ["./index.py", "./login.py", "./logout.py", "./signup.py"], "python3"
-    )
+    cgi_scripts = glob.glob("./*.py")
+    write_shebang_to_files(cgi_scripts, "python3")
