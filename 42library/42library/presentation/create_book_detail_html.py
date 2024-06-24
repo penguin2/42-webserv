@@ -49,7 +49,7 @@ def _create_book_loan(user: tuple, book: tuple) -> str:
         elif is_loan_suspended(book_id):
             return ""
         # それ以外 -> 図書館から本を削除
-        return _create_loan_href(book_id, "delete", "DELETE BOOK?")
+        return _create_delete_href(book_id, "DELETE BOOK?")
 
     # 現在貸出中
     if is_on_loan(book_id):
@@ -71,6 +71,15 @@ def _create_loan_href(book_id: int, control: str, message: str) -> str:
     <a href="/42library/book_loan.py?book_id={book_id}&control={control}">
         {message}
     </a>
+    """
+
+
+def _create_delete_href(book_id: int, message: str) -> str:
+    return f"""
+    <a href="#" id="delete_book" book_id={book_id}>
+        {message}
+    </a>
+    <script src="/static/delete_book.js"></script>
     """
 
 

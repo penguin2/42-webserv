@@ -5,6 +5,7 @@ from persistence.table_data import BOOK_LOANS
 from business_logic.books_utils import is_loan_suspended, is_on_loan
 from business_logic.books_utils import is_available_for_loan
 import time
+import os
 
 
 def manage_book_data(user: tuple, book_id: Optional[str], control: Optional[str]):
@@ -44,6 +45,7 @@ def _handler_delete(user: tuple, book_id: str):
     if user_id == book_owner_id and can_delete_book:
         db = LibraryDatabase()
         db.delete(BOOKS, {"book_id": book_id})
+        os.chmod(f"./../images/{book_id}.png", 0o755)
 
 
 def _handler_loan(user: tuple, book_id: str):
