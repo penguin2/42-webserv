@@ -59,7 +59,7 @@ void ConfigParser::parseLine(const std::string& line) {
     handleError("syntax error : line with only space detected");
   }
 
-  if (tokens[0] == "#") {
+  if (!tokens[0].empty() && tokens[0][0] == '#') {
     return;
   }
 
