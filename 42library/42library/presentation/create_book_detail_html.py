@@ -1,6 +1,6 @@
 from persistence.table_data import USERS
 from persistence.table_data import BOOK_LOANS
-from business_logic.books_utils import is_on_loan
+from business_logic.books_utils import is_available_for_loan, is_on_loan
 from business_logic.books_utils import is_loan_suspended
 from persistence.library_database import LibraryDatabase
 
@@ -16,7 +16,8 @@ def create_book_detail_html(user: tuple, book: tuple) -> str:
         <li data-label="MaxLoan:">{book[3]}秒</li>
         <li data-label="ISBN:">{book[4]}</li>
         <li data-label="Owner:">{owner_user[1]}</li>
-        {_create_book_loan(user, book)}
+        {_create_loan_user_data(book)}
+        <div class="book_loan">{_create_book_loan(user, book)}</div>
     </ul></div>
     """
     return html
@@ -34,28 +35,59 @@ def _convert_book_status_to_string(status: int) -> str:
 
 
 def _create_book_loan(user: tuple, book: tuple) -> str:
-    user_id = user[0]
-    book_id = book[0]
-    book_owner_id = book[5]
+    user_id = int(user[0])
+    book_id = int(book[0])
+    book_owner_id = int(book[5])
     db = LibraryDatabase()
 
+    # 自分が本の所有者
     if user_id == book_owner_id:
+        # 現在貸出中 -> 貸出停止
         if is_on_loan(book_id):
-            book_loan_html = "<p>STOP LOAN BOOK?</p>"
-        else:
-            book_loan_html = "<p>DELETE BOOK?</p>"
-    else:
-        if is_on_loan(book_id):
-            loan_user: tuple = db.select(
-                BOOK_LOANS, {"book_id": book[0]}, {"loan_id": "DESC"}
-            )[0]
-            book_loan_html = f"<p>{loan_user[1]} is Loan.</p>"
-        elif not is_loan_suspended(book_id):
-            book_loan_html = "<p>Loan?</p>"
+            return _create_loan_href(book_id, "stop", "STOP LOAN BOOK?")
+        # 現在貸出停止中
+        elif is_loan_suspended(book_id):
+            return ""
+        # それ以外 -> 図書館から本を削除
+        return _create_loan_href(book_id, "delete", "DELETE BOOK?")
 
-    html = f"""
-        <div class="book_loan">
-        {book_loan_html}
-        </div>
+    # 現在貸出中
+    if is_on_loan(book_id):
+        book_loan = db.select(BOOK_LOANS,
+                              {"book_id": str(book_id)},
+                              {"loan_id": "DESC"})[0]
+        loan_user_id = book_loan[6]
+        if int(loan_user_id) == user_id:
+            return _create_loan_href(book_id, "return", "RETURN BOOK?")
+
+    elif not is_loan_suspended(book_id):
+        return _create_loan_href(book_id, "loan", "LOAN BOOK?")
+
+    return ""
+
+
+def _create_loan_href(book_id: int, control: str, message: str) -> str:
+    return f"""
+    <a href="/42library/book_loan.py?book_id={book_id}&control={control}">
+        {message}
+    </a>
     """
-    return html
+
+
+def _create_loan_user_data(book: tuple) -> str:
+    book_id = int(book[0])
+    if is_on_loan(book_id) or is_loan_suspended(book_id):
+        db = LibraryDatabase()
+        book_loan = db.select(BOOK_LOANS,
+                              {"book_id": str(book_id)},
+                              {"loan_id": "DESC"})[0]
+        loan_user_id = book_loan[6]
+        loan_user = db.select(USERS, {"user_id": loan_user_id})[0]
+        return f'<li data-label="LoanUser:">{loan_user[1]}</li>'
+    return ""
+
+
+if __name__ == "__main__":
+    html = create_book_detail_html((3, "new", "new"),
+                                   (1, "1", "1", "1", "1", "1"))
+    print(html)
