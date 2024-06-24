@@ -2,13 +2,13 @@
 
 #include <sstream>
 
-#include "utils/HttpUtils.hpp"
+#include "HttpException.hpp"
 #include "Request.hpp"
 #include "ResponseData.hpp"
-#include "ServerException.hpp"
 #include "Uri.hpp"
-#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
+#include "utils/HttpUtils.hpp"
+#include "utils/Utils.hpp"
 
 void CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
     const Request& request, ResponseData& data) {
@@ -21,8 +21,8 @@ void CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
   else if (INTERNAL::isClientRedirectResponseWithDocument(data))
     clientRedirectResponseWithDocumentHandler(data);
   else
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "INTERNAL Server Error");
+    throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
+                        "Internal Server Error");
 }
 
 void CgiResponseHandler::documentResponseHandler(ResponseData& data) {
@@ -65,8 +65,8 @@ void CgiResponseHandler::clientRedirectResponseWithDocumentHandler(
     ResponseData& data) {
   INTERNAL::convertStatusHeaderToStatusLine(data);
   if (!http_utils::isRedirectStatusCode(data.getStatusCode()))
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "INTERNAL Server Error");
+    throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
+                        "Internal Server Error");
 }
 
 void CgiResponseHandler::INTERNAL::convertStatusHeaderToStatusLine(

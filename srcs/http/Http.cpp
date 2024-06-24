@@ -7,9 +7,9 @@
 #include "CgiRequest.hpp"
 #include "CgiResponseHandler.hpp"
 #include "ConnectionState.hpp"
+#include "HttpException.hpp"
 #include "Request.hpp"
 #include "RequestHandler.hpp"
-#include "ServerException.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
 #include "utils/HttpUtils.hpp"
@@ -104,7 +104,7 @@ connection::State Http::httpHandlerRecv(void) {
           request_, response_, request_.getRequestData()->getUri().getPath());
     }
     return connection::RECV;
-  } catch (ServerException& e) {
+  } catch (HttpException& e) {
     return RequestHandler::errorRequestHandler(request_, response_, e.code(),
                                                e.what());
   }
@@ -125,10 +125,10 @@ connection::State Http::httpHandlerCgi(void) {
       CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
           request_, cgi_response_->Response::getResponseData());
     } else {
-      throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                            "Cgi Parse Error");
+      throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
+                          "Cgi Parse Error");
     }
-  } catch (ServerException& e) {
+  } catch (HttpException& e) {
     this->cgi_response_->resetResponseData();
     return RequestHandler::errorRequestHandler(request_, *cgi_response_,
                                                e.code(), e.what());

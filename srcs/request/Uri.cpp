@@ -1,6 +1,6 @@
 #include "Uri.hpp"
 
-#include "ServerException.hpp"
+#include "HttpException.hpp"
 #include "utils/UriUtils.hpp"
 #include "utils/Utils.hpp"
 
@@ -28,8 +28,7 @@ void Uri::parse(const std::string& uri) {
     const size_t scheme_end_idx = uri.find("://");
     // Schemeが空
     if (scheme_end_idx == std::string::npos)
-      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                            "Bad URI format");
+      throw HttpException(HttpException::BAD_REQUEST, "Bad URI Format");
     setAndCheckScheme(uri.substr(0, scheme_end_idx));
     // strlen("://") == 3
     const size_t authority_start_idx = (scheme_end_idx + 3);
@@ -91,8 +90,7 @@ void Uri::setAndCheckScheme(const std::string& scheme) {
   // Schemeは大文字小文字を区別しない
   this->scheme_ = utils::toLower(scheme);
   if (this->scheme_ != "http")
-    throw ServerException(ServerException::SERVER_ERROR_MISDIRECTED_REQUEST,
-                          "Scheme != http");
+    throw HttpException(HttpException::MISDIRECTED_REQUEST, "Scheme != http");
 }
 
 void Uri::setAndCheckAndDecodeUserInfo(const std::string& user_info) {
@@ -100,8 +98,7 @@ void Uri::setAndCheckAndDecodeUserInfo(const std::string& user_info) {
   // (使用不可文字を含む or デコードに失敗)
   if (!utils::isContainsOnly(user_info_, uri_utils::isUserInfoCharset) ||
       uri_utils::decodeUrlEncoding(this->user_info_) == false)
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Bad UserInfo");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad UserInfo");
 }
 
 void Uri::setAndCheckAndDecodeHost(const std::string& host) {
@@ -109,12 +106,10 @@ void Uri::setAndCheckAndDecodeHost(const std::string& host) {
   this->host_ = utils::toLower(host);
   // Hostコンポーネントが空
   if (this->host_.size() == 0)
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Empty Host");
+    throw HttpException(HttpException::BAD_REQUEST, "Empty Host");
   if (!utils::isContainsOnly(this->host_, uri_utils::isRegName) ||
       uri_utils::decodeUrlEncoding(this->host_) == false)
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Bad Host");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Host");
 }
 
 void Uri::setAndCheckPort(const std::string& port) {
@@ -124,20 +119,18 @@ void Uri::setAndCheckPort(const std::string& port) {
     this->port_ = 80;
   } else {
     if (utils::strToSize_t(port, num, 10) == false)
-      throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                            "Bad Port");
+      throw HttpException(HttpException::BAD_REQUEST, "Bad Port");
     this->port_ = num;
   }
 }
 
 void Uri::setAndCheckAndDecodePath(const std::string& path) {
-  // ".." "." "//"を整形し親ディレクトリを参照する場合、ServerExceptionをthrow
+  // ".." "." "//"を整形し親ディレクトリを参照する場合、HttpExceptionをthrow
   this->path_ = uri_utils::removeDotSegments(path);
   // (使用不可文字を含む or デコードに失敗)
   if (!utils::isContainsOnly(this->path_, uri_utils::isPathCharset) ||
       uri_utils::decodeUrlEncoding(this->path_) == false)
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Bad Path");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Path");
 }
 
 void Uri::setAndCheckQuery(const std::string& query) {
@@ -146,8 +139,7 @@ void Uri::setAndCheckQuery(const std::string& query) {
   // (使用不可文字を含む or デコードに失敗)
   if (!utils::isContainsOnly(this->query_, uri_utils::isQueryCharset) ||
       uri_utils::decodeUrlEncoding(cpy_query) == false)
-    throw ServerException(ServerException::SERVER_ERROR_BAD_REQUEST,
-                          "Bad Query");
+    throw HttpException(HttpException::BAD_REQUEST, "Bad Query");
 }
 
 void Uri::setFragment(const std::string& fragment) {

@@ -3,8 +3,8 @@
 #include <iostream>
 #include <map>
 
+#include "HttpException.hpp"
 #include "Request.hpp"
-#include "ServerException.hpp"
 #include "config/ServerConfig.hpp"
 
 #define SAMPLE_REQUEST               \
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
         return 0;
       }
     }
-  } catch (ServerException& e) {
+  } catch (HttpException& e) {
     std::cout << e.code() << e.what() << std::endl;
     return 1;
   }

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "ServerException.hpp"
+#include "HttpException.hpp"
 #include "utils/UriUtils.hpp"
 
 void testDecodeUrlEncoding(const char* target, const char* expect_str,
@@ -18,7 +18,7 @@ void testRemoveDotSegments(const char* target, const char* expect_str,
     ASSERT_NO_THROW((result_str = uri_utils::removeDotSegments(target)));
     EXPECT_STREQ(result_str.c_str(), expect_str);
   } else
-    ASSERT_THROW(uri_utils::removeDotSegments(target), ServerException);
+    ASSERT_THROW(uri_utils::removeDotSegments(target), HttpException);
 }
 
 TEST(UriUtils, DECODE_URL_ENCODING_SUCCESS) {

@@ -4,8 +4,8 @@
 #include <utility>
 
 #include "Connection.hpp"
+#include "HttpException.hpp"
 #include "RequestHandler.hpp"
-#include "ServerException.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/LocationConfig.hpp"
 #include "utils/FileUtils.hpp"
@@ -36,7 +36,7 @@ connection::State RequestHandler::MethodHandler::getMethodHandler(
       file_utils::hasFilePermission(file_path, R_OK)) {
     return getMethodDirHandler(request, response, http_path);
   }
-  throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not found");
+  throw HttpException(HttpException::NOT_FOUND, "Not Found");
 }
 
 connection::State RequestHandler::MethodHandler::getMethodFileHandler(
@@ -48,8 +48,7 @@ connection::State RequestHandler::MethodHandler::getMethodFileHandler(
   std::stringstream ss;
 
   if (file_utils::readAllDataFromFile(file_path, ss) == false) {
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Read Error");
+    throw HttpException(HttpException::INTERNAL_SERVER_ERROR, "Read Error");
   }
   response.appendBody(ss.str());
   response.insertHeader("Content-Type",
@@ -71,16 +70,16 @@ connection::State RequestHandler::MethodHandler::getMethodDirHandler(
     try {
       return RequestHandler::dispatch(request, response,
                                       utils::concatWithSlash(http_path, index));
-    } catch (ServerException& e) {
+    } catch (HttpException& e) {
       // 内部リダイレクト失敗時の情報は無視, 後工程の処理を続ける
     }
   }
   if (!ConfigAdapter::isAutoindex(*location_conf)) {
-    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
+    throw HttpException(HttpException::NOT_FOUND, "Not Found");
   }
   if (http_utils::generateAutoindexPage(http_path, file_path, ss) == false) {
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Autoindex Error");
+    throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
+                        "Autoindex Error");
   }
   response.appendBody(ss.str());
   response.insertHeader("Content-Type", "text/html");
@@ -97,14 +96,13 @@ connection::State RequestHandler::MethodHandler::postMethodHandler(
   const std::string& body = request.getRequestData()->getBody();
 
   if (!ConfigAdapter::canUpload(*location_conf)) {
-    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN, "Forbidden");
+    throw HttpException(HttpException::FORBIDDEN, "Forbidden");
   }
   if (file_utils::isExistFile(file_path) || file_utils::isExistDir(file_path)) {
-    throw ServerException(ServerException::SERVER_ERROR_CONFLICT, "Conflict");
+    throw HttpException(HttpException::CONFLICT, "Conflict");
   }
   if (file_utils::writeAllDataToFile(file_path, body) == false) {
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Internal Error");
+    throw HttpException(HttpException::INTERNAL_SERVER_ERROR, "Internal Error");
   }
   const std::string absolute_uri =
       request.getRequestData()->getUri().buildAbsoluteUri();
@@ -123,14 +121,13 @@ connection::State RequestHandler::MethodHandler::deleteMethodHandler(
       ConfigAdapter::makeFilePath(*location_conf, http_path);
 
   if (!file_utils::isExistFile(file_path)) {
-    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
+    throw HttpException(HttpException::NOT_FOUND, "Not Found");
   }
   if (!file_utils::hasFilePermission(file_path, W_OK)) {
-    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
+    throw HttpException(HttpException::NOT_FOUND, "Not Found");
   }
   if (std::remove(file_path.c_str()) != 0) {
-    throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                          "Can not remove file");
+    throw HttpException(HttpException::INTERNAL_SERVER_ERROR, "Can't Remove");
   }
   response.setStatusLine(204, "No Content");
   return connection::SEND;

@@ -3,14 +3,14 @@
 #include <unistd.h>
 
 #include "ConnectionState.hpp"
-#include "utils/FileUtils.hpp"
-#include "utils/HttpUtils.hpp"
+#include "HttpException.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
-#include "ServerException.hpp"
-#include "utils/Utils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/LocationConfig.hpp"
+#include "utils/FileUtils.hpp"
+#include "utils/HttpUtils.hpp"
+#include "utils/Utils.hpp"
 
 connection::State RequestHandler::dispatch(Request& request, Response& response,
                                            const std::string& http_path) {
@@ -21,12 +21,12 @@ connection::State RequestHandler::dispatch(Request& request, Response& response,
 
   // ここでNULLcheckをするので以降searchLocationConfig実行時,NULLが返ることは絶対にない
   if (location_conf == NULL) {
-    throw ServerException(ServerException::SERVER_ERROR_NOT_FOUND, "Not Found");
+    throw HttpException(HttpException::NOT_FOUND, "Not Found");
   }
   if (!ConfigAdapter::isAllowMethods(*location_conf,
                                      request.getRequestData()->getMethod())) {
-    throw ServerException(ServerException::SERVER_ERROR_METHOD_NOT_ALLOWED,
-                          "Method not allowed");
+    throw HttpException(HttpException::METHOD_NOT_ALLOWED,
+                        "Method Not Allowed");
   }
   if (ConfigAdapter::searchRedirectUri(*location_conf) != NULL) {
     return RequestHandler::redirectHandler(request, response, http_path);
@@ -39,8 +39,7 @@ connection::State RequestHandler::dispatch(Request& request, Response& response,
     return method_handler_map.find(method)->second(request, response,
                                                    http_path);
   }
-  throw ServerException(ServerException::SERVER_ERROR_INTERNAL_SERVER_ERROR,
-                        "Unknown Method");
+  throw HttpException(HttpException::INTERNAL_SERVER_ERROR, "Unknown Method");
 }
 
 connection::State RequestHandler::redirectHandler(
@@ -92,7 +91,7 @@ connection::State RequestHandler::cgiHandler(Request& request,
       file_data_map["DIR"] + file_data_map["FILE"];
 
   if (!file_utils::hasFilePermission(cgi_file_path, X_OK))
-    throw ServerException(ServerException::SERVER_ERROR_FORBIDDEN, "Forbidden");
+    throw HttpException(HttpException::FORBIDDEN, "Forbidden");
 
   request.overwritePath(http_path);
   return connection::CGI;
