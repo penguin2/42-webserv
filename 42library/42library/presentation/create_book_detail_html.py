@@ -2,6 +2,7 @@ from persistence.table_data import USERS
 from persistence.table_data import BOOK_LOANS
 from business_logic.books_utils import is_on_loan
 from business_logic.books_utils import is_loan_suspended
+from business_logic.books_utils import is_available_for_loan
 from business_logic.books_utils import convert_book_status_to_string
 from persistence.library_database import LibraryDatabase
 
@@ -56,13 +57,13 @@ def _create_book_loan_data(user: tuple, book: tuple) -> str:
         return _create_delete_href(book_id, "DELETE BOOK?")
 
     # 現在貸出中
-    if is_on_loan(book_id):
+    if is_on_loan(book_id) or is_loan_suspended(book_id):
         loan_user_id = _get_loan_user_id(book_id)
         # 自分が借りている
         if int(loan_user_id) == user_id:
             return _create_loan_href(book_id, "return", "RETURN BOOK?")
 
-    elif not is_loan_suspended(book_id):
+    elif is_available_for_loan(book_id):
         return _create_loan_href(book_id, "loan", "LOAN BOOK?")
 
     return ""
