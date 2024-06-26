@@ -32,10 +32,14 @@ def generate_redirect_logout_page(host: str):
 
 
 def generate_redirect_book_detail_page(
-    session_id: str, referer: Optional[str], host: str, max_age: int = 30
+    session_id: str,
+    referer: Optional[str],
+    host: str,
+    is_delete: bool,
+    max_age: int = 30,
 ):
     builder = HtmlBuilder()
-    if referer is None:
+    if referer is None or is_delete:
         referer = f"http://{host}/42library/index.py"
     builder.insert_header("Location", referer)
     builder.insert_header("Status", "302 Found")

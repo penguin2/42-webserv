@@ -15,7 +15,7 @@ def manage_book_data(user: tuple, book_id: Optional[str], control: Optional[str]
         "stop": _handler_stop,
         "delete": _handler_delete,
         "loan": _handler_loan,
-        "return": _handler_return
+        "return": _handler_return,
     }
     if (book_id is None) or (control is None):
         return
@@ -36,7 +36,7 @@ def _handler_stop(user: tuple, book_id: int):
     is_my_book = int(user[0]) == int(book[5])
     if is_my_book and is_on_loan(book_id):
         db = LibraryDatabase()
-        db.update(BOOKS, {"status": '2'}, {"book_id": str(book_id)})
+        db.update(BOOKS, {"status": "2"}, {"book_id": str(book_id)})
 
 
 def _handler_delete(user: tuple, book_id: int):
@@ -54,7 +54,9 @@ def _handler_delete(user: tuple, book_id: int):
     if is_my_book and can_delete:
         db = LibraryDatabase()
         db.delete(BOOKS, {"book_id": str(book_id)})
-        os.chmod(f"./../images/{book_id}.png", 0o755)
+        image_file_path = f"./../images/{book_id}.png"
+        if os.path.isfile(image_file_path):
+            os.remove(image_file_path)
 
 
 def _handler_loan(user: tuple, book_id: int):
@@ -71,7 +73,7 @@ def _handler_loan(user: tuple, book_id: int):
         user_id = int(user[0])
         max_loan_sec = int(book[3])
         db.insert_book_loan(book_id, user_id, max_loan_sec)
-        db.update(BOOKS, {"status": '1'}, {"book_id": str(book_id)})
+        db.update(BOOKS, {"status": "1"}, {"book_id": str(book_id)})
 
 
 def _handler_return(user: tuple, book_id: int):
@@ -92,15 +94,11 @@ def _handler_return(user: tuple, book_id: int):
         # if 現在のstatusが貸出停止: next_book_status = 削除可能
         next_book_status = 0 if is_on_loan(book_id) else 3
         loan_id = str(book_loan[0])
-        db.update(
-            BOOKS,
-            {"status": str(next_book_status)},
-            {"book_id": str(book_id)}
-        )
+        db.update(BOOKS, {"status": str(next_book_status)}, {"book_id": str(book_id)})
         db.update(
             BOOK_LOANS,
-            {"actual_return_date": str(time.time()), "is_returned": '1'},
-            {"loan_id": loan_id}
+            {"actual_return_date": str(time.time()), "is_returned": "1"},
+            {"loan_id": loan_id},
         )
 
 
@@ -123,4 +121,4 @@ def _get_book_loan(book_id: int) -> Optional[tuple]:
 
 
 if __name__ == "__main__":
-    manage_book_data((4, "new", "new"), '1', "loan")
+    manage_book_data((4, "new", "new"), "1", "loan")

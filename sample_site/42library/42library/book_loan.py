@@ -27,8 +27,12 @@ def main():
         manage_book_data(user, book_id, control)
 
         session_id = session[0]
+        is_delete = control == "delete"
         generate_redirect_book_detail_page(
-            session_id, os.environ.get("HTTP_REFERER"), os.environ["HTTP_HOST"]
+            session_id,
+            os.environ.get("HTTP_REFERER"),
+            os.environ["HTTP_HOST"],
+            is_delete,
         )
     else:
         generate_redirect_page("/42library/html/no_session.html")
