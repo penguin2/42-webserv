@@ -1,3 +1,4 @@
+from typing import Optional
 from business_logic.sessions_utils import SESSION_ID_KEY
 from presentation.html_builder import HtmlBuilder
 
@@ -22,10 +23,30 @@ def generate_redirect_to_index_py(session_id: str, host: str, max_age: int = 30)
 
 def generate_redirect_logout_page(host: str):
     builder = HtmlBuilder()
-    builder.insert_header("Location", f"http://{host}/index.html")
+    builder.insert_header("Location", f"http://{host}/42library/html/index.html")
     builder.insert_header("Status", "302 Found")
     builder.insert_header("Content-Type", "text/html")
     builder.insert_header("Set-Cookie", f"{SESSION_ID_KEY}=; Max-Age=-1")
+    builder.append_body("<p>REDIRECT</p>")
+    builder.generate_page()
+
+
+def generate_redirect_book_detail_page(
+    session_id: str,
+    referer: Optional[str],
+    host: str,
+    is_delete: bool,
+    max_age: int = 30,
+):
+    builder = HtmlBuilder()
+    if referer is None or is_delete:
+        referer = f"http://{host}/42library/index.py"
+    builder.insert_header("Location", referer)
+    builder.insert_header("Status", "302 Found")
+    builder.insert_header("Content-Type", "text/html")
+    builder.insert_header(
+        "Set-Cookie", f"{SESSION_ID_KEY}={session_id}; Max-Age={max_age}"
+    )
     builder.append_body("<p>REDIRECT</p>")
     builder.generate_page()
 

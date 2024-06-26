@@ -2,45 +2,6 @@ import math
 from typing import Callable
 
 
-def convert_book_status_to_string(status: int) -> str:
-    if status == 0:
-        return "貸出可能"
-    elif status == 1:
-        return "貸出中"
-    elif status == 2:
-        return "貸出停止"
-    else:
-        return "削除可能"
-
-
-def create_book_detail_html(book: tuple) -> str:
-    response = f"""
-        <div class="book">
-            <ul>
-                <img src="/images/{book[1]}.png" alt="{book[1]}">
-                <li>Title: {book[1]}</li>
-                <li>Status: {convert_book_status_to_string(book[2])}</li>
-                <li>MaxLoan: {book[2]}秒</li>
-                <li>ISBN: {book[3]}</li>
-                <li>Owner: {book[4]}</li>
-            </ul>
-        </div>
-    """
-    return response
-
-
-def create_book_html(book: tuple) -> str:
-    response = f"""
-        <div class="book">
-            <ul>
-            <img src="/images/{book[0]}.png" alt="{book[1]}">
-            <li>Title: {book[1]}</li>
-            </ul>
-        </div>
-    """
-    return response
-
-
 class ContentCreator:
     """
     contents_per_row * contnts_per_colのコンテンツ一覧HTMLを生成する
