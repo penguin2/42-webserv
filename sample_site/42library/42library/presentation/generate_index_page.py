@@ -11,8 +11,7 @@ def generate_index_page(user: tuple, session_id: str, max_age: int = 30):
     db = LibraryDatabase()
     books = db.select(BOOKS, order_by={"book_id": "DESC"})
     page_number = _get_page_number_from_query_string()
-    book_content_creator = ContentCreator(
-        page_number, books, _create_book_html)
+    book_content_creator = ContentCreator(page_number, books, _create_book_html)
     book_contents = book_content_creator.create_contents()
     page_href = book_content_creator.create_page_href("/42library/index.py")
 
@@ -50,7 +49,7 @@ def _create_book_html(book: tuple) -> str:
         <div class="book">
             <a href="/42library/book_detail.py?book_id={book[0]}">
                 <ul>
-                <li><img src="/images/{book[0]}.png" alt="{book[1]}"></li>
+                <li><img src="/42library/images/{book[0]}.png" alt="{book[1]}"></li>
                 <li>Title: {book[1]}</li>
                 </ul>
             </a>

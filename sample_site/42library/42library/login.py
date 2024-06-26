@@ -23,7 +23,7 @@ def main():
         host = os.environ["HTTP_HOST"]
         generate_redirect_to_index_py(session_id, host)
     else:
-        generate_redirect_page("/login.html")
+        generate_redirect_page("/42library/html/login.html")
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ def main():
         session_id = session[0]
         generate_index_page(user, session_id, max_age=30)
     else:
-        generate_redirect_page("/no_session.html")
+        generate_redirect_page("/42library/html/no_session.html")
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ def create_book_detail_html(user: tuple, book: tuple) -> str:
     html = f"""
     <div class="book_detail">
         <ul>
-            <img src="/images/{book[0]}.png" alt="{book[1]}">
+            <img src="/42library/images/{book[0]}.png" alt="{book[1]}">
             <li data-label="Title:">{book[1]}</li>
             <li data-label="Status:">{book_status_str}</li>
             <li data-label="MaxLoan:">{book[3]}秒</li>
@@ -82,7 +82,7 @@ def _create_delete_href(book_id: int, message: str) -> str:
     <a href="#" id="delete_book" book_id={book_id}>
         {message}
     </a>
-    <script src="/static/delete_book.js"></script>
+    <script src="/42library/static/delete_book.js"></script>
     """
 
 
@@ -96,6 +96,5 @@ def _get_loan_user_id(book_id: int) -> int:
 
 
 if __name__ == "__main__":
-    html = create_book_detail_html((3, "new", "new"),
-                                   (1, "1", "1", "1", "1", "1"))
+    html = create_book_detail_html((3, "new", "new"), (1, "1", "1", "1", "1", "1"))
     print(html)

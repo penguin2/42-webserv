@@ -24,7 +24,7 @@ class HtmlBuilder:
                 <a class="button">{user_name}</a>
             </div>
             <div class="container">
-                <a href="/logout.html" class="button">LOGOUT</a>
+                <a href="/42library/html/logout.html" class="button">LOGOUT</a>
             </div>
         </header>
         """
@@ -42,7 +42,7 @@ class HtmlBuilder:
                 <head>
                     <meta charset="UTF-8">
                     <title>{self.__title}</title>
-                    <link rel="stylesheet" href="/static/cgi_styles.css">
+                    <link rel="stylesheet" href="/42library/static/cgi_styles.css">
                 </head>
                 <body>
                     {self.__html_header}
