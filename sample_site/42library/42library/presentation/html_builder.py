@@ -1,9 +1,12 @@
 class HtmlBuilder:
-    def __init__(self):
+    def __init__(
+        self, title="42Library", style_file="/42library/static/cgi_styles.css"
+    ):
         self.__headers = {}
-        self.__title = "42Library"
+        self.__title = title
         self.__html_body = ""
         self.__html_header = ""
+        self.__style_file = style_file
 
     def insert_header(self, key: str, value: str):
         self.__headers[key] = value
@@ -24,6 +27,9 @@ class HtmlBuilder:
                 <a class="button">{user_name}</a>
             </div>
             <div class="container">
+                <a href="/42library/add_book.py" class="button">Add Book</a>
+            </div>
+            <div class="container">
                 <a href="/42library/html/logout.html" class="button">LOGOUT</a>
             </div>
         </header>
@@ -42,7 +48,7 @@ class HtmlBuilder:
                 <head>
                     <meta charset="UTF-8">
                     <title>{self.__title}</title>
-                    <link rel="stylesheet" href="/42library/static/cgi_styles.css">
+                    <link rel="stylesheet" href="{self.__style_file}">
                 </head>
                 <body>
                     {self.__html_header}

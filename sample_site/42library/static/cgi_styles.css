@@ -80,6 +80,11 @@
 	width: 100px;
 }
 
+.book img {
+	width: 100px;
+	height: auto;
+}
+
 .book_detail {
 	display: flex;
 	flex: 1;
