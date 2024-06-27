@@ -1,18 +1,18 @@
-from conftest import safe_post_request
+from conftest import request_with_body
 from conftest import IGNORE_BODY_PY
 
+import requests
 
-def _check_pipe_broken(body_size: int, expect_success: bool):
+
+def _check_pipe_broken(body_size: int):
     body = "a" * body_size
-    status_code_or_error: int = safe_post_request(IGNORE_BODY_PY, body)
-
-    if expect_success:
-        assert status_code_or_error == 200
-    else:
-        assert status_code_or_error == -1
+    response: requests.Response = request_with_body(IGNORE_BODY_PY, body)
+    assert response.status_code == 200
+    response: requests.Response = request_with_body(IGNORE_BODY_PY, body)
+    assert response.status_code == 200
 
 
 def test_pipe_broken():
-    _check_pipe_broken(1, True)
-    _check_pipe_broken(1000, True)
-    _check_pipe_broken(1000000, False)
+    _check_pipe_broken(1)
+    _check_pipe_broken(1000)
+    _check_pipe_broken(1000000)

@@ -28,10 +28,7 @@ def manage_cgi_script():
         shutil.rmtree(CGI_BIN_DIR)
 
 
-def safe_post_request(path: str, body: str) -> int:
+def request_with_body(path: str, body: str) -> requests.Response:
     url = BASE_URL + path
-    try:
-        response = requests.post(url, data=body)
-        return response.status_code
-    except requests.exceptions.ConnectionError:
-        return -1
+    response = requests.post(url, data=body)
+    return response
