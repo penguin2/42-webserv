@@ -28,7 +28,7 @@ add_book_body = """
 	
     <div>
         <div id="request_error_message" style="margin: 0; color: red; text-align: center;"></div>
-        <button type="submit" class="add_book_button">Add Book</button>
+        <button type="submit" class="add_book_button">Add New Book</button>
     </div>
 </form>
 <script src="/42library/static/add_book.js"></script>

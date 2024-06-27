@@ -50,7 +50,7 @@ def _create_book_html(book: tuple) -> str:
             <a href="/42library/book_detail.py?book_id={book[0]}">
                 <ul>
                 <li><img src="/42library/images/{book[0]}.png" alt="{book[1]}"></li>
-                <li>Title: {book[1]}</li>
+                <li>{book[1]}</li>
                 </ul>
             </a>
         </div>

@@ -71,6 +71,12 @@
 	background-color: lightblue;
 	justify-content: center;
 	align-items: center;
+    font-family: Arial, sans-serif;
+	font-size: 12px;
+	word-break: break-word;
+}
+.book a {
+	text-decoration: none;
 }
 
 .book ul {
@@ -82,7 +88,7 @@
 
 .book img {
 	width: 100px;
-	height: auto;
+	height: 100px;
 }
 
 .book_detail {
@@ -98,6 +104,7 @@
 .book_detail img {
 	margin: 10% 0 10% 0;
 	width: 200px;
+	height: 200px;
 }
 
 .book_detail ul li {
