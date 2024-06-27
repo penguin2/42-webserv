@@ -35,8 +35,8 @@ EventManagerKqueue::EventManagerKqueue(
 
 EventManagerKqueue::~EventManagerKqueue() { close(kq_fd_); }
 
-int EventManagerKqueue::wait(std::vector<ASocket*>& event_sockets,
-                             std::vector<ASocket*>& closing_sockets) {
+int EventManagerKqueue::wait(std::set<ASocket*>& event_sockets,
+                             std::set<ASocket*>& closing_sockets) {
   const int ready_list_size = kevent(
       kq_fd_, NULL, 0, EventManagerKqueue::ready_list_,
       EventManagerKqueue::kEvlistMaxSize, &EventManagerKqueue::kWaitTimeout);
@@ -49,12 +49,12 @@ int EventManagerKqueue::wait(std::vector<ASocket*>& event_sockets,
   for (int i = 0; i < ready_list_size; ++i) {
     ASocket* current_socket = reinterpret_cast<ASocket*>(ready_list_[i].udata);
 
-    if (ready_list_[i].flags & EV_ERROR)
-      closing_sockets.push_back(current_socket);
-    else {
+    if (ready_list_[i].flags & EV_ERROR) {
+      closing_sockets.insert(current_socket);
+    } else {
       current_socket->setEventType(
           EventManagerKqueue::makeEventType(ready_list_[i].filter));
-      event_sockets.push_back(current_socket);
+      event_sockets.insert(current_socket);
     }
   }
   return ready_list_size;
@@ -93,14 +93,26 @@ int EventManagerKqueue::erase(int fd, ASocket* socket, int event_type) {
 }
 
 int EventManagerKqueue::makeKqueueFilter(int event_type) {
-  if (EventType::isRead(event_type)) return EVFILT_READ;
-  if (EventType::isWrite(event_type)) return EVFILT_WRITE;
+  switch (event_type) {
+    case EventType::READ:
+      return EVFILT_READ;
+    case EventType::WRITE:
+      return EVFILT_WRITE;
+    default:
+      break;
+  }
   return 0;
 }
 
 int EventManagerKqueue::makeEventType(int kqueue_filter) {
-  if (kqueue_filter == EVFILT_READ) return EventType::READ;
-  if (kqueue_filter == EVFILT_WRITE) return EventType::WRITE;
+  switch (kqueue_filter) {
+    case EVFILT_READ:
+      return EventType::READ;
+    case EVFILT_WRITE:
+      return EventType::WRITE;
+    default:
+      break;
+  }
   return 0;
 }
 

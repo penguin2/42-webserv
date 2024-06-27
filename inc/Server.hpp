@@ -3,6 +3,7 @@
 
 #include <map>
 #include <ostream>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -38,11 +39,11 @@ class Server {
                     const std::vector<const ServerConfig*>& server_configs);
 
   int handleTimeouts(const std::vector<ASocket*>& timeout_sockets,
-                     std::vector<ASocket*>& closing_sockets);
-  int executeEventSockets(const std::vector<ASocket*>& event_sockets,
-                          std::vector<ASocket*>& closing_sockets);
+                     std::set<ASocket*>& closing_sockets);
+  int executeEventSockets(const std::set<ASocket*>& event_sockets,
+                          std::set<ASocket*>& closing_sockets);
   int closeSocket(ASocket* socket);
-  int closeSockets(const std::vector<ASocket*>& closing_sockets);
+  int closeSockets(const std::set<ASocket*>& closing_sockets);
 
   static const std::string kDefaultConfigFilename;
 };

@@ -9,9 +9,9 @@
 
 #include "Logger.hpp"
 #include "SocketAddress.hpp"
-#include "utils/SysUtils.hpp"
 #include "config/ConfigAdapter.hpp"
 #include "config/ConfigParser.hpp"
+#include "utils/SysUtils.hpp"
 
 Server::Server(const char* config_filename) {
   const std::string config_filename_str = config_filename != NULL
@@ -85,19 +85,20 @@ int Server::start() {
 }
 
 int Server::loop() {
-  std::vector<ASocket*> event_sockets, closing_sockets;
+  std::set<ASocket*> event_sockets, closing_sockets;
   while (true) {
-    closeSockets(closing_sockets);
     closing_sockets.clear();
-
     handleTimeouts(timeout_manager_->findTimeouts(), closing_sockets);
+    closeSockets(closing_sockets);
 
     event_sockets.clear();
+    closing_sockets.clear();
     const int wait_status =
         event_manager_->wait(event_sockets, closing_sockets);
     if (wait_status < 0) return -1;
     if (wait_status == 0) continue;
     executeEventSockets(event_sockets, closing_sockets);
+    closeSockets(closing_sockets);
   }
   return 0;
 }
@@ -145,25 +146,24 @@ int Server::addConnection(
 }
 
 int Server::handleTimeouts(const std::vector<ASocket*>& timeout_sockets,
-                           std::vector<ASocket*>& closing_sockets) {
+                           std::set<ASocket*>& closing_sockets) {
   for (std::vector<ASocket*>::const_iterator it = timeout_sockets.begin();
        it != timeout_sockets.end(); ++it) {
     ASocket* timeout_socket = *it;
     if (dynamic_cast<Connection*>(timeout_socket) != NULL &&
         static_cast<Connection*>(timeout_socket)->handlerTimeout() == 0)
       continue;
-    closing_sockets.push_back(timeout_socket);
+    closing_sockets.insert(timeout_socket);
   }
   return 0;
 }
 
-int Server::executeEventSockets(const std::vector<ASocket*>& event_sockets,
-                                std::vector<ASocket*>& closing_sockets) {
-  for (std::vector<ASocket*>::const_iterator it = event_sockets.begin();
+int Server::executeEventSockets(const std::set<ASocket*>& event_sockets,
+                                std::set<ASocket*>& closing_sockets) {
+  for (std::set<ASocket*>::const_iterator it = event_sockets.begin();
        it != event_sockets.end(); ++it) {
     ASocket* event_socket = *it;
-    if (event_socket->handler(this) < 0)
-      closing_sockets.push_back(event_socket);
+    if (event_socket->handler(this) < 0) closing_sockets.insert(event_socket);
   }
   return 0;
 }
@@ -182,8 +182,8 @@ int Server::closeSocket(ASocket* socket) {
   return 0;
 }
 
-int Server::closeSockets(const std::vector<ASocket*>& closing_sockets) {
-  for (std::vector<ASocket*>::const_iterator it = closing_sockets.begin();
+int Server::closeSockets(const std::set<ASocket*>& closing_sockets) {
+  for (std::set<ASocket*>::const_iterator it = closing_sockets.begin();
        it != closing_sockets.end(); ++it) {
     closeSocket(*it);
   }

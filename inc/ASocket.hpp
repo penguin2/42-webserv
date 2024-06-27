@@ -15,8 +15,9 @@ class ASocket {
   Time getTimeout() const;
   void setTimeout(const Time& timeout);
 
-  int getEventType() const;
+  bool isEventType(int event_type) const;
   void setEventType(int event_type);
+  void unsetEventType(int event_type);
 
   SocketAddress getLocalAddress() const;
 
@@ -31,7 +32,7 @@ class ASocket {
  private:
   SocketAddress local_address_;
   Time timeout_;
-  int event_type_;
+  int event_type_flag_;
 
   ASocket();
   ASocket(const ASocket&);
