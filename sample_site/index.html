@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Webserv</title>
+    <link
+      href="/assets/42_logo_black.png"
+      rel="shortcut icon"
+      type="image/png"
+    />
+  </head>
+
+  <body>
+    <h1>Webserv</h1>
+    <a href="/42library">
+      <h2>42 Library</h2>
+    </a>
+    <h2>Documents</h2>
+    <ul>
+      <li>
+        <a href="https://github.com/penguin2/42-webserv/wiki">github-wiki</a>
+      </li>
+      <li>
+        <a
+          href="https://drive.google.com/file/d/18q8xm40RBPDwKtSaRY-stoChPxLL0JV_/view"
+          >modeling diagrams: class diagram, flow chart ...</a
+        >
+      </li>
+      <li>
+        <a href="https://nginx.org/en/docs/">nginx documentation</a>
+      </li>
+    </ul>
+    <h2>Config</h2>
+    <ul>
+      <li>
+        <h3>directives</h3>
+        <ul>
+          <li>http</li>
+          <li>server</li>
+          <li>listen</li>
+          <li>server_name</li>
+          <li>
+            <a href="/you-may-see-404-error-page">error_page</a>
+          </li>
+          <li>location</li>
+          <li>allow_methods</li>
+          <li>
+            <a href="/return">return</a>
+          </li>
+          <li>root</li>
+          <li>index</li>
+          <li>
+            <a href="http://localhost:4243">autoindex</a>
+          </li>
+          <li>client_max_body_size</li>
+          <li>
+            <a href="/cgi_ext/">cgi_ext</a>
+          </li>
+          <li>
+            <a href="/upload/">upload</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <h3>
+          sample <a href="http://localhost:4243/webserv.conf">webserv.conf</a>
+        </h3>
+        <pre>
+http {
+    server {
+        listen 0.0.0.0:4242;
+        server_name webserv;
+
+        location / {
+            root ./sample_site;
+            allow_methods GET;
+            index index.html;
+        }
+
+        location /return {
+            root ./sample_site;
+            allow_methods GET;
+            return 302 /;
+        }
+
+        location /upload {
+            root ./sample_site;
+            allow_methods GET POST DELETE;
+            autoindex on;
+            upload on;
+            client_max_body_size 1m;
+        }
+
+        location /cgi_ext {
+            root ./sample_site;
+            allow_methods GET;
+            autoindex on;
+            cgi_ext .php .py .sh;
+        }
+
+        location /42library {
+            root ./sample_site/42library;
+            allow_methods GET POST;
+            cgi_ext .py;
+            index index.py;
+        }
+        location /42library/html {
+            root ./sample_site;
+            allow_methods GET;
+            index index.html;
+        }
+        location /42library/images {
+            root ./sample_site;
+            allow_methods GET;
+        }
+        location /42library/static {
+            root ./sample_site;
+            allow_methods GET;
+        }
+    }
+
+    server {
+        listen 0.0.0.0:4243;
+        server_name autoindex;
+
+        location / {
+            root ./;
+            allow_methods GET;
+            autoindex on;
+        }
+    }
+}
+    </pre
+        >
+      </li>
+    </ul>
+  </body>
+</html>

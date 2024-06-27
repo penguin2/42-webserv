@@ -1,0 +1,12 @@
+#!/usr/local/bin/python3
+print("content-type: text/html")
+print("")
+print("<!DOCTYPE html>")
+print("<html>")
+print("    <head>")
+print("        <title>Hello World</title>")
+print("    </head>")
+print("    <body>")
+print("        <p>Hello World</p>")
+print("    </body>")
+print("</html>")
