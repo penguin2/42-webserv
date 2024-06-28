@@ -13,12 +13,18 @@ def create_user_detail_html(user: tuple) -> str:
     html = f"""
     <div class="user_detail">
         <p class="user_name">{user_name}</p>
-        <p class="book_data_title">{user_name}'s BOOKS</p>
-        <ul>{my_books}</ul>
-        <p class="book_data_title">LOAN BOOKS</p>
-        <ul>{loan_books}</ul>
-        <p class="book_data_title">LOAN HISTORIES</p>
-        <ul>{loan_histories}</ul>
+        <div class="book_data_title">
+            <p>{user_name}'s BOOKS</p>
+            <ul class="book_data">{my_books}</ul>
+        </div>
+        <div class="book_data_title">
+            <p>LOAN BOOKS</p>
+            <ul class="book_data">{loan_books}</ul>
+        </div>
+        <div class="book_data_title">
+            <p>LOAN HISTORIES</p>
+            <ul class="book_data">{loan_histories}</ul>
+        </div>
     </div>
     """
     return html
@@ -35,7 +41,7 @@ def _get_my_books(user_id: str) -> str:
         html += f"""
         <li>
             <a href="/42library/book_detail.py?book_id={book_id}">
-                <p class="book_data">
+                <p>
                     {book_name}
                 </p>
             <a>
@@ -59,7 +65,7 @@ def _get_loan_books(user_id: str) -> str:
         html += f"""
         <li>
             <a href="/42library/book_detail.py?book_id={book_id}">
-                <p class="book_data">
+                <p>
                     {book_name}({limit_date})
                 </p>
             <a>
@@ -84,7 +90,7 @@ def _get_loan_histories(user_id: str) -> str:
         html += f"""
         <li>
             <a href="/42library/book_detail.py?book_id={book_id}">
-                <p class="book_data">
+                <p>
                     {book_name}({loan_start_date} ~ {loan_return_date})
                 </p>
             <a>
