@@ -66,7 +66,7 @@ def _get_loan_books(user_id: str) -> str:
         <li>
             <a href="/42library/book_detail.py?book_id={book_id}">
                 <p>
-                    {book_name}({limit_date})
+                    {book_name}  ({limit_date})
                 </p>
             <a>
         </li>
@@ -91,7 +91,7 @@ def _get_loan_histories(user_id: str) -> str:
         <li>
             <a href="/42library/book_detail.py?book_id={book_id}">
                 <p>
-                    {book_name}({loan_start_date} ~ {loan_return_date})
+                    {book_name}  ({loan_start_date} ~ {loan_return_date})
                 </p>
             <a>
         </li>
@@ -103,4 +103,4 @@ def _get_loan_histories(user_id: str) -> str:
 def _convert_timestamp_to_date(timestamp: float) -> str:
 
     date_time = datetime.fromtimestamp(timestamp)
-    return date_time.strftime("%Y年%m月%d日%H時%M分%S秒")
+    return date_time.strftime("%Y/%m/%d[%H:%M:%S]")
