@@ -7,6 +7,7 @@ import time
 import os
 
 SESSION_ID_KEY = "library_session_id"
+SESSION_SEC = 30
 
 
 def get_session_from_envs(envs: os._Environ) -> Optional[list]:
@@ -46,9 +47,9 @@ def delete_session(session: list):
     db.delete(SESSIONS, {"session_id": session_id})
 
 
-def create_session(user_id: int) -> str:
+def create_session(user_id: int, session_sec: int) -> str:
     db = LibraryDatabase()
-    session: tuple = db.insert_session(user_id)
+    session: tuple = db.insert_session(user_id, session_sec)
     session_id: str = session[0]
     return session_id
 
