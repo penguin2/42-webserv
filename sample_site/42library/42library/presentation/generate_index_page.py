@@ -3,14 +3,14 @@ from persistence.library_database import LibraryDatabase
 from persistence.table_data import BOOKS
 from business_logic.sessions_utils import SESSION_ID_KEY
 from presentation.content_creator import ContentCreator
-import cgi
+from business_logic.get_value_from_qstring import get_page_number_from_qstring
 
 
 def generate_index_page(user: tuple, session_id: str, max_age: int = 30):
     builder = HtmlBuilder()
     db = LibraryDatabase()
     books = db.select(BOOKS, order_by={"book_id": "DESC"})
-    page_number = _get_page_number_from_query_string()
+    page_number = get_page_number_from_qstring()
     book_content_creator = ContentCreator(page_number, books, _create_book_html)
     book_contents = book_content_creator.create_contents()
     page_href = book_content_creator.create_page_href("/42library/index.py")
@@ -26,22 +26,6 @@ def generate_index_page(user: tuple, session_id: str, max_age: int = 30):
     """
     builder.append_body(body)
     builder.generate_page()
-
-
-def _get_page_number_from_query_string() -> int:
-    """
-    QUERY_STRINGから'p'というkeyを取得
-    'p'が存在しない・不正な値の場合は1ページ目を表示させる
-    """
-    form = cgi.FieldStorage()
-    page_number = form.getvalue("p")
-    try:
-        page_number = int(page_number)
-    except Exception:
-        page_number = 1
-    page_number = 1 if (page_number <= 0) else page_number
-
-    return page_number
 
 
 def _create_book_html(book: tuple) -> str:

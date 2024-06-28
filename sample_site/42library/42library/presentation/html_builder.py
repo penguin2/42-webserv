@@ -30,6 +30,9 @@ class HtmlBuilder:
                 <a href="/42library/add_book.py" class="button">Add Book</a>
             </div>
             <div class="container">
+                <a href="/42library/users.py" class="button">Users</a>
+            </div>
+            <div class="container">
                 <a href="/42library/html/logout.html" class="button">Log Out</a>
             </div>
         </header>
