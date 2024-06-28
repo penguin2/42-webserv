@@ -3,7 +3,7 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 0;
-	margin: 0 5%;
+	margin: 0 1%;
 }
 
 .button {
@@ -147,4 +147,40 @@ header {
 
 body {
 	background-color: #f4f4f4;
+}
+
+.users_list {
+    display: block;
+	align-items: center;
+}
+
+@keyframes wobble {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(1deg);
+    }
+    75% {
+        transform: rotate(-1deg);
+    }
+}
+
+.user {
+	text-align: center;
+	font-size: 30px;
+}
+
+.user a {
+    text-decoration: none;
+}
+
+.user p {
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 50px;
+    display: inline-block;
+	animation: wobble 5s infinite;
 }
