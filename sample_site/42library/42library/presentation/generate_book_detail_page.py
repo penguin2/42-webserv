@@ -12,7 +12,7 @@ def generate_book_detail_page(user: tuple, session_id: str, max_age: int = 30):
     builder.insert_header(
         "Set-Cookie", f"{SESSION_ID_KEY}={session_id}; Max-Age={max_age}"
     )
-    builder.set_html_header(user[1])
+    builder.set_html_header(user[0], user[1])
 
     db = LibraryDatabase()
     book_id = get_id_from_qstring("book_id")
