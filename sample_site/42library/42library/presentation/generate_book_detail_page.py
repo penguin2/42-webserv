@@ -3,8 +3,7 @@ from persistence.library_database import LibraryDatabase
 from business_logic.sessions_utils import SESSION_ID_KEY
 from persistence.table_data import BOOKS
 from presentation.create_book_detail_html import create_book_detail_html
-import cgi
-from typing import Optional
+from business_logic.get_value_from_qstring import get_id_from_qstring
 
 
 def generate_book_detail_page(user: tuple, session_id: str, max_age: int = 30):
@@ -16,7 +15,7 @@ def generate_book_detail_page(user: tuple, session_id: str, max_age: int = 30):
     builder.set_html_header(user[1])
 
     db = LibraryDatabase()
-    book_id = _get_book_id_from_query_string()
+    book_id = get_id_from_qstring("book_id")
     try:
         books = db.select(BOOKS, conditions={"book_id": str(book_id)})
         book = books[0]
@@ -31,17 +30,6 @@ def generate_book_detail_page(user: tuple, session_id: str, max_age: int = 30):
 
     builder.append_body(book_detail)
     builder.generate_page()
-
-
-def _get_book_id_from_query_string() -> Optional[int]:
-    form = cgi.FieldStorage()
-    book_id = form.getvalue("book_id")
-    try:
-        book_id = int(book_id)
-    except Exception:
-        book_id = None
-
-    return book_id
 
 
 if __name__ == "__main__":
