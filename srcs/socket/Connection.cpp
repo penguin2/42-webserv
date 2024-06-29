@@ -74,6 +74,7 @@ SocketAddress Connection::getPeerAddress() const { return peer_address_; }
 int Connection::handlerRecv() {
   const ssize_t recv_size = recv(socket_fd_, Connection::recv_buffer_,
                                  Connection::kRecvBufferSize, 0);
+  unsetEventType(EventType::READ);
   if (recv_size <= 0) {
     updateState(connection::CLOSED);
     return -1;
@@ -92,6 +93,7 @@ int Connection::handlerSend() {
   const ssize_t send_size =
       send(socket_fd_, response_.c_str() + response_sent_size_,
            response_.size() - response_sent_size_, 0);
+  unsetEventType(EventType::WRITE);
   if (send_size <= 0) {
     updateState(connection::CLOSED);
     return -1;
@@ -108,12 +110,12 @@ int Connection::handlerSend() {
 }
 
 int Connection::handlerCgi() {
-  const bool is_write_event = EventType::isWrite(getEventType());
-  const bool is_read_event = EventType::isRead(getEventType());
+  const bool is_write_event = isEventType(EventType::WRITE);
+  const bool is_read_event = isEventType(EventType::READ);
 
-  if (is_write_event && handlerCgiWrite() < 0) return -1;
-  if (is_read_event && handlerCgiRead() < 0) return -1;
-
+  if ((is_write_event && handlerCgiWrite() < 0) ||
+      (is_read_event && handlerCgiRead() < 0))
+    return -1;
   return 0;
 }
 
@@ -140,14 +142,16 @@ int Connection::handlerCgiDone() {
 }
 
 int Connection::handlerCgiRead() {
+  unsetEventType(EventType::READ);
   if (cgi_->isReadDone()) return handlerCgiDone();
   if (cgi_->readMessage() < 0) return -1;
   return 0;
 }
 
 int Connection::handlerCgiWrite() {
-  if (cgi_->writeMessage() < 0) return -1;
-  if (cgi_->isWriteDone() &&
+  unsetEventType(EventType::WRITE);
+  const bool is_write_done = cgi_->writeMessage() < 0 || cgi_->isWriteDone();
+  if (is_write_done &&
       (event_manager_->erase(cgi_->getWriteFd(), this, EventType::WRITE) < 0 ||
        cgi_->clearWriteFd() < 0))
     return -1;

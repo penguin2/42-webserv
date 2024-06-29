@@ -79,7 +79,7 @@ int Cgi::writeMessage() {
       write_fd_, cgi_request_message_.c_str() + cgi_request_message_sent_size_,
       cgi_request_message_.size() - cgi_request_message_sent_size_);
   if (write_size <= 0) {
-    LOG(WARN, "write(cgi): ", std::strerror(errno));
+    LOG(INFO, "write(cgi): ", std::strerror(errno));
     return -1;
   }
   cgi_request_message_sent_size_ += write_size;

@@ -36,8 +36,8 @@ EventManagerEpoll::EventManagerEpoll(
 
 EventManagerEpoll::~EventManagerEpoll() { close(ep_fd_); }
 
-int EventManagerEpoll::wait(std::vector<ASocket*>& event_sockets,
-                            std::vector<ASocket*>& closing_sockets) {
+int EventManagerEpoll::wait(std::set<ASocket*>& event_sockets,
+                            std::set<ASocket*>& closing_sockets) {
   const int ready_list_size = epoll_wait(ep_fd_, EventManagerEpoll::ready_list_,
                                          EventManagerEpoll::kEvlistMaxSize,
                                          EventManagerEpoll::kWaitTimeoutMilli);
@@ -53,14 +53,15 @@ int EventManagerEpoll::wait(std::vector<ASocket*>& event_sockets,
 
     if (ready_list_[i].events & (EPOLLHUP | EPOLLRDHUP))
       ready_list_[i].events = EPOLLIN;
+    else if (ready_list_[i].events & EPOLLERR)
+      ready_list_[i].events = EPOLLOUT;
 
-    current_socket->setEventType(
-        EventManagerEpoll::makeEventType(ready_list_[i].events));
-
-    if (ready_list_[i].events & (EPOLLIN | EPOLLOUT))
-      event_sockets.push_back(current_socket);
-    else if (ready_list_[i].events & EPOLLERR) {
-      closing_sockets.push_back(current_socket);
+    if (ready_list_[i].events & (EPOLLIN | EPOLLOUT)) {
+      current_socket->setEventType(
+          EventManagerEpoll::makeEventType(ready_list_[i].events));
+      event_sockets.insert(current_socket);
+    } else {
+      closing_sockets.insert(current_socket);
     }
   }
   return ready_list_size;
@@ -98,17 +99,27 @@ int EventManagerEpoll::erase(int fd, ASocket* socket, int event_type) {
 }
 
 int EventManagerEpoll::makeEventType(int epoll_flags) {
-  int event_type = 0;
-  if (epoll_flags & EPOLLIN) event_type |= EventType::READ;
-  if (epoll_flags & EPOLLOUT) event_type |= EventType::WRITE;
-  return event_type;
+  switch (epoll_flags) {
+    case EPOLLIN:
+      return EventType::READ;
+    case EPOLLOUT:
+      return EventType::WRITE;
+    default:
+      break;
+  }
+  return 0;
 }
 
 int EventManagerEpoll::makeEpollFlags(int event_type) {
-  int epoll_flags = 0;
-  if (event_type & EventType::READ) epoll_flags |= EPOLLIN;
-  if (event_type & EventType::WRITE) epoll_flags |= EPOLLOUT;
-  return epoll_flags;
+  switch (event_type) {
+    case EventType::READ:
+      return EPOLLIN;
+    case EventType::WRITE:
+      return EPOLLOUT;
+    default:
+      break;
+  }
+  return 0;
 }
 
 #endif

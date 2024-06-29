@@ -3,7 +3,7 @@
 #if defined(__MACH__)
 
 #include <map>
-#include <vector>
+#include <set>
 
 #include "ASocket.hpp"
 #include "EventType.hpp"
@@ -13,8 +13,8 @@ class EventManagerKqueue {
   EventManagerKqueue(const std::map<int, ASocket*>& sockets);
   ~EventManagerKqueue();
 
-  int wait(std::vector<ASocket*>& event_sockets,
-           std::vector<ASocket*>& closing_sockets);
+  int wait(std::set<ASocket*>& event_sockets,
+           std::set<ASocket*>& closing_sockets);
   int insert(int fd, ASocket* socket, int event_type);
   int modify(int fd, ASocket* socket, int new_event_type);
   int erase(int fd, ASocket* socket, int event_type);
