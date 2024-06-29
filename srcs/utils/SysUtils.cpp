@@ -89,7 +89,7 @@ char* sys_utils::convertToCstring(const std::string& str) {
   return cstr;
 }
 
-void sys_utils::deleteCstring(char* cstr) { delete cstr; }
+void sys_utils::deleteCstring(char* cstr) { delete[] cstr; }
 
 char* const* sys_utils::convertToEnvp(
     const std::map<std::string, std::string> envp_map) {
