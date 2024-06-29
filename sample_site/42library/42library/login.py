@@ -4,6 +4,7 @@ from business_logic.users_utils import get_user_if_exist
 from business_logic.sessions_utils import create_session
 from presentation.generate_redirect_page import generate_redirect_page
 from presentation.generate_redirect_page import generate_redirect_to_index_py
+from business_logic.sessions_utils import SESSION_SEC
 import os
 
 
@@ -19,7 +20,7 @@ def main():
     user: Optional[tuple] = get_user_if_exist()
     if user:
         user_id = user[0]
-        session_id = create_session(user_id)
+        session_id = create_session(user_id, SESSION_SEC)
         host = os.environ["HTTP_HOST"]
         generate_redirect_to_index_py(session_id, host)
     else:

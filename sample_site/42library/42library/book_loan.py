@@ -6,6 +6,7 @@ from business_logic.users_utils import get_user_from_session
 from business_logic.manage_book_data import manage_book_data
 from presentation.generate_redirect_page import generate_redirect_page
 from presentation.generate_redirect_page import generate_redirect_book_detail_page
+from business_logic.sessions_utils import SESSION_SEC
 import os
 import cgi
 
@@ -18,7 +19,7 @@ def main():
     """
     session = get_session_from_envs(os.environ)
     if session:
-        update_session(session, additional_session_sec=30)
+        update_session(session, additional_session_sec=SESSION_SEC)
         user: tuple = get_user_from_session(session)
 
         form = cgi.FieldStorage()

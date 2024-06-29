@@ -17,17 +17,20 @@ class HtmlBuilder:
     def append_body(self, body):
         self.__html_body += body
 
-    def set_html_header(self, user_name: str):
+    def set_html_header(self, user_id: str, user_name: str):
         self.__html_header = f"""
         <header>
             <div class="container">
                 <a href="/42library/index.py" class="button">42Library</a>
             </div>
             <div class="container">
-                <a class="button">{user_name}</a>
+                <a href="/42library/user_detail.py?user_id={user_id} "class="button">{user_name}</a>
             </div>
             <div class="container">
                 <a href="/42library/add_book.py" class="button">Add Book</a>
+            </div>
+            <div class="container">
+                <a href="/42library/users.py" class="button">Users</a>
             </div>
             <div class="container">
                 <a href="/42library/html/logout.html" class="button">Log Out</a>

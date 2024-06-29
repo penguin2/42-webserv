@@ -4,6 +4,7 @@ from business_logic.users_utils import create_user
 from business_logic.sessions_utils import create_session
 from presentation.generate_redirect_page import generate_redirect_page
 from presentation.generate_redirect_page import generate_redirect_to_index_py
+from business_logic.sessions_utils import SESSION_SEC
 import cgi
 import os
 
@@ -24,7 +25,7 @@ def main():
 
     if user_name and password and not is_exist_user(user_name):
         user_id = create_user(user_name, password)
-        session_id = create_session(user_id)
+        session_id = create_session(user_id, SESSION_SEC)
         host = os.environ["HTTP_HOST"]
         generate_redirect_to_index_py(session_id, host)
     else:

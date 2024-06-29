@@ -3,7 +3,7 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 0;
-	margin: 0 5%;
+	margin: 0 1%;
 }
 
 .button {
@@ -75,9 +75,6 @@
 	font-size: 12px;
 	word-break: break-word;
 }
-.book a {
-	text-decoration: none;
-}
 
 .book ul {
 	list-style-type: none;
@@ -97,7 +94,7 @@
 	padding: 5%;
 	border: 1px solid #ccc;
 	margin: 3% 10% 5% 10%;
-	background-color: orange;
+	background-color: #dee2e6;
 	justify-content: center;
 }
 
@@ -147,4 +144,83 @@ header {
 
 body {
 	background-color: #f4f4f4;
+}
+
+.users_list {
+    display: block;
+	align-items: center;
+}
+
+@keyframes wobble {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(1deg);
+    }
+    75% {
+        transform: rotate(-1deg);
+    }
+}
+
+.user {
+	text-align: center;
+	font-size: 30px;
+}
+
+.user a {
+    text-decoration: none;
+}
+
+.user p {
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 50px;
+    display: inline-block;
+	animation: wobble 5s infinite;
+}
+
+.user_detail {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.user_name {
+    font-size: 50px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.book_data_title {
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 2px solid #333;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.book_data {
+	list-style: none;
+}
+
+.book_data p {
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.book_data p:hover {
+    background-color: #dee2e6;
+}
+
+a {
+    text-decoration: none;
 }
