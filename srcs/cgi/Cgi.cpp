@@ -62,7 +62,6 @@ int Cgi::readMessage() {
   const ssize_t read_size =
       read(read_fd_, Cgi::read_buffer_, Cgi::kReadBufferSize);
   if (read_size < 0) {
-    LOG(WARN, "read(cgi): ", std::strerror(errno));
     return -1;
   }
   if (read_size == 0) {
@@ -79,7 +78,6 @@ int Cgi::writeMessage() {
       write_fd_, cgi_request_message_.c_str() + cgi_request_message_sent_size_,
       cgi_request_message_.size() - cgi_request_message_sent_size_);
   if (write_size <= 0) {
-    LOG(INFO, "write(cgi): ", std::strerror(errno));
     return -1;
   }
   cgi_request_message_sent_size_ += write_size;
