@@ -10,7 +10,6 @@
 #include "HttpException.hpp"
 #include "Request.hpp"
 #include "RequestHandler.hpp"
-#include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
 #include "utils/HttpUtils.hpp"
 #include "utils/Utils.hpp"
@@ -58,8 +57,8 @@ connection::State Http::httpHandler(connection::State current_state) {
       next_state == connection::SEND) {
     prepareToSendResponse(this->response_);
   }
-  if ((current_state == connection::RECV ||
-       current_state == connection::SEND) &&
+  if ((current_state == connection::RECV || current_state == connection::SEND ||
+       current_state == connection::CGI) &&
       next_state == connection::CGI) {
     cleanupCgiResources();
     createCgiRequestAndResponse();
@@ -122,8 +121,8 @@ connection::State Http::httpHandlerSend(void) {
 connection::State Http::httpHandlerCgi(void) {
   try {
     if (cgi_response_->parse(cgi_response_message_) == true) {
-      CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
-          request_, cgi_response_->Response::getResponseData());
+      return CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
+          request_, *cgi_response_);
     } else {
       throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
                           "Cgi Parse Error");
@@ -133,7 +132,6 @@ connection::State Http::httpHandlerCgi(void) {
     return RequestHandler::errorRequestHandler(request_, *cgi_response_,
                                                e.code(), e.what());
   }
-  return connection::SEND;
 }
 
 connection::State Http::httpHandlerCgiError(void) {
