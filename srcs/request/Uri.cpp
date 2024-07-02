@@ -16,6 +16,8 @@ void Uri::overwritePath(const std::string& new_path) {
 }
 
 void Uri::overwritePathQuery(const std::string& new_path_query) {
+  this->path_.clear();
+  this->query_.clear();
   this->parsePathQueryFragment(new_path_query);
 }
 
