@@ -250,3 +250,7 @@ size_t ConfigAdapter::getMaxNumberOfHeaders(void) {
 bool ConfigAdapter::isCorrespondingMethod(const std::string& method) {
   return Config::isCorrespondingMethod(method);
 }
+
+size_t ConfigAdapter::getMaxLocalRedirectCount(void) {
+  return INTERNAL::DEFAULT_MAX_LOCAL_REDIRECT_COUNT;
+}

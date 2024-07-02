@@ -10,6 +10,7 @@
 #include "HttpException.hpp"
 #include "Request.hpp"
 #include "RequestHandler.hpp"
+#include "config/ConfigAdapter.hpp"
 #include "config/ServerConfig.hpp"
 #include "utils/HttpUtils.hpp"
 #include "utils/Utils.hpp"
@@ -21,7 +22,8 @@ Http::Http(SocketAddress peer_address,
       keep_alive_flag_(true),
       request_(server_configs),
       cgi_request_(NULL),
-      cgi_response_(NULL) {}
+      cgi_response_(NULL),
+      local_redirect_count_(0) {}
 
 Http::~Http(void) { cleanupCgiResources(); }
 
@@ -119,19 +121,25 @@ connection::State Http::httpHandlerSend(void) {
 }
 
 connection::State Http::httpHandlerCgi(void) {
+  connection::State next_state;
   try {
-    if (cgi_response_->parse(cgi_response_message_) == true) {
-      return CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
-          request_, *cgi_response_);
-    } else {
+    if (cgi_response_->parse(cgi_response_message_) == false) {
       throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
                           "Cgi Parse Error");
+    } else {
+      next_state = CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
+          request_, *cgi_response_);
+      if (next_state == connection::CGI) ++local_redirect_count_;
+      if (ConfigAdapter::getMaxLocalRedirectCount() < local_redirect_count_)
+        throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
+                            "LocalRedirectLoop Detected");
     }
   } catch (HttpException& e) {
     this->cgi_response_->resetResponseData();
-    return RequestHandler::errorRequestHandler(request_, *cgi_response_,
-                                               e.code(), e.what());
+    next_state = RequestHandler::errorRequestHandler(request_, *cgi_response_,
+                                                     e.code(), e.what());
   }
+  return next_state;
 }
 
 connection::State Http::httpHandlerCgiError(void) {
