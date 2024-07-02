@@ -19,6 +19,7 @@ class RequestData {
   void appendBody(const std::string& data);
   void setServerConfig(const ServerConfig& server_conf);
   void overwritePath(const std::string& new_path);
+  void overwritePathQuery(const std::string& new_path_query);
 
   const std::string& getMethod(void) const;
   const Uri& getUri(void) const;

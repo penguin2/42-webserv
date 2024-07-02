@@ -18,6 +18,7 @@ class Request {
   void setServerConfig(const ServerConfig& server_conf);
   const ServerConfig* getServerConfig(void) const;
   void overwritePath(const std::string& new_path);
+  void overwritePathQuery(const std::string& new_path_query);
 
  private:
   typedef enum eRequestState {

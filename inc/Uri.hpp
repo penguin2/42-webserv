@@ -13,6 +13,7 @@ class Uri {
   std::string buildAbsoluteUri(void) const;
   std::string buildAuthority(void) const;
   void overwritePath(const std::string& new_path);
+  void overwritePathQuery(const std::string& new_path_query);
 
   const std::string& getScheme(void) const;
   const std::string& getUserInfo(void) const;

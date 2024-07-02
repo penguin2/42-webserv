@@ -15,6 +15,10 @@ void Uri::overwritePath(const std::string& new_path) {
   this->setAndCheckAndDecodePath(new_path);
 }
 
+void Uri::overwritePathQuery(const std::string& new_path_query) {
+  this->parsePathQueryFragment(new_path_query);
+}
+
 void Uri::parse(const std::string& uri) {
   // origin-form(原形式)
   // AuthorityはHostヘッダを読み取ったらをセットする
