@@ -9,7 +9,58 @@
 1. `git clone https://github.com/penguin2/42-webserv.git`
 2. `cd 42-webserv`
 3. `make`
-4. `./webserv [/path/to/configファイル]` 引数無し実行でサンプルサイトを表示([コンフィグファイルの詳細な設定方法](https://github.com/penguin2/42-webserv/wiki/Nginx-config))
+4. `./webserv [/path/to/configファイル]` 引数無し実行でサンプルサイトを表示([Configファイルの詳細](https://github.com/penguin2/42-webserv/wiki/Nginx-config))
+
+## configファイル
+```
+http {
+    server {
+        # ポートのみ記述・IPアドレスとポート両方記述の2種類
+        # listen 127.0.0.1:4242;
+        listen 80;
+
+        # ホスト名
+        server_name example.com;
+
+        # エラーの場合に表示させるページ(複数ステータスコードを指定可能)
+        error_page 404 /404.html;
+        error_page 500 502 503 504 /50x.html;
+
+        location / {
+            # 記述しない場合は全てのメソッドを許可
+            allow_methods GET POST;
+            # ベースとなるディレクトリを指定、相対パスと絶対パスの両方指定可能
+            root /var/www/html;
+            # ディレクトリに対してリクエストされた際に仕様するデフォルトのファイルを指定
+            index index.html;
+            # ディレクトリに対してリクエストされた際にディレクトリリストを表示
+            autoindex on;
+        }
+
+        location /route1 {
+            # リダイレクトを定義(301,302,303,307,308のみ)
+            return 301 /new-location;
+        }
+
+        location /route2 {
+            root /var/www/example;
+        }
+
+        location /upload {
+            allow_methods POST;
+            # アップロードされたファイルサイズの上限(メガバイト単位)
+            client_max_body_size 100M;
+            # POSTメソッドによるリクエストをファイルアップロードとするか
+            upload on;
+        }
+        location /cgi-bin {
+            allow_methods GET POST;
+            # CGIスクリプトの拡張子を指定
+            cgi_ext .py .php;
+        }
+    }
+}
+```
 
 ## ファイル構成
 ```
@@ -93,56 +144,6 @@
 └── webserv.conf
 ```
 
-## configファイル
-```
-http {
-    server {
-        # ポートのみ記述・IPアドレスとポート両方記述の2種類
-        # listen 127.0.0.1:4242;
-        listen 80;
-
-        # ホスト名
-        server_name example.com;
-
-        # エラーの場合に表示させるページ(複数ステータスコードを指定可能)
-        error_page 404 /404.html;
-        error_page 500 502 503 504 /50x.html;
-
-        location / {
-            # 記述しない場合は全てのメソッドを許可
-            allow_methods GET POST;
-            # ベースとなるディレクトリを指定、相対パスと絶対パスの両方指定可能
-            root /var/www/html;
-            # ディレクトリに対してリクエストされた際に仕様するデフォルトのファイルを指定
-            index index.html;
-            # ディレクトリに対してリクエストされた際にディレクトリリストを表示
-            autoindex on;
-        }
-
-        location /route1 {
-            # リダイレクトを定義(301,302,303,307,308のみ)
-            return 301 /new-location;
-        }
-
-        location /route2 {
-            root /var/www/example;
-        }
-
-        location /upload {
-            allow_methods POST;
-            # アップロードされたファイルサイズの上限(メガバイト単位)
-            client_max_body_size 100M;
-            # POSTメソッドによるリクエストをファイルアップロードとするか
-            upload on;
-        }
-        location /cgi-bin {
-            allow_methods GET POST;
-            # CGIスクリプトの拡張子を指定
-            cgi_ext .py .php;
-        }
-    }
-}
-```
 
 ## クラス図
 ![class_diagram drawio](https://github.com/penguin2/42-webserv/assets/110877359/6ec2d5fd-b2ee-4a07-85d0-a645cf8dfba0)
@@ -153,6 +154,22 @@ http {
 
 * httpHandler
 ![http_handler_flow drawio](https://github.com/penguin2/42-webserv/assets/110877359/870900a1-b4b6-4581-a4a6-ae400482fe7d)
+
+## サンプルサイト
+### 起動方法
+`./webserv`(サイトが上手く表示されない場合は `cd ./sample/42library/42library/ && python3 shebang.py && cd ../../../` を実行してください)
+
+### 機能
+* サインアップ・ログイン・ログアウト機能
+* CookieとDBによるSession維持機能
+* 図書一覧機能
+* 図書追加・削除機能
+* 図書貸出・返却機能
+* ユーザー一覧機能
+
+### 設計
+![sample_site drawio](https://github.com/penguin2/42-webserv/assets/110877359/886862e7-afda-49e5-b9e3-5f08e537ce3a)
+
 
 ## リンク
 * [CGIとは](https://github.com/penguin2/42-webserv/wiki/CGI)
