@@ -147,12 +147,12 @@ http {
 ## クラス図
 ![class_diagram drawio](https://github.com/penguin2/42-webserv/assets/110877359/6ec2d5fd-b2ee-4a07-85d0-a645cf8dfba0)
 
-## アクティビティ図
+## フローチャート
 * dispatch
-![dispatch_flow drawio](https://github.com/penguin2/42-webserv/assets/110877359/66830b1e-83a4-44f6-920e-e9eaae86869a)
+![dispatch_flow drawio](https://github.com/penguin2/42-webserv/assets/110877359/a914b394-72ac-4c84-999e-9f6a40222353)
 
 * httpHandler
-![http_handler_flow drawio](https://github.com/penguin2/42-webserv/assets/110877359/a0cb5dd5-3c40-4fe0-9d0d-9f923e0aa875)
+![http_handler_flow drawio](https://github.com/penguin2/42-webserv/assets/110877359/870900a1-b4b6-4581-a4a6-ae400482fe7d)
 
 ## リンク
 * [CGIとは](https://github.com/penguin2/42-webserv/wiki/CGI)
