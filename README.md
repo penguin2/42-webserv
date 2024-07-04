@@ -136,7 +136,7 @@ http {
             upload on;
         }
         location /cgi-bin {
-            allow_method GET POST;
+            allow_methods GET POST;
             # CGIスクリプトの拡張子を指定
             cgi_ext .py .php;
         }
