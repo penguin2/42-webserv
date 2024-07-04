@@ -143,3 +143,12 @@ http {
     }
 }
 ```
+
+## リンク
+* [CGIとは](https://github.com/penguin2/42-webserv/wiki/CGI)
+* [CookieとSession](https://github.com/penguin2/42-webserv/wiki/Cookie%EF%BC%86Session)
+* [HTTP通信](https://github.com/penguin2/42-webserv/wiki/HTTP%E9%80%9A%E4%BF%A1)
+* [IO多重化](https://github.com/penguin2/42-webserv/wiki/IO%E5%A4%9A%E9%87%8D%E5%8C%96)
+* [Configファイル仕様](https://github.com/penguin2/42-webserv/wiki/Nginx-config)
+* [ソケット通信](https://github.com/penguin2/42-webserv/wiki/Socket%E9%80%9A%E4%BF%A1)
+* [テスト](https://github.com/penguin2/42-webserv/wiki/%E3%83%86%E3%82%B9%E3%83%88)
