@@ -9,7 +9,7 @@
 1. `git clone https://github.com/penguin2/42-webserv.git`
 2. `cd 42-webserv`
 3. `make`
-4. `./webserv [/path/to/configファイル]` 引数無し実行でサンプルサイトを表示([Configファイルの詳細](https://github.com/penguin2/42-webserv/wiki/Nginx-config))
+4. `./webserv [/path/to/configファイル]` 引数無し実行でサンプルサイトを表示([Configファイルの詳細](https://github.com/penguin2/42-webserv/wiki/Webserv-config))
 
 ## configファイル
 ```
@@ -176,6 +176,6 @@ http {
 * [CookieとSession](https://github.com/penguin2/42-webserv/wiki/Cookie%EF%BC%86Session)
 * [HTTP通信](https://github.com/penguin2/42-webserv/wiki/HTTP%E9%80%9A%E4%BF%A1)
 * [IO多重化](https://github.com/penguin2/42-webserv/wiki/IO%E5%A4%9A%E9%87%8D%E5%8C%96)
-* [Configファイル仕様](https://github.com/penguin2/42-webserv/wiki/Nginx-config)
+* [Configファイル仕様](https://github.com/penguin2/42-webserv/wiki/Webserv-config)
 * [ソケット通信](https://github.com/penguin2/42-webserv/wiki/Socket%E9%80%9A%E4%BF%A1)
 * [テスト](https://github.com/penguin2/42-webserv/wiki/%E3%83%86%E3%82%B9%E3%83%88)
