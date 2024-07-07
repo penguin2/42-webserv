@@ -167,6 +167,7 @@ void Http::prepareToSendResponse(Response& response) {
   if (response.getStatusCode() == 204) response.clearBody();
   response.insertCommonHeaders(this->keep_alive_flag_);
   response.getResponseRawData(raw_response_data_);
+  this->local_redirect_count_ = 0;
 }
 
 void Http::createCgiRequestAndResponse(void) {
