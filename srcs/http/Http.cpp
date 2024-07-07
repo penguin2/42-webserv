@@ -132,7 +132,7 @@ connection::State Http::httpHandlerCgi(void) {
       if (next_state == connection::CGI) ++local_redirect_count_;
       if (ConfigAdapter::getMaxLocalRedirectCount() < local_redirect_count_)
         throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
-                            "LocalRedirectLoop Detected");
+                            "LocalRedirectCount Limit Reached");
     }
   } catch (HttpException& e) {
     this->cgi_response_->resetResponseData();
