@@ -77,6 +77,9 @@ class Connection : public ASocket {
   static int sendToCgi(Connection* conn);
   static int sendToRecv(Connection* conn);
   static int cgiToSend(Connection* conn);
+  static int cgiToCgi(Connection* conn);
+  static int recvToRecv(Connection* conn);
+  static int sendToSend(Connection* conn);
 };
 
 std::ostream& operator<<(std::ostream& os, const Connection& connection);

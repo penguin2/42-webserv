@@ -177,7 +177,6 @@ int Connection::updateState(connection::State new_state) {
       updateTimeout(prev_state, new_state) < 0)
     return -1;
 
-  if (prev_state == new_state) return 0;
   Connection::TransitHandlerMap::const_iterator it =
       Connection::transitHandlers.find(std::make_pair(prev_state, new_state));
   if (it == Connection::transitHandlers.end()) return -1;
@@ -196,7 +195,8 @@ int Connection::updateTimeout(connection::State prev_state,
       new_timeout_limit = TimeoutManager::kDefaultTimeoutLimit;
       break;
     case connection::CGI:
-      new_timeout_limit = TimeoutManager::kCgiTimeoutLimit;
+      if (prev_state != connection::CGI)
+        new_timeout_limit = TimeoutManager::kCgiTimeoutLimit;
       break;
     default:
       break;
@@ -225,6 +225,12 @@ void Connection::initTransitHandlers() {
       connection::SEND, connection::RECV)] = Connection::sendToRecv;
   Connection::transitHandlers[std::make_pair(
       connection::CGI, connection::SEND)] = Connection::cgiToSend;
+  Connection::transitHandlers[std::make_pair(
+      connection::CGI, connection::CGI)] = Connection::cgiToCgi;
+  Connection::transitHandlers[std::make_pair(
+      connection::RECV, connection::RECV)] = Connection::recvToRecv;
+  Connection::transitHandlers[std::make_pair(
+      connection::SEND, connection::SEND)] = Connection::sendToSend;
 }
 
 int Connection::recvToSend(Connection* conn) {
@@ -264,6 +270,28 @@ int Connection::sendToRecv(Connection* conn) {
 int Connection::cgiToSend(Connection* conn) {
   conn->clearCgi();
   return conn->event_manager_->insert(conn->socket_fd_, conn, EventType::WRITE);
+}
+
+int Connection::cgiToCgi(Connection* conn) {
+  conn->clearCgi();
+  conn->cgi_ = Cgi::createCgi(conn->http_.getCgiRequest());
+  if (conn->cgi_ == NULL ||
+      conn->event_manager_->insert(conn->cgi_->getReadFd(), conn,
+                                   EventType::READ) < 0 ||
+      conn->event_manager_->insert(conn->cgi_->getWriteFd(), conn,
+                                   EventType::WRITE) < 0)
+    return -1;
+  return 0;
+}
+
+int Connection::recvToRecv(Connection* conn) {
+  (void)conn;
+  return 0;
+}
+
+int Connection::sendToSend(Connection* conn) {
+  (void)conn;
+  return 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const Connection& connection) {
