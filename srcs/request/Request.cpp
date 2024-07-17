@@ -27,6 +27,10 @@ void Request::overwritePath(const std::string& new_path) {
   this->data_->overwritePath(new_path);
 }
 
+void Request::overwritePathQuery(const std::string& new_path_query) {
+  this->data_->overwritePath(new_path_query);
+}
+
 bool Request::parse(std::string& buffer) {
   if (this->state_ == END) {
     this->state_ = METHOD;

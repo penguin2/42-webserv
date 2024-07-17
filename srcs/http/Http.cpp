@@ -22,7 +22,8 @@ Http::Http(SocketAddress peer_address,
       keep_alive_flag_(true),
       request_(server_configs),
       cgi_request_(NULL),
-      cgi_response_(NULL) {}
+      cgi_response_(NULL),
+      local_redirect_count_(0) {}
 
 Http::~Http(void) { cleanupCgiResources(); }
 
@@ -58,8 +59,8 @@ connection::State Http::httpHandler(connection::State current_state) {
       next_state == connection::SEND) {
     prepareToSendResponse(this->response_);
   }
-  if ((current_state == connection::RECV ||
-       current_state == connection::SEND) &&
+  if ((current_state == connection::RECV || current_state == connection::SEND ||
+       current_state == connection::CGI) &&
       next_state == connection::CGI) {
     cleanupCgiResources();
     createCgiRequestAndResponse();
@@ -120,20 +121,25 @@ connection::State Http::httpHandlerSend(void) {
 }
 
 connection::State Http::httpHandlerCgi(void) {
+  connection::State next_state;
   try {
-    if (cgi_response_->parse(cgi_response_message_) == true) {
-      CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
-          request_, cgi_response_->Response::getResponseData());
-    } else {
+    if (cgi_response_->parse(cgi_response_message_) == false) {
       throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
                           "Cgi Parse Error");
+    } else {
+      next_state = CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
+          request_, *cgi_response_);
+      if (next_state == connection::CGI) ++local_redirect_count_;
+      if (ConfigAdapter::getMaxLocalRedirectCount() < local_redirect_count_)
+        throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
+                            "LocalRedirectCount Limit Reached");
     }
   } catch (HttpException& e) {
     this->cgi_response_->resetResponseData();
-    return RequestHandler::errorRequestHandler(request_, *cgi_response_,
-                                               e.code(), e.what());
+    next_state = RequestHandler::errorRequestHandler(request_, *cgi_response_,
+                                                     e.code(), e.what());
   }
-  return connection::SEND;
+  return next_state;
 }
 
 connection::State Http::httpHandlerCgiError(void) {
@@ -161,6 +167,7 @@ void Http::prepareToSendResponse(Response& response) {
   if (response.getStatusCode() == 204) response.clearBody();
   response.insertCommonHeaders(this->keep_alive_flag_);
   response.getResponseRawData(raw_response_data_);
+  this->local_redirect_count_ = 0;
 }
 
 void Http::createCgiRequestAndResponse(void) {

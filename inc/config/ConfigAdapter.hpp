@@ -77,12 +77,15 @@ size_t getMaxNumberOfHeaders(void);
 
 bool isCorrespondingMethod(const std::string& method);
 
+size_t getMaxLocalRedirectCount(void);
+
 namespace INTERNAL {
 const int DEFAULT_LISTEN_BACKLOG = 511;
 const size_t DEFAULT_MAX_NUMBER_OF_CRLF_BEFORE_METHOD = 10;
 const size_t DEFAULT_MAX_URI_SIZE = 2000;
 const size_t DEFAULT_MAX_HEADER_SIZE = 200;
 const size_t DEFAULT_MAX_NUMBER_OF_HEADERS = 100;
+const size_t DEFAULT_MAX_LOCAL_REDIRECT_COUNT = 5;
 const std::string DEFAULT_ROOT = "/var/www/html";
 }  // namespace INTERNAL
 

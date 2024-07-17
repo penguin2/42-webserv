@@ -1,31 +1,32 @@
 #include "CgiResponseHandler.hpp"
 
-#include <sstream>
-
+#include "ConnectionState.hpp"
 #include "HttpException.hpp"
 #include "Request.hpp"
+#include "RequestHandler.hpp"
 #include "ResponseData.hpp"
 #include "Uri.hpp"
-#include "config/ConfigAdapter.hpp"
 #include "utils/HttpUtils.hpp"
 #include "utils/Utils.hpp"
 
-void CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
-    const Request& request, ResponseData& data) {
+connection::State CgiResponseHandler::convertCgiResponseDataToHttpResponseData(
+    const Request& request, Response& response) {
+  ResponseData& data = response.getResponseData();
   if (INTERNAL::isDocumentResponse(data))
-    documentResponseHandler(data);
+    return documentResponseHandler(data);
   else if (INTERNAL::isLocalRedirectResponse(data))
-    localRedirectResponseHandler(data, request);
+    return localRedirectResponseHandler(response, request);
   else if (INTERNAL::isClientRedirectResponse(data))
-    clientRedirectResponseHandler(data);
+    return clientRedirectResponseHandler(data);
   else if (INTERNAL::isClientRedirectResponseWithDocument(data))
-    clientRedirectResponseWithDocumentHandler(data);
+    return clientRedirectResponseWithDocumentHandler(data);
   else
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
                         "Internal Server Error");
 }
 
-void CgiResponseHandler::documentResponseHandler(ResponseData& data) {
+connection::State CgiResponseHandler::documentResponseHandler(
+    ResponseData& data) {
   const std::map<std::string, std::string>& headers = data.getHeaders();
 
   if (headers.find("status") != headers.end()) {
@@ -35,22 +36,25 @@ void CgiResponseHandler::documentResponseHandler(ResponseData& data) {
     data.setStatusCode(200);
     data.setPhrase("OK");
   }
+  return connection::SEND;
 }
 
-void CgiResponseHandler::localRedirectResponseHandler(ResponseData& data,
-                                                      const Request& request) {
-  const size_t redirect_status_code = 302;
-  const std::string absolute_location =
-      INTERNAL::convertLocalLocationToAbsoluteLocation(data, request);
+connection::State CgiResponseHandler::localRedirectResponseHandler(
+    Response& response, const Request& const_request) {
+  Request& request = const_cast<Request&>(const_request);
+  const std::map<std::string, std::string>& headers =
+      response.getResponseData().getHeaders();
+  const std::map<std::string, std::string>::const_iterator location =
+      headers.find("location");
+  request.overwritePathQuery(location->second);
+  const std::string http_path = request.getRequestData()->getUri().getPath();
 
-  data.appendBody(http_utils::generateRedirectContent(
-      absolute_location, redirect_status_code, "Found"));
-  data.insertHeader("location", absolute_location);
-  data.setStatusCode(redirect_status_code);
-  data.setPhrase("Found");
+  response.resetResponseData();
+  return RequestHandler::dispatch(request, response, http_path);
 }
 
-void CgiResponseHandler::clientRedirectResponseHandler(ResponseData& data) {
+connection::State CgiResponseHandler::clientRedirectResponseHandler(
+    ResponseData& data) {
   const size_t redirect_status_code = 302;
   const std::map<std::string, std::string>& headers = data.getHeaders();
   const std::string& absolute_location = headers.find("location")->second;
@@ -59,14 +63,16 @@ void CgiResponseHandler::clientRedirectResponseHandler(ResponseData& data) {
       absolute_location, redirect_status_code, "Found"));
   data.setStatusCode(redirect_status_code);
   data.setPhrase("Found");
+  return connection::SEND;
 }
 
-void CgiResponseHandler::clientRedirectResponseWithDocumentHandler(
+connection::State CgiResponseHandler::clientRedirectResponseWithDocumentHandler(
     ResponseData& data) {
   INTERNAL::convertStatusHeaderToStatusLine(data);
   if (!http_utils::isRedirectStatusCode(data.getStatusCode()))
     throw HttpException(HttpException::INTERNAL_SERVER_ERROR,
                         "Internal Server Error");
+  return connection::SEND;
 }
 
 void CgiResponseHandler::INTERNAL::convertStatusHeaderToStatusLine(

@@ -98,3 +98,7 @@ const ServerConfig *RequestData::getServerConfig(void) const {
 void RequestData::overwritePath(const std::string &new_path) {
   this->uri_.overwritePath(new_path);
 }
+
+void RequestData::overwritePathQuery(const std::string &new_path_query) {
+  this->uri_.overwritePathQuery(new_path_query);
+}

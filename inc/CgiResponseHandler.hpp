@@ -1,17 +1,19 @@
 #ifndef WEBSERV_CGIRESPONSEHANDLER_H_
 #define WEBSERV_CGIRESPONSEHANDLER_H_
 
+#include "ConnectionState.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
 #include "ResponseData.hpp"
-#include "Uri.hpp"
 
 namespace CgiResponseHandler {
-void convertCgiResponseDataToHttpResponseData(const Request& request,
-                                              ResponseData& data);
-void documentResponseHandler(ResponseData& data);
-void localRedirectResponseHandler(ResponseData& data, const Request& request);
-void clientRedirectResponseHandler(ResponseData& data);
-void clientRedirectResponseWithDocumentHandler(ResponseData& data);
+connection::State convertCgiResponseDataToHttpResponseData(
+    const Request& request, Response& response);
+connection::State documentResponseHandler(ResponseData& data);
+connection::State localRedirectResponseHandler(Response& response,
+                                               const Request& const_request);
+connection::State clientRedirectResponseHandler(ResponseData& data);
+connection::State clientRedirectResponseWithDocumentHandler(ResponseData& data);
 
 namespace INTERNAL {
 void convertStatusHeaderToStatusLine(ResponseData& data);

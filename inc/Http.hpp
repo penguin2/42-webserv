@@ -40,6 +40,7 @@ class Http {
   CgiRequest* cgi_request_;
   CgiResponse* cgi_response_;
   std::string cgi_response_message_;
+  size_t local_redirect_count_;
 
   connection::State httpHandlerRecv(void);
   connection::State httpHandlerRecvTimeout(void);
